@@ -1,0 +1,25 @@
+{
+  "auth": "zef:tbrowder",
+  "authors": [
+    "Tom Browder"
+  ],
+  "build-depends": [
+  ],
+  "depends": [
+  ],
+  "description": "Provides routines for handling play of the Florida Power Ball lottery game\n",
+  "license": "Artistic-2.0",
+  "name": "PB-Lottery",
+  "perl": "6.d",
+  "provides": {
+    "PB-Lottery": "lib/PB-Lottery.rakumod"
+  },
+  "resources": [
+  ],
+  "source-url": "",
+  "tags": [
+  ],
+  "test-depends": [
+  ],
+  "version": "0.0.1"
+}
