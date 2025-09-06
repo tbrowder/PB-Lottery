@@ -1,3 +1,432 @@
-unit class PB-Lottery;
+unit module PB-Lottery;
+
+use Text::Utils :strip-comment;
+
+sub trim-zeros(
+    $s is copy --> UInt) {
+    if $s ~~ /^0/ {
+        $s ~~ s/^0//;
+    }
+    $s;
+}
+
+sub Lstr2info-hash(
+    Str $s is copy,
+    --> Hash
+) is export {
+    # use the first six numbers in a string to provide a
+    # Power Ball info hash:
+    #   "nn nn nn nn nn nn yyyy-mm-dd pb dp qp   
+    # use the rest of the line, if any, to provide additional data
+    my %h;
+
+    $s = strip-comment $s;
+    my $s2 = ""; # for any additional data
+    # check with a hash
+    if $s ~~ /^ 
+        \h* \d\d      # ~$0
+        \h+ \d\d      # ~$1 
+        \h+ \d\d      # ~$2
+        \h+ \d\d      # ~$3
+        \h+ \d\d      # ~$4
+        \h+ \d\d \h*  # ~$5
+
+        # that may be the end OR more space-separated chars
+        # which we will treat separately
+        [\h+ .*]?     # ~$6
+
+        $/ {
+     
+        if $6.defined {
+            $s2 = ~$6;
+        }
+    }
+    else {
+        die qq:to/HERE/;
+        FATAL: Unrecognized line format: |$s|
+               Exiting...
+        HERE
+    }
+
+    my @nums = $s.words[0..^6];
+    # take care of the numbers: sort the first 5 and ensure
+    #   they are in the range 1..69
+    # the sixth is the power ball in the range 1..26
+
+    # Now take care of the remaining data, if any. Put them
+    # in the same hash:
+    if $s2 {
+        my @w = $s2.words; 
+        for @w.kv -> $i, $w {
+            if $i == 0 {
+                %h<date> = $w;
+                next;
+            }
+            if $w ~~ /pb/ { %h<pb> = 1; next; }
+            if $w ~~ /dp/ { %h<dp> = 1; next; }
+            if $w ~~ /qp/ { %h<qp> = 1; next; }
+        }
+    }
+
+    %h;
+}
+
+class SixNumber is export {
+    has Str  $.nums;
+    has Hash %.numsh;
+}
+
+class PB-Draw is SixNumber {
+    has Str  $.nums2;
+    has Hash %.nums2h;
+    has Date $.date;
+    submethod TWEAK {
+    
+    }
+}
+
+class PB-Ticket is SixNumber {
+    has Date $.date;
+    has Bool $.is-qp;
+}
+
+# use a class generator 
+sub SixNumberFactory(
+    Str  $nums,
+    Str  $nums2?, # if defined, this is the double play and this is a PB draw
+    Date :$date,
+    --> SixNumber
+) is export {
+    # Each call returns a single class object. The general process 
+    # should be:
+    #   read all the valid owner tickets, getting a lists of ticket
+    #     objects
+    #   read the draw numbers, geting a list of draw object
+    #   check results of each ticket against each draw
+    my $o;
+    if $nums2.defined {
+        $o = PB-Draw.new: :$nums, :$nums2, :$date;
+    }
+    else {
+        $o = PB-Ticket.new: :$nums, :$date;
+    }
+    $o;
+}
+
+# old stuff to steal from
+sub get-multiple-powerball-plays(
+    $nplays,
+    :$debug,
+    --> List
+) is export {
+    my @plays;
+    for 1..$nplays {
+        my $p = get-random-powerball-play;
+        @plays.push: $p;
+    }
+    @plays
+}
+
+sub get-random-powerball-play(
+    :$debug,
+    --> Str
+) is export {
+    # uses a random seed saved in an envvar "PBALL_SEED"
+    # to create:
+    #   a set of 5 numbers from the set 1..69
+    #   one Power Ball number from the set 1..26
+    my (@num, $pball);
+    for (1..5) {
+        my $n = (1..69).roll;
+        @num.push: $n;
+    }
+
+    $pball = (1..26).roll;
+    if $pball < 10 {
+        $pball = "0$pball";
+    }
+
+    # sort the @num numerically
+    @num = @num.sort({$^a cmp $^b});
+    my $num = "";
+    for @num.kv -> $i, $v is copy {
+        if $v < 10 {
+            $v = "0$v";
+        }
+        if $i > 0 {
+            $v = " $v";
+        }
+        $num ~= $v;
+    }
+    $num ~= " $pball";
+}
+
+=finish
+sub show-tickets(
+    LNum :@tickets!,
+    :$debug,
+) is export {
+} # end sub show-tickets
+
+sub show-matches(
+    LNum :@draws!,
+    LNum :@tickets!,
+    :$debug,
+) is export {
+} # end sub show-matches
+
+sub show-draws(
+    LNum :@draws!,
+    :$debug,
+) is export {
+} # end sub show-draws
+
+role Lottery is export {
+    has Str  $.digits;  # "00 00 00 00 00 00"; # <= up to 6 numbers from 1..99
+    has UInt $.ndigits; # depends on the type of game
+    has Bool $.qp; # quick pick? # for history
+    has Bool $.pp; # power play?
+    has Bool $.dp; # double play?
+
+    has Str  $.game  = "pb"; # Power Ball, others to be added
+    has Str  $.state = "FL";
+}
+
+class LNum does Lottery is export {
+    has Str $.entry is required; # n n n n n   N  date?
+    has %.nums;
+    has Date $.date;
+
+    my $dt;
+
+    my $debug = 0;
+    sub trim-zeros($s is copy --> UInt) {
+        if $s ~~ /^0/ {
+            $s ~~ s/^0//;
+        }
+        $s;
+    }
+
+    submethod TWEAK {
+        if $!entry ~~ /^
+            \h* (\d+) # 0
+            \h+ (\d+) # 1
+            \h+ (\d+) # 2
+            \h+ (\d+) # 3
+            \h+ (\d+) # 4
+            \h+ (\d+) # 5 the Power Ball
+
+            # the date is now required
+            # 6
+            [\h+ (\d\d\d\d '-' \d\d '-' \d\d)]
+
+            # three more optional, two-char entries
+            # 7
+            [\h+ (\w\w)]? # qp, dp, or pp
+            # 8
+            [\h+ (\w\w)]? # qp, dp, or pp
+            # 9
+            [\h+ (\w\w)]? # qp, dp, or pp
 
 
+            \h*
+
+            $/ {
+
+            # need to trim leading zeros, if any
+            %!nums<a> = trim-zeros +$0;
+            %!nums<b> = trim-zeros +$1;
+            %!nums<c> = trim-zeros +$2;
+            %!nums<d> = trim-zeros +$3;
+            %!nums<e> = trim-zeros +$4;
+            %!nums<f> = trim-zeros +$5; # the Power Ball
+            # the date is now mandatory
+            $dt = ~$6;
+            say "date = '$dt'" if $debug;
+            $!date = Date.new: $dt;
+
+            # the 3 optional entries 7, 8, 9
+            if $7.defined {
+                my $s = ~$7;
+                if $s ~~ /:i qp /  { $!qp = True}
+                if $s ~~ /:i dp /  { $!dp = True}
+                if $s ~~ /:i pp /  { $!pp = True}
+            }
+            if $8.defined {
+                my $s = ~$8;
+                if $s ~~ /:i qp /  { $!qp = True}
+                if $s ~~ /:i dp /  { $!dp = True}
+                if $s ~~ /:i pp /  { $!pp = True}
+            }
+            if $9.defined {
+                my $s = ~$9;
+                if $s ~~ /:i qp /  { $!qp = True}
+                if $s ~~ /:i dp /  { $!dp = True}
+                if $s ~~ /:i pp /  { $!pp = True}
+            }
+
+        }
+        else {
+            say "FATAL: Unknown input format: '$!entry'";
+            exit(1);
+        }
+    }
+
+    method show($ticket-num?, :$debug, --> Str) {
+        # show the ticket
+        # tid x x x x x pb x
+        my $id = "X";
+        if $ticket-num.defined {
+            $id = $ticket-num;
+        }
+
+        my @k = self.nums.keys.sort;
+        my $t = "";
+        my $num = 0;
+        for @k -> $k {
+            ++$num;
+            # interject codes if applicable
+            if $num == 1 {
+                $t ~= " $id";
+            }
+            elsif $num == 6 {
+                # print " PB";
+                $t ~= " PB";
+            }
+
+            my $n = self.nums{$k};
+            if $n.chars == 1 {
+                # print "  $n";
+                $t ~= "  $n";
+            }
+            else {
+                # print " $n";
+                $t ~= " $n";
+            }
+        }
+        # print " # {self.date}";
+        $t ~= " # {self.date}";
+        # say();
+    }
+
+    method matches(LNum $draw, :$show-draw, :$debug) {
+        # given a drawing set of six numbers, show the matched numbers
+        # ensure we start with cash = 0
+        my $cash = 0;
+
+        # rules are complicated
+        # winning matches and prizes:
+        #   1 numbers + pb or just pb      $4
+        #   2 numbers + pb or 3 numbers    $7
+        #   3 numbers + pb or 4 numbers    $100
+        #   4 numbers + pb                 $50,000
+        #   5 numbers                      $1,000,000
+        #   5 numbers + pb                 current jackpot
+
+        my @d = $draw.nums.keys.sort;
+        my @k = self.nums.keys.sort;
+        my $pb-match  = 0;
+        my $num-match = 0;
+        my ($is-draw-power-ball, $is-self-power-ball);
+        DRAW: for @d -> $d {
+            $is-draw-power-ball = False;
+            # keys: a..f
+            if $d eq "f" {
+                $is-draw-power-ball = True;
+            }
+            my $dnum = $draw.nums{$d};
+
+            for @k -> $k {
+                $is-self-power-ball = False;
+                # keys: a..f
+                if $k eq "f" {
+                    $is-self-power-ball = True;
+                }
+                my $mnum = self.nums{$k};
+
+                # so so we have a Power Ball match or not?
+                if $is-draw-power-ball and $is-self-power-ball {
+                    ++$pb-match if $dnum == $mnum;
+                }
+                elsif not $is-draw-power-ball {
+                    ++$num-match if $dnum == $mnum;
+                }
+                else {
+                    next;
+                    # no matches, so go to next user number
+                    # for this tickes
+                    die "FATAL: no pb match so what action to take?";
+                }
+            } # end of this ticket
+
+            # analyze results...
+            # winning matches and prizes:
+            #   1 numbers + pb or just pb      $4
+            #   2 numbers + pb or 3 numbers    $7
+            #   3 numbers + pb or 4 numbers    $100
+            #   4 numbers + pb                 $50,000
+            #   5 numbers                      $1,000,000
+            #   5 numbers + pb                 current jackpot
+            if $pb-match {
+                # auto win?
+                # 0 or 1 num = $4
+                # 2 nums = $7
+                # 3 nums = $100
+                # 4 nums = $50,000
+                # 5 nums = current jackpot
+                with $num-match {
+                    when $_ == 0 { $cash = 4 }
+                    when $_ == 1 { $cash = 4 }
+                    when $_ == 2 { $cash = 7 }
+                    when $_ == 3 { $cash = 100 }
+                    when $_ == 4 { $cash = 50_000 }
+                    when $_ == 5 { $cash = 2_000_000 } # jackpot
+                }
+            }
+            elsif $num-match {
+                # 3 nums = $7
+                # 4 nums = $100
+                # 5 nums = $1,000,000
+                with $num-match {
+                    when $_ == 3 { $cash = 7 }
+                    when $_ == 4 { $cash = 100 }
+                    when $_ == 5 { $cash = 1_000_000 }
+                }
+            }
+
+        } # end of this draw loop
+
+        say "pb-match:  $pb-match"  if $debug;
+        say "num-match: $num-match" if $debug;
+        next unless $cash > 0; #$num-match or $pb-match;
+
+        if $show-draw {
+            print qq:to/HERE/;
+              The draw  : {$draw.show.chomp}
+              Winning tickets
+            HERE
+        }
+        if $cash > 0 {
+            print qq:to/HERE/;
+            Our ticket: {self.show.chomp} \# winnings: \$$cash
+            HERE
+        }
+        else {
+            print qq:to/HERE/;
+            Our ticket: No winning tickets.
+            HERE
+        }
+    }
+
+} # end of class LNum
+
+
+our @picks is export = [
+    # my Florida Lottery numbers (last number is Power Ball)
+    # first 5 numbers are Florida Lottery, last number is the Power ball
+    # a  b  c  d  e  f # <= %nums hash key
+    #                    valid date
+    #                    for pick   |<= Power Play
+    #                                 |<= Double Play
+    "18 30 37 45 56 18 2025-09-22 qp rp dp",
+];

@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/tbrowder/PB-Lottery/actions/workflows/linux.yml/badge.svg)](https://github.com/tbrowder/PB-Lottery/actions) [![Actions Status](https://github.com/tbrowder/PB-Lottery/actions/workflows/macos.yml/badge.svg)](https://github.com/tbrowder/PB-Lottery/actions) [![Actions Status](https://github.com/tbrowder/PB-Lottery/actions/workflows/windows.yml/badge.svg)](https://github.com/tbrowder/PB-Lottery/actions)
+
 NAME
 ====
 
