@@ -1,7 +1,5 @@
 use Test;
 
-use lib "lib";
-# use Subs; # now in /prev-lottery-lin
 use PB-Lottery;
 
 isa-ok PB-Lottery, PB-Lottery;
