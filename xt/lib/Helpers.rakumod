@@ -14,12 +14,12 @@ sub Die is export {
     HERE
 }
 
-sub Exit is export {
+sub Exit($errcode = 0) is export {
     print qq:to/HERE/;
     ERROR: Unrecognized format.
-           Exiting with error code 1...
+           Exiting with error code $errcode...
     HERE
-    exit(1);
+    exit($errcode);
 }
 
 sub Leave is export {
@@ -29,4 +29,3 @@ sub Leave is export {
     HERE
     exit(0);
 }
-
