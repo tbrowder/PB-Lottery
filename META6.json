@@ -6,6 +6,7 @@
   "build-depends": [
   ],
   "depends": [
+    "Text::Utils"
   ],
   "description": "Provides routines for handling play of the Florida Power Ball lottery game\n",
   "license": "Artistic-2.0",
