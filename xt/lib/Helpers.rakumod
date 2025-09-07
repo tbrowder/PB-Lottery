@@ -1,5 +1,12 @@
 unit module Helpers;
 
+sub Okay is export {
+    print qq:to/HERE/;
+    NOTE: Unrecognized format.
+          Continuing...
+    HERE
+}
+
 sub Die is export {
     die qq:to/HERE/;
     FATAL: Unrecognized format.

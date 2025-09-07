@@ -1,0 +1,13 @@
+# lives-ok single test only
+my $n = Inf;
+
+use Test;
+
+use lib "xt/lib";
+use Helpers;
+
+plan 1;
+
+lives-ok {
+    1 == 1;
+}, "lives-ok test $n";

@@ -1,0 +1,13 @@
+# dies-ok single test only
+my $n = Inf;
+
+use Test;
+
+use lib "xt/lib";
+use Helpers;
+
+plan 1;
+
+dies-ok {
+    die "FATAL";
+}, "dies-ok test $n";
