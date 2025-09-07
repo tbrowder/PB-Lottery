@@ -2,3 +2,4 @@ Revision history for PB-Lottery
 
 {{$NEXT}}
     - Initial version
+    - Use pick instead of roll (thanks @jubilateous1!)
