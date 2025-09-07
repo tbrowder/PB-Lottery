@@ -136,6 +136,10 @@ sub get-random-powerball-play(
     #   a set of 5 numbers from the set 1..69
     #   one Power Ball number from the set 1..26
     my (@num, $pball);
+    @num = (1..69).pick(5);
+    $pball = (1..26).pick;
+
+    =begin comment
     for (1..5) {
         my $n = (1..69).roll;
         @num.push: $n;
@@ -145,6 +149,7 @@ sub get-random-powerball-play(
     if $pball < 10 {
         $pball = "0$pball";
     }
+    =end comment
 
     # sort the @num numerically
     @num = @num.sort({$^a cmp $^b});
