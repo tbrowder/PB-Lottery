@@ -1,0 +1,20 @@
+# Florida Poweball draws
+# a  b  c  d  e  f # <= %nums hash key
+09 12 22 41 61 25 2025-08-27 pb
+03 18 22 27 33 17 2025-08-30 pb
+
+# with this draw we started playing double play with
+#   1 Sep 2025 tickets at $4 a pop so we have to 
+#   start checking our tickets for 2 draws
+08 23 25 40 53 05 2025-09-01 pb # <= the Power Ball draw
+10 15 26 48 67 19 2025-09-01 dp # <= the Double Play draw
+
+# next draw
+03 16 29 61 69 22 2025-09-03 pb
+07 32 39 50 61 04 2025-09-03 dp
+
+# next draw 
+26 28 41 53 64 09 2025-09-08 pb
+07 18 19 22 68 13 2025-09-08 db
+
+# next draw	
