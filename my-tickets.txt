@@ -12,4 +12,10 @@
 # a  b  c  d  e  f # <= %nums hash key
 #                  valid date
 #                  for pick   |<= add 'dp' if Double Play
- 18 30 37 45 56 18 2025-09-22 pp dp
+#                                | add pp if Power Play
+ nn nn nn nn nn nn yyyy-mm-dd dp pp 
+
+# Note the first five numbers must be drawn without 
+#   replacement from the set in the range (1..69).
+# The sixth and last number is selected from the
+#   set in the range (1..26).
