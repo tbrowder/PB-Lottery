@@ -26,7 +26,9 @@ The drawing records must be in a file named C<drawings.txt> and your
 ticket records must be in a file named C<my-tickets.txt>.
 
 This program expects your two data files to be in a directory pointed
-to by the environment variable B<PB_LOTTERY_PRIVATE_DIR>.
+to by the environment variable B<PB_LOTTERY_PRIVATE_DIR>. That directory B<must>
+exist in order for the program to run, and the C<draws.txt> file must exist
+in order to check your results.
 
 =head2 Ticket file format
 
@@ -86,7 +88,7 @@ text file in the following format (note two draw dates are shown):
 In the author's state of Florida, Power Ball lottery results can be
 found at L<https://floridalottery.com>.  Other states will have their
 own lottery sites, but the results for any Power Ball lottery should be
-the same on all states' lottery site for the same date.
+the same on each states' lottery site for the same date.
 
 =head1 AUTHOR
 

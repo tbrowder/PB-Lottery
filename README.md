@@ -21,7 +21,7 @@ It uses two separate data records, in defined formats (see below), for your tick
 
 The drawing records must be in a file named `drawings.txt` and your ticket records must be in a file named `my-tickets.txt`.
 
-This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**.
+This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run, and the `draws.txt` file must exist in order to check your results.
 
 Ticket file format
 ------------------
@@ -70,7 +70,7 @@ Note the Power Ball lottery's **draw** record is slightly different from the use
 Finding results
 ---------------
 
-In the author's state of Florida, Power Ball lottery results can be found at [https://floridalottery.com](https://floridalottery.com). Other states will have their own lottery sites, but the results for any Power Ball lottery should be the same on all states' lottery site for the same date.
+In the author's state of Florida, Power Ball lottery results can be found at [https://floridalottery.com](https://floridalottery.com). Other states will have their own lottery sites, but the results for any Power Ball lottery should be the same on each states' lottery site for the same date.
 
 AUTHOR
 ======
