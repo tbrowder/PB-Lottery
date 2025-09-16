@@ -5,8 +5,6 @@ use Text::Utils :strip-comment;
 use PB-Lottery::Classes;
 use PB-Lottery::Subs;
 
-
-
 class SixNumber is export {
     has Str  $.nums;
     has Hash %.numsh;
@@ -35,7 +33,7 @@ sub SixNumberFactory(
 ) is export {
     # Each call returns a single class object. The general process 
     # should be:
-    #   read all the valid owner tickets, getting a lists of ticket
+    #   read all the valid owner tickets, getting a list of ticket
     #     objects
     #   read the draw numbers, geting a list of draw object
     #   check results of each ticket against each draw
@@ -49,6 +47,7 @@ sub SixNumberFactory(
     $o;
 }
 
+=finish
 # old stuff to steal from
 sub get-multiple-powerball-plays(
     $nplays,
@@ -61,7 +60,7 @@ sub get-multiple-powerball-plays(
         @plays.push: $p;
     }
     @plays
-}
+} # end sub get-multiple-powerball-plays
 
 sub get-random-powerball-play(
     :$debug,
@@ -74,18 +73,6 @@ sub get-random-powerball-play(
     my (@num, $pball);
     @num = (1..69).pick(5);
     $pball = (1..26).pick;
-
-    =begin comment
-    for (1..5) {
-        my $n = (1..69).roll;
-        @num.push: $n;
-    }
-
-    $pball = (1..26).roll;
-    if $pball < 10 {
-        $pball = "0$pball";
-    }
-    =end comment
 
     # sort the @num numerically
     @num = @num.sort({$^a cmp $^b});
@@ -100,7 +87,7 @@ sub get-random-powerball-play(
         $num ~= $v;
     }
     $num ~= " $pball";
-}
+} # sub get-random-powerball-play
 
 =finish
 sub show-tickets(

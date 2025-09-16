@@ -1,8 +1,8 @@
 #!/usr/bin/env raku
 
-#use lib "lib";
 use PB-Lottery;
-#use Subs;
+use PB-Lottery::Subs;
+use PB-Lottery::Classes;
 
 =begin comment
 my $t = get-random-powerball-play;
