@@ -13,7 +13,9 @@
   "name": "PB-Lottery",
   "perl": "6.d",
   "provides": {
-    "PB-Lottery": "lib/PB-Lottery.rakumod"
+    "PB-Lottery": "lib/PB-Lottery.rakumod",
+    "PB-Lottery::Classes": "lib/PB-Lottery/Classes.rakumod",
+    "PB-Lottery::Subs": "lib/PB-Lottery/Subs.rakumod"
   },
   "resources": [
   ],
