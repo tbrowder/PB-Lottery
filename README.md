@@ -3,7 +3,7 @@
 NAME
 ====
 
-**PB-Lottery** - Provides routines for handling play of the Florida Power Ball lottery game
+**PB-Lottery** - Provides routines for handling play of US Power Ball lottery game
 
 SYNOPSIS
 ========
@@ -54,9 +54,9 @@ Your lottery ticket records must be in a text file in the following format:
 Draw file format
 ----------------
 
-Note the Power Ball lotters **draw** record is slightly different and must be in a text file in the following format:
+Note the Power Ball lottery's **draw** record is slightly different from the user's ticket entry. First, it has **two** lines per draw date. The **first** line is the actual 'Power Ball' draw. The **second** line is the 'Double Play' draw. The two lines for each draw data **must** be in a text file in the following format (note two draw dates are shown):
 
-    # Florida Poweball draws
+    # Powerball lottery draws
 
     # draw on 2025-09-01
     08 23 25 40 53 05 2025-09-01 pb # <= the Power Ball draw
@@ -64,8 +64,13 @@ Note the Power Ball lotters **draw** record is slightly different and must be in
 
     # next draw
     # draw on 2025-09-03
-    03 16 29 61 69 22 2025-09-03 pb
-    07 32 39 50 61 04 2025-09-03 dp
+    03 16 29 61 69 22 2025-09-03 pb # <= the Power Ball draw
+    07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw
+
+Finding results
+---------------
+
+In the author's state of Florida, Power Ball lottery results can be found at [https://floridalottery.com](https://floridalottery.com). Other states will have their own lottery sites, but the results for any Power Ball lottery should be the same on all states' lottery site for the same date.
 
 AUTHOR
 ======

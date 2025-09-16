@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-B<PB-Lottery> - Provides routines for handling play of the Florida Power Ball lottery game
+B<PB-Lottery> - Provides routines for handling play of US Power Ball lottery game
 
 
 =head1 SYNOPSIS
@@ -15,15 +15,15 @@ use PB-Lottery;
 
 =head1 DESCRIPTION
 
-B<PB-Lottery> is intended to help the user manage his or her
-play in the US Power Ball Lottery with draws every Monday, Wednesday, and
+B<PB-Lottery> is intended to help the user manage his or her play in
+the US Power Ball Lottery with draws every Monday, Wednesday, and
 Saturday.
 
 It uses two separate data records, in defined formats (see below), for
 your tickets and the Power Ball drawings.
 
-The drawing records must be in a file named C<drawings.txt> and your ticket
-records must be in a file named C<my-tickets.txt>.
+The drawing records must be in a file named C<drawings.txt> and your
+ticket records must be in a file named C<my-tickets.txt>.
 
 This program expects your two data files to be in a directory pointed
 to by the environment variable B<PB_LOTTERY_PRIVATE_DIR>.
@@ -61,11 +61,14 @@ in the following format:
 
 =head2 Draw file format
 
-Note the Power Ball lotters B<draw> record is slightly different and
-must be in a text file in the following format:
+Note the Power Ball lottery's B<draw> record is slightly different
+from the user's ticket entry. First, it has B<two> lines per draw date. The
+B<first> line is the actual 'Power Ball' draw. The B<second> line is the
+'Double Play' draw.  The two lines for each draw data B<must> be in a
+text file in the following format (note two draw dates are shown):
 
 =begin code
-# Florida Poweball draws
+# Powerball lottery draws
 
 # draw on 2025-09-01
 08 23 25 40 53 05 2025-09-01 pb # <= the Power Ball draw
@@ -73,10 +76,17 @@ must be in a text file in the following format:
 
 # next draw
 # draw on 2025-09-03
-03 16 29 61 69 22 2025-09-03 pb
-07 32 39 50 61 04 2025-09-03 dp
+03 16 29 61 69 22 2025-09-03 pb # <= the Power Ball draw
+07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw
 
 =end code
+
+=head2 Finding results
+
+In the author's state of Florida, Power Ball lottery results can be
+found at L<https://floridalottery.com>.  Other states will have their
+own lottery sites, but the results for any Power Ball lottery should be
+the same on all states' lottery site for the same date.
 
 =head1 AUTHOR
 
