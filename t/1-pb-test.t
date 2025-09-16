@@ -1,6 +1,8 @@
 use Test;
 
 use PB-Lottery;
+use PB-Lottery::Subs;
+use PB-Lottery::Classes;
 
 isa-ok PB-Lottery, PB-Lottery;
 
