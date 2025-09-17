@@ -51,14 +51,21 @@ sub do-pick(
     $pdir, #= private directory
     :$debug,
 ) is export {
-    say "Entering sub pick";
+    say "Entering sub do-pick";
+}
+
+sub do-enter-pick(
+    $pdir, #= private directory
+    :$debug,
+) is export {
+    say "Entering sub do-enter-pick";
 }
 
 sub do-enter-draw(
     $pdir, #= private directory
     :$debug,
 ) is export {
-    say "Entering sub enter";
+    say "Entering sub do-enter-draw";
     my $res = prompt "Enter date of the draw (yyyy-mm-dd): ";
     if  $res ~~ /^ \h* (\d\d\d\d '-' \d\d '-' \d\d) \h* $/ {
     }
@@ -72,11 +79,11 @@ sub do-enter-draw(
 }
 
 sub do-status(
-    Str $pdir, #= private directory
-    :$all = False, #= show latest only
+    $pdir, #= private directory
+    :$all, #= show latest only unless true
     :$debug,
 ) is export {
-    say "Entering sub status";
+    say "Entering sub do-status";
     # read all the draws...
     my $dfil = "$pdir/draws.txt";
     # read all the valid picks...

@@ -24,8 +24,10 @@ else {
 
 my $debug  = 0;
 my $pick   = 0;
-my $enter  = 0;
 my $status = 0;
+my $edraw  = 0;
+my $epick  = 0;
+my $all    = 0;
 
 if not @*ARGS {
     print qq:to/HERE/;
@@ -53,6 +55,7 @@ for @*ARGS {
     when /^:i s/  { ++$status }
     when /^:i ed/ { ++$edraw  }
     when /^:i ep/ { ++$epick  }
+    when /^:i a/  { ++$all    }
     when /^:i d/  { ++$debug  }
     default {
         print qq:to/HERE/;
@@ -72,10 +75,10 @@ elsif $pick {
     do-pick $pdir, :$debug;
 }
 elsif $edraw {
-    do-edraw $pdir, :$debug;
+    do-enter-draw $pdir, :$debug;
 }
 elsif $epick {
-    do-edraw $pdir, :$debug;
+    do-enter-pick $pdir, :$debug;
 }
 
 =begin comment
