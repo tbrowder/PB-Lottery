@@ -23,6 +23,8 @@ The drawing records must be in a file named `drawings.txt` and your ticket recor
 
 This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run, and the `draws.txt` file must exist in order to check your results.
 
+Note if you use the script to update any of those files it should create a '.bak' version of the base file. It should NOT continue any updates if that file already exists. It is recommended to keep your data files under *Git* management.
+
 Ticket file format
 ------------------
 
@@ -66,6 +68,13 @@ Note the Power Ball lottery's **draw** record is slightly different from the use
     # draw on 2025-09-03
     03 16 29 61 69 22 2025-09-03 pb # <= the Power Ball draw
     07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw
+
+Account data
+------------
+
+A third file is created to show results of the user's play. Its name is **my-financials.txt** and it shows total costs and other data for the period of play.
+
+As of the writing, the cost of a ticket is $2. It costs $1 to add the Power Play option, and it costs $1 to add the Double Play option. Neither option depends upon the other.
 
 Finding results
 ---------------

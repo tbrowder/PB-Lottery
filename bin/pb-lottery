@@ -12,13 +12,70 @@ if %*ENV{$env-var}:exists {
 }
 else {
     print qq:to/HERE/;
-    FATAL: Required env var '$env-var' not defined.
+    FATAL: The required environment variable
+
+              $env-var 
+
+           is not defined.  See the README for details.
            Exiting...
     HERE
     exit(1);
 }
 
-say "DEBUG: early exit"; exit;
+my $debug  = 0;
+my $pick   = 0;
+my $enter  = 0;
+my $status = 0;
+
+if not @*ARGS {
+    print qq:to/HERE/;
+    Usage: {$*PROGRAM.basename} <mode> [options...]
+
+    Modes:
+      pick   - Select a random Power Ball play
+      status - Shows current user results from latest data
+      edraw  - Begin a dialogue to enter a Power Ball draw
+                 (not yet implemented)
+      epick  - Begin a dialogue to enter a Power Ball ticket
+                 (not yet implemented)
+
+    Options:
+      all    - With mode 'status', if true, show all valid data
+                 (including net profit/loss)
+      debug
+
+    HERE
+    exit;
+}
+
+for @*ARGS {
+    when /^:i p/  { ++$pick   }
+    when /^:i s/  { ++$status }
+    when /^:i ed/ { ++$edraw  }
+    when /^:i ep/ { ++$epick  }
+    when /^:i d/  { ++$debug  }
+    default {
+        print qq:to/HERE/;
+        FATAL: Unknown entry '$_'.
+               Exiting...
+        HERE
+        exit(1);
+    }
+}
+
+if $debug { say "DEBUG: early exit"; exit; }
+if $status {
+    do-status $pdir, :$all, :$debug;
+}
+elsif $pick {
+    do-pick $pdir, :$debug;
+}
+elsif $edraw {
+    do-edraw $pdir, :$debug;
+}
+elsif $epick {
+    do-edraw $pdir, :$debug;
+}
 
 =begin comment
 my $t = get-random-powerball-play;
@@ -29,6 +86,8 @@ say "4 more plays:";
 say "  '$_'" for @np;
 say "DEBUG exit"; exit;
 =end comment
+
+=finish
 
 # TODO:
 #   put all draws and tickets here for easy visibility
@@ -58,37 +117,6 @@ HERE
 my $lnum = "x x x x x x 2025-08-27";
 my @draws = [
    # a  b  c  d  e  f # <= %nums hash key
-    "09 12 22 41 61 25 2025-08-27 pb",
-    "03 18 22 27 33 17 2025-08-30 pb",
-
-    # with this draw we started playing double play with
-    #   1 Sep 2025 tickets at $4 a pop so we have to 
-    #   start checking our tickets for 2 draws
-    "08 23 25 40 53 05 2025-09-01 pb", # <= the Power Ball draw
-    "10 15 26 48 67 19 2025-09-01 dp", # <= the Double Play draw
-
-    # next draw
-    "03 16 29 61 69 22 2025-09-03 pb",
-    "07 32 39 50 61 04 2025-09-03 dp",
-
-    # next draw 
-    "26 28 41 53 64 09 2025-09-08 pb",
-    "07 18 19 22 68 13 2025-09-08 db",
-
-    # next draw	
-];
-
-our @picks is export = [
-    # my Florida Lottery numbers (last number is Power Ball)
-    # first 5 numbers are Florida Lottery, last number is the Power ball
-    # a  b  c  d  e  f # <= %nums hash key
-    #                  valid date
-    #                  for pick   |<= Power Play
-    #                                |<= Double Play
-    #                                   |<= Quick pick (for history)
-    "18 30 37 45 56 18 2025-09-22 pp dp qp",
-];
-
 my @alpha = 'A'..'Z';
 
 if not @*ARGS {

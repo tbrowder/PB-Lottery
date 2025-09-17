@@ -47,6 +47,43 @@ sub SixNumberFactory(
     $o;
 }
 
+sub do-pick(
+    $pdir, #= private directory
+    :$debug,
+) is export {
+    say "Entering sub pick";
+}
+
+sub do-enter-draw(
+    $pdir, #= private directory
+    :$debug,
+) is export {
+    say "Entering sub enter";
+    my $res = prompt "Enter date of the draw (yyyy-mm-dd): ";
+    if  $res ~~ /^ \h* (\d\d\d\d '-' \d\d '-' \d\d) \h* $/ {
+    }
+    else {
+        print qq:to/HERE/;
+        FATAL: Invalid date entry: '$res'.
+               Exiting...
+        HERE
+        exit(1);
+    }
+}
+
+sub do-status(
+    $pdir, #= private directory
+    :$all = False, #= show latest only
+    :$debug,
+) is export {
+    say "Entering sub status";
+    # read all the draws...
+    my $dfil = "$pdir/draws.txt";
+    # read all the valid picks...
+    my $tfil = "$pdir/my-tickets.txt";
+}
+
+
 =finish
 # old stuff to steal from
 sub get-multiple-powerball-plays(
