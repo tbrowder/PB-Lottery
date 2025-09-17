@@ -4,6 +4,22 @@ use PB-Lottery;
 use PB-Lottery::Subs;
 use PB-Lottery::Classes;
 
+# check for required env var
+my $env-var = "PB_LOTTERY_PRIVATE_DIR";
+my $pdir;
+if %*ENV{$env-var}:exists {
+    $pdir = %*ENV{$env-var};
+}
+else {
+    print qq:to/HERE/;
+    FATAL: Required env var '$env-var' not defined.
+           Exiting...
+    HERE
+    exit(1);
+}
+
+say "DEBUG: early exit"; exit;
+
 =begin comment
 my $t = get-random-powerball-play;
 say "random ticket: '$t'";

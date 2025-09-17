@@ -1,18 +1,17 @@
-# My Florida Lottery number choices (picks)
+# My Power Ball Lottery number choices (picks)
 #
 # The first five numbers are picks for the lottery, 
 # and the sixth and last number is the Power Ball.
 
 # The seventh entry is the date the ticket is valid
-# through and must be in yyyy-mm-dd format.
+# through. It must be in yyyy-mm-dd format.
 #
-# Any hash mark ('#') on a line starts a comment and 
-# it and the # remainder of that line are ignored.
+# Any hash mark ('#') on a line starts a comment, and 
+# it and the remainder of that line are ignored.
 
-# a  b  c  d  e  f # <= %nums hash key
 #                  valid date
 #                  for pick   |<= add 'dp' if Double Play
-#                                | add pp if Power Play
+#                             |  | add pp if Power Play
  nn nn nn nn nn nn yyyy-mm-dd dp pp 
 
 # Note the first five numbers must be drawn without 
