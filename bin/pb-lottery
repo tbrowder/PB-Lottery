@@ -64,6 +64,7 @@ for @*ARGS {
 }
 
 if $debug { say "DEBUG: early exit"; exit; }
+
 if $status {
     do-status $pdir, :$all, :$debug;
 }

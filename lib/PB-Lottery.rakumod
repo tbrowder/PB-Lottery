@@ -15,7 +15,7 @@ class PB-Draw is SixNumber {
     has Hash %.nums2h;
     has Date $.date;
     submethod TWEAK {
-    
+
     }
 }
 
@@ -24,14 +24,14 @@ class PB-Ticket is SixNumber {
     has Bool $.is-qp;
 }
 
-# use a class generator 
+# use a class generator
 sub SixNumberFactory(
     Str  $nums,
     Str  $nums2?, # if defined, this is the double play and this is a PB draw
     Date :$date,
     --> SixNumber
 ) is export {
-    # Each call returns a single class object. The general process 
+    # Each call returns a single class object. The general process
     # should be:
     #   read all the valid owner tickets, getting a list of ticket
     #     objects
@@ -72,7 +72,7 @@ sub do-enter-draw(
 }
 
 sub do-status(
-    $pdir, #= private directory
+    Str $pdir, #= private directory
     :$all = False, #= show latest only
     :$debug,
 ) is export {
