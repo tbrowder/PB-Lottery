@@ -83,7 +83,7 @@ sub do-status(
     my $tfil = "$pdir/my-tickets.txt";
 }
 
-
+=begin comment
 =finish
 # old stuff to steal from
 sub get-multiple-powerball-plays(
@@ -395,3 +395,4 @@ our @picks is export = [
     #                                 |<= Double Play
     "18 30 37 45 56 18 2025-09-22 qp rp dp",
 ];
+=end comment
