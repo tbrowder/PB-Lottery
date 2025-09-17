@@ -36,6 +36,7 @@ if not @*ARGS {
     Modes:
       pick   - Select a random Power Ball play
       status - Shows current user results from latest data
+
       edraw  - Begin a dialogue to enter a Power Ball draw
                  (not yet implemented)
       epick  - Begin a dialogue to enter a Power Ball ticket
