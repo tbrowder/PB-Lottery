@@ -23,20 +23,32 @@ for ($n1, $n2, $n3).kv -> $i, $n {
     lives-ok {
         %h = Lstr2info-hash $n; 
     }, "good input: $n";
+
+    my $N = $n.words.elems;
+    with $i { 
+        when * == 0 { is $N, 6 }
+        when * == 1 { is $N, 7 }
+        when * == 2 { is $N, 8 }
+    }
 }
 
-#=begin comment
 # bad number strings:
 $n1 = "32 01 64 02 42 27";
+$e1 = 6;
 $n2 = "32 01 70 02 42 01 2025-09-06";
+$e2 = 7;
 
 for ($n1, $n2).kv -> $i, $n {
-    #dies-ok {
     lives-ok {
         %h = Lstr2info-hash $n; 
     }, "bad input: $n";
+
+    my $N = $n.words.elems;
+    with $i { 
+        when * == 0 { is $N, 6 }
+        when * == 1 { is $N, 7 }
+    }
 }
-#=end comment
 
 # from the docs:
 sub saruman(Bool :$ents-destroy-isengard) {
