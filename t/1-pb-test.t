@@ -8,14 +8,20 @@ isa-ok PB-Lottery, PB-Lottery;
 
 # miscellanous checks of subs and classes
 my ($n1, $n2, $n3);
+my ($e1, $e2, $e3);
+my (%h);
+
 # good number strings:
 $n1 = "32 01 64 02 42 01";
+$e1 = 6;
 $n2 = "32 01 64 02 42 01 2025-09-06";
+$e2 = 7;
 $n3 = "32 01 64 02 42 01 2025-09-06 dp";
+$e3 = 8;
 
-for $n1, $n2, $n3 -> $n {
+for ($n1, $n2, $n3).kv -> $i, $n {
     lives-ok {
-        my %h = Lstr2info-hash $n; 
+        %h = Lstr2info-hash $n; 
     }, "good input: $n";
 }
 
@@ -24,10 +30,10 @@ for $n1, $n2, $n3 -> $n {
 $n1 = "32 01 64 02 42 27";
 $n2 = "32 01 70 02 42 01 2025-09-06";
 
-for $n1, $n2 -> $n {
+for ($n1, $n2).kv -> $i, $n {
     #dies-ok {
     lives-ok {
-        my %h = Lstr2info-hash $n; 
+        %h = Lstr2info-hash $n; 
     }, "bad input: $n";
 }
 #=end comment
