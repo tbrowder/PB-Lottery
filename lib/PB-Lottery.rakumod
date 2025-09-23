@@ -5,25 +5,6 @@ use Text::Utils :strip-comment;
 use PB-Lottery::Classes;
 use PB-Lottery::Subs;
 
-class SixNumber is export {
-    has Str  $.nums;
-    has Hash %.numsh;
-}
-
-class PB-Draw is SixNumber {
-    has Str  $.nums2;
-    has Hash %.nums2h;
-    has Date $.date;
-    submethod TWEAK {
-
-    }
-}
-
-class PB-Ticket is SixNumber {
-    has Date $.date;
-    has Bool $.is-qp;
-}
-
 # use a class generator
 sub SixNumberFactory(
     Str  $nums,
