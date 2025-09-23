@@ -66,9 +66,55 @@ sub do-status(
 ) is export {
     say "Entering sub do-status";
     # read all the draws...
-    my $dfil = "$pdir/draws.txt";
+    say "  Reading latest draw and associated valid tickets...";
+
+    my $dfil   = "$pdir/draws.txt";
+    my @dlines = $dfil.IO.slurp;
+    if 0 or $debug {
+        say "draw lines:";
+        say "  $_" for @dlines;
+    }
+    my @draws  = [];
+    # two data lines per draw ticked
+    my ($line1, $line2);
+
+    $line1 = "";
+    $line2 = "";
+# 28 37 42 50 53 19 2025-09-13 pb
+# 03 06 20 34 49 12 2025-09-13 dp
+    for @dlines.kv -> $i, $line is copy {
+        $line = strip-comment $line;
+        my @words = $line.words;
+        my $nw = @words.elems;
+        unless $nw == 8 {
+            print qq:to/HERE/;
+            FATAL: Invalid draw line 'line'.
+                     It has $nw words but should have eight (8).
+                   Exiting...
+            HERE
+            exit(1);
+        }
+        next unless $line ~~ /\S/;
+        if $line1 {
+            # then this should be line2 and the data 
+            # for the next draw object is complete
+            my $dobj;
+        }
+        elsif not $line1 {
+            # this should be the first data line for
+            # next draw object
+        }
+
+    }
+ 
     # read all the valid picks...
-    my $tfil = "$pdir/my-tickets.txt";
+    my $tfil   = "$pdir/my-tickets.txt";
+    my @tlines = $tfil.IO.slurp;
+    if 0 or $debug {
+        say "draw lines:";
+        say "  $_" for @tlines;
+    }
+    my @picks  = [];
 }
 
 #=begin comment
@@ -372,7 +418,6 @@ class LNum does Lottery is export {
     }
 
 } # end of class LNum
-
 
 our @picks is export = [
     # my Florida Lottery numbers (last number is Power Ball)

@@ -1,7 +1,7 @@
 # Florida Poweball draws
 # a  b  c  d  e  f # <= %nums hash key
 09 12 22 41 61 25 2025-08-27 pb
-03 18 22 27 33 17 2025-08-30 pb
+03 18 22 27 33 17 2025-08-30 dp
 
 # with this draw we started playing double play with
 #   1 Sep 2025 tickets at $4 a pop so we have to 
