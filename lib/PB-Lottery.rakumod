@@ -126,10 +126,10 @@ sub do-status(
 
     $line1 = "";
     if 0 or $debug {
-        say "ticked lines:";
+        say "ticket lines:";
         say "  $_" for @tlines;
     }
-    my @picks  = [];
+    my @tickets  = [];
     # 03 06 20 34 49 12 2025-09-13 dp pb qp
     for @tlines.kv -> $i, $line is copy {
         $line = strip-comment $line;
@@ -147,11 +147,17 @@ sub do-status(
             exit(1);
         }
 
+        # data for next ticket object is complete
+        my $tobj = SixNumberFactory $line1;
+        @tickets.push: $tobj;
+
         # reset $line1
         $line1 = "";
     }
 
-}
+    say "Calculating winnings...";
+
+} # end sub do-status
 
 #=begin comment
 =finish
