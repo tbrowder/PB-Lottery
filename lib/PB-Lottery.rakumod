@@ -69,7 +69,7 @@ sub do-status(
     say "  Reading latest draw and associated valid tickets...";
 
     my $dfil   = "$pdir/draws.txt";
-    my @dlines = $dfil.IO.slurp;
+    my @dlines = $dfil.IO.slurp.lines;
     if 0 or $debug {
         say "draw lines:";
         say "  $_" for @dlines;
@@ -84,27 +84,38 @@ sub do-status(
 # 03 06 20 34 49 12 2025-09-13 dp
     for @dlines.kv -> $i, $line is copy {
         $line = strip-comment $line;
+        next unless $line ~~ /\S/;
+
         my @words = $line.words;
         my $nw = @words.elems;
         unless $nw == 8 {
             print qq:to/HERE/;
-            FATAL: Invalid draw line 'line'.
+            FATAL: Invalid draw line '$line'.
                      It has $nw words but should have eight (8).
                    Exiting...
             HERE
             exit(1);
         }
-        next unless $line ~~ /\S/;
+
+        if 0 or $debug {
+            say "a draw line:";
+            say "  $line";
+        }
+
         if $line1 {
             # then this should be line2 and the data 
+            $line2 = $line;
             # for the next draw object is complete
-            my $dobj;
+            my $dobj = SixNumberFactory $line1, $line2;
+
+            # finally, zero the two lines ready for the next draw
+            $line1 = $line2 = "";
         }
         elsif not $line1 {
             # this should be the first data line for
             # next draw object
+            $line1 = $line;
         }
-
     }
  
     # read all the valid picks...
