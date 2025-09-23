@@ -138,10 +138,10 @@ sub do-status(
         # one line per ticket
         my @words = $line.words;
         my $nw = @words.elems;
-        unless $nw == 8 {
+        unless $nw >= 8 {
             print qq:to/HERE/;
             FATAL: Invalid draw line '$line'.
-                     It has $nw words but should have eight (8).
+                     It has $nw words but should have at least eight (8).
                    Exiting...
             HERE
             exit(1);
