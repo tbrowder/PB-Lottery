@@ -1,6 +1,7 @@
 unit module PB-Lottery;
 
 use Text::Utils :strip-comment;
+use Test;
 
 use PB-Lottery::Classes;
 use PB-Lottery::Subs;
@@ -80,8 +81,8 @@ sub do-status(
 
     $line1 = "";
     $line2 = "";
-# 28 37 42 50 53 19 2025-09-13 pb
-# 03 06 20 34 49 12 2025-09-13 dp
+    # 28 37 42 50 53 19 2025-09-13 pb
+    # 03 06 20 34 49 12 2025-09-13 dp
     for @dlines.kv -> $i, $line is copy {
         $line = strip-comment $line;
         next unless $line ~~ /\S/;
@@ -107,6 +108,7 @@ sub do-status(
             $line2 = $line;
             # for the next draw object is complete
             my $dobj = SixNumberFactory $line1, $line2;
+            @draws.push: $dobj;
 
             # finally, zero the two lines ready for the next draw
             $line1 = $line2 = "";
@@ -118,14 +120,37 @@ sub do-status(
         }
     }
  
-    # read all the valid picks...
+    # read all the valid tickets (picks)...
     my $tfil   = "$pdir/my-tickets.txt";
-    my @tlines = $tfil.IO.slurp;
+    my @tlines = $tfil.IO.slurp.lines;
+
+    $line1 = "";
     if 0 or $debug {
-        say "draw lines:";
+        say "ticked lines:";
         say "  $_" for @tlines;
     }
     my @picks  = [];
+    # 03 06 20 34 49 12 2025-09-13 dp pb qp
+    for @tlines.kv -> $i, $line is copy {
+        $line = strip-comment $line;
+        next unless $line ~~ /\S/;
+
+        # one line per ticket
+        my @words = $line.words;
+        my $nw = @words.elems;
+        unless $nw == 8 {
+            print qq:to/HERE/;
+            FATAL: Invalid draw line '$line'.
+                     It has $nw words but should have eight (8).
+                   Exiting...
+            HERE
+            exit(1);
+        }
+
+        # reset $line1
+        $line1 = "";
+    }
+
 }
 
 #=begin comment
