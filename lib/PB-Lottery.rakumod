@@ -29,6 +29,167 @@ sub SixNumberFactory(
     $o;
 }
 
+sub calc-part-winnings(
+    :$tobj!, #= the ticket object
+    :$dobj!, #= the draw object
+    :$part! where * ~~ /1|2/,
+    :$debug,
+    --> Numeric #= return part winnings for this ticket/draw combo
+) is export {
+    my @dnums;
+    # If part == 1, check the user's ticket against the power ball ticket
+    # If part == 2, check the user's ticket against the the double play ticket
+    if $part == 1 {
+        # the power ball draw
+        @dnums = $dobj.nums.keys.sort;
+    }
+    else {
+        # the double play draw
+        @dnums = $dobj.nums2.keys.sort;
+    }
+}
+
+sub calc-winnings(
+    :$tobj!, #= the ticket object
+    :$dobj!, #= the draw object
+    :$debug,
+    --> Numeric #= return winnings for this ticket/draw combo
+) is export {
+    # Given a drawing set of numbers,
+    # and a valid ticket for the drawing date,
+    # calculate any winnings (may be estimates).
+
+    # ensure we start with cash = 0
+    my ($cash, $cash1, $cash2) = 0, 0, 0;;
+
+    $cash1 = calc-part-winnings :$tobj, :$dobj, :part(1);
+    $cash2 = calc-part-winnings :$tobj, :$dobj, :part(2);
+    $cash  = $cash1 + $cash2;
+
+=begin comment
+    # calc-dp-winnings
+    # rules are complicated
+    # winning matches and prizes:
+
+    # for the main draw:
+    #   1 numbers + pb or just pb      $4
+    #   2 numbers + pb or 3 numbers    $7
+    #   3 numbers + pb or 4 numbers    $100
+    #   4 numbers + pb                 $50,000
+    #   5 numbers                      $1,000,000 # power play
+    #   5 numbers + pb                 current jackpot
+
+    # for the second draw for $1,000,000 # power play
+
+    # the power ball draw
+    my @pb = $dobj.nums.keys.sort;
+    # the double play draw
+    my @dp = $dobj.nums2.keys.sort;
+
+    my @t = $tobj.nums.keys.sort;
+    my $pb-match  = 0;
+    my $num-match = 0;
+    my $is-draw1-power-ball;
+    my $is-draw2-power-ball;
+    my $is-ticket-power-ball;
+
+    # iterate over the ticket numbers
+    TICKET: for @t -> $t {
+
+        $is-ticket-power-ball = False;
+        # keys: a..f
+        if $d eq "f" {
+            $is-ticket-power-ball = True;
+        }
+
+        for @t -> $t {
+            $is-ticket-power-ball = False;
+            # keys: a..f
+            if $t eq "f" {
+                $is-ticket-power-ball = True;
+            }
+            my $tnum = $tobj.nums{$k};
+
+        #=== main play ===
+        # iterate over the first draw set of numbers
+
+        my $dnum = $dobj.nums{$d};
+
+            # so so we have a Power Ball match or not?
+            if $is-draw-power-ball and $is-self-power-ball {
+                ++$pb-match if $dnum == $tnum;
+            }
+            elsif not $is-draw-power-ball {
+                ++$num-match if $dnum == $tnum;
+            }
+            else {
+                next;
+                # no matches, so go to next user number
+                # for this tickes
+                die "FATAL: no pb match so what action to take?";
+            }
+        } # end of this ticket
+
+        # analyze results...
+        # winning matches and prizes:
+        #   1 numbers + pb or just pb      $4
+        #   2 numbers + pb or 3 numbers    $7
+        #   3 numbers + pb or 4 numbers    $100
+        #   4 numbers + pb                 $50,000
+        #   5 numbers                      $1,000,000
+        #   5 numbers + pb                 current jackpot
+        if $pb-match {
+            # auto win?
+            # 0 or 1 num = $4
+            # 2 nums = $7
+            # 3 nums = $100
+            # 4 nums = $50,000
+            # 5 nums = current jackpot
+            with $num-match {
+                when $_ == 0 { $cash = 4 }
+                when $_ == 1 { $cash = 4 }
+                when $_ == 2 { $cash = 7 }
+                when $_ == 3 { $cash = 100 }
+                when $_ == 4 { $cash = 50_000 }
+                when $_ == 5 { $cash = 2_000_000 } # jackpot
+            }
+        }
+        elsif $num-match {
+            # 3 nums = $7
+            # 4 nums = $100
+            # 5 nums = $1,000,000
+            with $num-match {
+                when $_ == 3 { $cash = 7 }
+                when $_ == 4 { $cash = 100 }
+                when $_ == 5 { $cash = 1_000_000 }
+            }
+        }
+
+    } # end of this draw loop
+
+    say "pb-match:  $pb-match"  if $debug;
+    say "num-match: $num-match" if $debug;
+    next unless $cash > 0; #$num-match or $pb-match;
+
+    if $show-draw {
+        print qq:to/HERE/;
+          The draw  : {$dobj.show.chomp}
+          Winning tickets
+        HERE
+    }
+    if $cash > 0 {
+        print qq:to/HERE/;
+        Our ticket: {$tobj.show.chomp} \# winnings: \$$cash
+        HERE
+    }
+    else {
+        print qq:to/HERE/;
+        Our ticket: No winning tickets.
+        HERE
+    }
+=end comment
+}
+
 sub do-pick(
     $pdir, #= private directory
     :$debug,
@@ -104,7 +265,7 @@ sub do-status(
         }
 
         if $line1 {
-            # then this should be line2 and the data 
+            # then this should be line2 and the data
             $line2 = $line;
             # for the next draw object is complete
             my $dobj = SixNumberFactory $line1, $line2;
@@ -119,7 +280,7 @@ sub do-status(
             $line1 = $line;
         }
     }
- 
+
     # read all the valid tickets (picks)...
     my $tfil   = "$pdir/my-tickets.txt";
     my @tlines = $tfil.IO.slurp.lines;
@@ -156,6 +317,14 @@ sub do-status(
     }
 
     say "Calculating winnings...";
+
+    my $cash = 0;
+    for @tickets -> $tobj {
+        for @draws -> $dobj {
+            my $money = calc-winnings :$tobj, :$dobj, :$debug;
+            $cash += $money;
+        }
+    }
 
 } # end sub do-status
 

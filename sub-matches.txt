@@ -23,10 +23,6 @@ sub calc-part-winnings(
         # the double play draw
         @dnums = $dobj.nums2.keys.sort;
     }
-
-
-
-
 }
 
 sub calc-winnings(
@@ -35,7 +31,7 @@ sub calc-winnings(
     :$debug,
     --> Numeric #= return winnings for this ticket/draw combo
 ) is export {
-    # Given a drawing set of numbers, 
+    # Given a drawing set of numbers,
     # and a valid ticket for the drawing date,
     # calculate any winnings (may be estimates).
 
