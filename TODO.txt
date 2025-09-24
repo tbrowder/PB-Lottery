@@ -1,0 +1,6 @@
+
+Use method "matches" as a template
+for a sub to check for any 
+winnings.
+
+

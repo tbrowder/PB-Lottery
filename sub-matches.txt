@@ -1,0 +1,122 @@
+sub show-matches(
+    LNum :@draws!,
+    LNum :@tickets!,
+    :$debug,
+) is export {
+} # end sub show-matches
+
+sub calc-winnings(
+    :$tobj!,
+    :$dobj!,
+    :$debug,
+    --> Numeric
+) is export {
+    # given a drawing set of numbers, 
+    # and a valid ticket for the drawing date,
+    # calculate any winnings
+    # ensure we start with cash = 0
+    my $cash = 0;
+
+    # rules are complicated
+    # winning matches and prizes:
+    #   1 numbers + pb or just pb      $4
+    #   2 numbers + pb or 3 numbers    $7
+    #   3 numbers + pb or 4 numbers    $100
+    #   4 numbers + pb                 $50,000
+    #   5 numbers                      $1,000,000
+    #   5 numbers + pb                 current jackpot
+
+    my @d = $draw.nums.keys.sort;
+    my @k = self.nums.keys.sort;
+    my $pb-match  = 0;
+    my $num-match = 0;
+    my ($is-draw-power-ball, $is-self-power-ball);
+    DRAW: for @d -> $d {
+        $is-draw-power-ball = False;
+        # keys: a..f
+        if $d eq "f" {
+            $is-draw-power-ball = True;
+        }
+        my $dnum = $draw.nums{$d};
+
+        for @k -> $k {
+            $is-self-power-ball = False;
+            # keys: a..f
+            if $k eq "f" {
+                $is-self-power-ball = True;
+            }
+            my $mnum = self.nums{$k};
+
+            # so so we have a Power Ball match or not?
+            if $is-draw-power-ball and $is-self-power-ball {
+                ++$pb-match if $dnum == $mnum;
+            }
+            elsif not $is-draw-power-ball {
+                ++$num-match if $dnum == $mnum;
+            }
+            else {
+                next;
+                # no matches, so go to next user number
+                # for this tickes
+                die "FATAL: no pb match so what action to take?";
+            }
+        } # end of this ticket
+
+        # analyze results...
+        # winning matches and prizes:
+        #   1 numbers + pb or just pb      $4
+        #   2 numbers + pb or 3 numbers    $7
+        #   3 numbers + pb or 4 numbers    $100
+        #   4 numbers + pb                 $50,000
+        #   5 numbers                      $1,000,000
+        #   5 numbers + pb                 current jackpot
+        if $pb-match {
+            # auto win?
+            # 0 or 1 num = $4
+            # 2 nums = $7
+            # 3 nums = $100
+            # 4 nums = $50,000
+            # 5 nums = current jackpot
+            with $num-match {
+                when $_ == 0 { $cash = 4 }
+                when $_ == 1 { $cash = 4 }
+                when $_ == 2 { $cash = 7 }
+                when $_ == 3 { $cash = 100 }
+                when $_ == 4 { $cash = 50_000 }
+                when $_ == 5 { $cash = 2_000_000 } # jackpot
+            }
+        }
+        elsif $num-match {
+            # 3 nums = $7
+            # 4 nums = $100
+            # 5 nums = $1,000,000
+            with $num-match {
+                when $_ == 3 { $cash = 7 }
+                when $_ == 4 { $cash = 100 }
+                when $_ == 5 { $cash = 1_000_000 }
+            }
+        }
+
+    } # end of this draw loop
+
+    say "pb-match:  $pb-match"  if $debug;
+    say "num-match: $num-match" if $debug;
+    next unless $cash > 0; #$num-match or $pb-match;
+
+    if $show-draw {
+        print qq:to/HERE/;
+          The draw  : {$draw.show.chomp}
+          Winning tickets
+        HERE
+    }
+    if $cash > 0 {
+        print qq:to/HERE/;
+        Our ticket: {self.show.chomp} \# winnings: \$$cash
+        HERE
+    }
+    else {
+        print qq:to/HERE/;
+        Our ticket: No winning tickets.
+        HERE
+    }
+}
