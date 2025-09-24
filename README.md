@@ -56,17 +56,17 @@ Your lottery ticket records must be in a text file in the following format:
 Draw file format
 ----------------
 
-Note the Power Ball lottery's **draw** record is slightly different from the user's ticket entry. First, it has **two** lines per draw date. The **first** line is the actual 'Power Ball' draw. The **second** line is the 'Double Play' draw. The two lines for each draw data **must** be in a text file in the following format (note two draw dates are shown):
+Note the Power Ball lottery's **draw** record is slightly different from the user's ticket entry. First, it has **two** lines per draw date. The **first** line is the actual 'Power Ball' draw plus the multiplier factor for the Power Play. The **second** line is the 'Double Play' draw. The two lines for each draw data **must** be in a text file in the following format (note two draw dates are shown):
 
     # Powerball lottery draws
 
     # draw on 2025-09-01
-    08 23 25 40 53 05 2025-09-01 pb # <= the Power Ball draw
+    08 23 25 40 53 05 2025-09-01 3x # <= the Power Ball draw
     10 15 26 48 67 19 2025-09-01 dp # <= the Double Play draw
 
     # next draw
     # draw on 2025-09-03
-    03 16 29 61 69 22 2025-09-03 pb # <= the Power Ball draw
+    03 16 29 61 69 22 2025-09-03 2x # <= the Power Ball draw
     07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw
 
 Account data

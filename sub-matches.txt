@@ -5,54 +5,85 @@ sub show-matches(
 ) is export {
 } # end sub show-matches
 
-sub calc-winnings(
-    :$tobj!,
-    :$dobj!,
+sub calc-part-winnings(
+    :$tobj!, #= the ticket object
+    :$dobj!, #= the draw object
+    :$part! where * ~~ /1|2/,
     :$debug,
-    --> Numeric
+    --> Numeric #= return part winnings for this ticket/draw combo
+) is export {
+}
+
+sub calc-winnings(
+    :$tobj!, #= the ticket object
+    :$dobj!, #= the draw object
+    :$debug,
+    --> Numeric #= return winnings for this ticket/draw combo
 ) is export {
     # given a drawing set of numbers, 
     # and a valid ticket for the drawing date,
-    # calculate any winnings
+    # calculate any winnings (may be estimates)
     # ensure we start with cash = 0
-    my $cash = 0;
+    my ($cash, $cash1, $cash2) = 0, 0, 0;;
 
+    $cash1 = calc-part-winnings :$tobj, :$dobj, :part(1);
+    $cash2 = calc-part-winnings :$tobj, :$dobj, :part(2);
+    $cash  = $cash1 + $cash2;
+
+    calc-dp-winnings
     # rules are complicated
     # winning matches and prizes:
+
+    # for the main draw:
     #   1 numbers + pb or just pb      $4
     #   2 numbers + pb or 3 numbers    $7
     #   3 numbers + pb or 4 numbers    $100
     #   4 numbers + pb                 $50,000
-    #   5 numbers                      $1,000,000
+    #   5 numbers                      $1,000,000 # power play
     #   5 numbers + pb                 current jackpot
 
-    my @d = $dobj.nums.keys.sort;
+    # for the second draw for $1,000,000 # power play
+
+    # the power ball draw
+    my @pb = $dobj.nums.keys.sort;
+    # the double play draw
+    my @dp = $dobj.nums2.keys.sort;
+
     my @t = $tobj.nums.keys.sort;
     my $pb-match  = 0;
     my $num-match = 0;
-    my ($is-draw-power-ball, $is-self-power-ball);
-    DRAW: for @d -> $d {
-        $is-draw-power-ball = False;
+    my $is-draw1-power-ball;
+    my $is-draw2-power-ball;
+    my $is-ticket-power-ball;
+
+    # iterate over the ticket numbers
+    TICKET: for @t -> $t {
+
+        $is-ticket-power-ball = False;
         # keys: a..f
         if $d eq "f" {
-            $is-draw-power-ball = True;
+            $is-ticket-power-ball = True;
         }
-        my $dnum = $draw.nums{$d};
 
-        for @k -> $k {
-            $is-self-power-ball = False;
+        for @t -> $t {
+            $is-ticket-power-ball = False;
             # keys: a..f
-            if $k eq "f" {
-                $is-self-power-ball = True;
+            if $t eq "f" {
+                $is-ticket-power-ball = True;
             }
-            my $mnum = self.nums{$k};
+            my $tnum = $tobj.nums{$k};
+
+        #=== main play ===
+        # iterate over the first draw set of numbers
+
+        my $dnum = $dobj.nums{$d};
 
             # so so we have a Power Ball match or not?
             if $is-draw-power-ball and $is-self-power-ball {
-                ++$pb-match if $dnum == $mnum;
+                ++$pb-match if $dnum == $tnum;
             }
             elsif not $is-draw-power-ball {
-                ++$num-match if $dnum == $mnum;
+                ++$num-match if $dnum == $tnum;
             }
             else {
                 next;
@@ -105,13 +136,13 @@ sub calc-winnings(
 
     if $show-draw {
         print qq:to/HERE/;
-          The draw  : {$draw.show.chomp}
+          The draw  : {$dobj.show.chomp}
           Winning tickets
         HERE
     }
     if $cash > 0 {
         print qq:to/HERE/;
-        Our ticket: {self.show.chomp} \# winnings: \$$cash
+        Our ticket: {$tobj.show.chomp} \# winnings: \$$cash
         HERE
     }
     else {
