@@ -107,12 +107,12 @@ potential winnings (other states may offer similar options)
 but the author has not attempted to handle any other
 state's programs).
 
-=begin table
+=begin table :caption<Add-on options>
 Add-on | Cost | Function
 -------+------+---------
 Power Play | +1$ per play | Multiplies non-jackpoy prizes 2, 3, 4, 5, or even 10 times, depending upon on the multiplier drawn.  A Match 5 prize with Power Play is automatically increased to $2 million.
+Double Play | +1$ per play | Gives you a second chance to win with your same numbers in a separate drawing. This feature has a top prize of $10 million.
 =end table
-
 
 
 =head2 Finding results
