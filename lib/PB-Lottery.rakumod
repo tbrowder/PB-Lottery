@@ -47,7 +47,7 @@ sub calc-part-winnings(
         # the double play draw
         @dnums = $dobj.nums2.keys.sort;
     }
-}
+} # end sub calc-part-winnings
 
 sub calc-winnings(
     :$tobj!, #= the ticket object
@@ -188,7 +188,7 @@ sub calc-winnings(
         HERE
     }
 =end comment
-}
+} # end sub calc-winnings
 
 sub do-pick(
     $pdir, #= private directory
