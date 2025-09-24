@@ -81,7 +81,7 @@ Ticket costs
 
 The basic cost of a Power Ball lottery ticket is $2. The Florida Lottery offers optional add-ons to increase potential winnings (other states may offer similar options) but the author has not attempted to handle any other state's programs).
 
-**Table 1.**
+**Table 1. Add-on options**
 
 <table class="pod-table">
 <thead><tr>

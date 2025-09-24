@@ -236,13 +236,14 @@ sub do-status(
         say "draw lines:";
         say "  $_" for @dlines;
     }
+
     my @draws  = [];
     # two data lines per draw ticked
     my ($line1, $line2);
 
     $line1 = "";
     $line2 = "";
-    # 28 37 42 50 53 19 2025-09-13 pb
+    # 28 37 42 50 53 19 2025-09-13 ?x
     # 03 06 20 34 49 12 2025-09-13 dp
     for @dlines.kv -> $i, $line is copy {
         $line = strip-comment $line;

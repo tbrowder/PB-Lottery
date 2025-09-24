@@ -2,8 +2,12 @@ use Test;
 
 use PB-Lottery;
 
-my $env-var = "PB_LOTTERY_PRIVATE_DIR";
-my $pdir = %*ENV{$env-var}; # hack
+my ($env-var, $pdir);
+
+# good tests
+%*ENV<PB_LOTTERY_PRIVATE_DIR> = "t/data/good";
+$env-var = "PB_LOTTERY_PRIVATE_DIR";
+$pdir    = %*ENV{$env-var}; # hack
 
 my $all   = 0;
 my $debug = 0;
