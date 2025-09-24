@@ -61,12 +61,12 @@ Note the Power Ball lottery's **draw** record is slightly different from the use
     # Powerball lottery draws
 
     # draw on 2025-09-01
-    08 23 25 40 53 05 2025-09-01 3x # <= the Power Ball draw
+    08 23 25 40 53 05 2025-09-01 3x # <= the Power Ball draw & multiplier
     10 15 26 48 67 19 2025-09-01 dp # <= the Double Play draw
 
     # next draw
     # draw on 2025-09-03
-    03 16 29 61 69 22 2025-09-03 2x # <= the Power Ball draw
+    03 16 29 61 69 22 2025-09-03 2x # <= the Power Ball draw & multiplier
     07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw
 
 Account data
@@ -75,6 +75,20 @@ Account data
 A third file is created to show results of the user's play. Its name is **my-financials.txt** and it shows total costs and other data for the period of play.
 
 As of the writing, the cost of a ticket is $2. It costs $1 to add the Power Play option, and it costs $1 to add the Double Play option. Neither option depends upon the other.
+
+Ticket costs
+------------
+
+The basic cost of a Power Ball lottery ticket is $2. The Florida Lottery offers optional add-ons to increase potential winnings (other states may offer similar options) but the author has not attempted to handle any other state's programs).
+
+<table class="pod-table">
+<thead><tr>
+<th>Add-on</th> <th>Cost</th> <th>Function</th>
+</tr></thead>
+<tbody>
+<tr> <td>Power Play</td> <td>+1$ per play</td> <td>Multiplies non-jackpoy prizes 2, 3, 4, 5, or even 10 times, depending upon on the multiplier drawn. A Match 5 prize with Power Play is automatically increased to $2 million.</td> </tr>
+</tbody>
+</table>
 
 Finding results
 ---------------
