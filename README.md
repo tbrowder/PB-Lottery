@@ -82,11 +82,12 @@ Ticket costs
 The basic cost of a Power Ball lottery ticket is $2. The Florida Lottery offers optional add-ons to increase potential winnings (other states may offer similar options) but the author has not attempted to handle any other state's programs).
 
 <table class="pod-table">
+<caption>Add-on options</caption>
 <thead><tr>
 <th>Add-on</th> <th>Cost</th> <th>Function</th>
 </tr></thead>
 <tbody>
-<tr> <td>Power Play</td> <td>+1$ per play</td> <td>Multiplies non-jackpoy prizes 2, 3, 4, 5, or even 10 times, depending upon on the multiplier drawn. A Match 5 prize with Power Play is automatically increased to $2 million.</td> </tr>
+<tr> <td>Power Play</td> <td>+1$ per play</td> <td>Multiplies non-jackpoy prizes 2, 3, 4, 5, or even 10 times, depending upon on the multiplier drawn. A Match 5 prize with Power Play is automatically increased to $2 million.</td> </tr> <tr> <td>Double Play</td> <td>+1$ per play</td> <td>Gives you a second chance to win with your same numbers in a separate drawing. This feature has a top prize of $10 million.</td> </tr>
 </tbody>
 </table>
 
