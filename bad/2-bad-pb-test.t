@@ -1,6 +1,8 @@
 use Test;
 
 use PB-Lottery;
+use PB-Lottery::Classes;
+use PB-Lottery::Subs;
 
 isa-ok PB-Lottery, PB-Lottery;
 
@@ -25,15 +27,6 @@ for $n1, $n2 -> $n {
     dies-ok {
         my %h = Lstr2info-hash $n; 
     }, "bad input: $n";
-}
-
-# from the docs:
-sub saruman(Bool :$ents-destroy-isengard) {
-    die "Killed by Wormyongue" if $ents-destroy-isengard;
-}
-
-dies-ok {
-    saruman(ents-destroy-isengard => True), "Saruman dies";
 }
 
 done-testing;

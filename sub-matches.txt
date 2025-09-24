@@ -12,6 +12,21 @@ sub calc-part-winnings(
     :$debug,
     --> Numeric #= return part winnings for this ticket/draw combo
 ) is export {
+    my @dnums;
+    # If part == 1, check the user's ticket against the power ball ticket
+    # If part == 2, check the user's ticket against the the double play ticket
+    if $part == 1 {
+        # the power ball draw
+        @dnums = $dobj.nums.keys.sort;
+    }
+    else {
+        # the double play draw
+        @dnums = $dobj.nums2.keys.sort;
+    }
+
+
+
+
 }
 
 sub calc-winnings(
@@ -20,9 +35,10 @@ sub calc-winnings(
     :$debug,
     --> Numeric #= return winnings for this ticket/draw combo
 ) is export {
-    # given a drawing set of numbers, 
+    # Given a drawing set of numbers, 
     # and a valid ticket for the drawing date,
-    # calculate any winnings (may be estimates)
+    # calculate any winnings (may be estimates).
+
     # ensure we start with cash = 0
     my ($cash, $cash1, $cash2) = 0, 0, 0;;
 
@@ -30,7 +46,8 @@ sub calc-winnings(
     $cash2 = calc-part-winnings :$tobj, :$dobj, :part(2);
     $cash  = $cash1 + $cash2;
 
-    calc-dp-winnings
+=begin comment
+    # calc-dp-winnings
     # rules are complicated
     # winning matches and prizes:
 
@@ -150,4 +167,5 @@ sub calc-winnings(
         Our ticket: No winning tickets.
         HERE
     }
+=end comment
 }

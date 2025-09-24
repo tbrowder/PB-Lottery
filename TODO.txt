@@ -1,3 +1,6 @@
+Tighten rules for determining winnings
+
+Add tests for the draw and ticket classes
 
 Use method "matches" as a template
 for a sub to check for any 
