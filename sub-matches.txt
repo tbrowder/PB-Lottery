@@ -26,8 +26,8 @@ sub calc-winnings(
     #   5 numbers                      $1,000,000
     #   5 numbers + pb                 current jackpot
 
-    my @d = $draw.nums.keys.sort;
-    my @k = self.nums.keys.sort;
+    my @d = $dobj.nums.keys.sort;
+    my @t = $tobj.nums.keys.sort;
     my $pb-match  = 0;
     my $num-match = 0;
     my ($is-draw-power-ball, $is-self-power-ball);
