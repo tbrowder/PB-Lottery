@@ -2,10 +2,26 @@ unit module PB-Lottery::Classes;
 
 # need some helper subs to parse input strings...
 # see old-code* for pieces
-sub set-draw-numsh(Str $s) {}
-sub set-draw-numsh2(Str $s) {}
-sub set-ticket-numsh(Str $s) {}
-sub set-date(Str $s) {}
+sub set-draw-numsh(
+    Str $s
+) {
+    my %h;
+}
+sub set-draw-numsh2(
+    Str $s
+) {
+    my %h;
+}
+sub set-ticket-numsh(
+    Str $s
+) {
+    my %h;
+}
+sub set-date(
+    Str $s
+) {
+    my Date $date;
+}
 
 class PB-Draw is export {
     has Str  $.nums  is required;
