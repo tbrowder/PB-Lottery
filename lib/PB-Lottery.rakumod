@@ -6,12 +6,12 @@ use Test;
 use PB-Lottery::Classes;
 use PB-Lottery::Subs;
 
+=begin comment
 # use a class generator
-sub SixNumberFactory(
+sub Factory(
     Str  $nums,
     Str  $nums2?, # if defined, this is the double play and this is a PB draw
     Date :$date,
-    --> SixNumber
 ) is export {
     # Each call returns a single class object. The general process
     # should be:
@@ -28,6 +28,7 @@ sub SixNumberFactory(
     }
     $o;
 }
+=end comment
 
 sub calc-part-winnings(
     :$tobj!, #= the ticket object
@@ -36,6 +37,7 @@ sub calc-part-winnings(
     :$debug,
     --> Numeric #= return part winnings for this ticket/draw combo
 ) is export {
+    my $cash = 0;
     my @dnums;
     # If part == 1, check the user's ticket against the power ball ticket
     # If part == 2, check the user's ticket against the the double play ticket
@@ -47,6 +49,7 @@ sub calc-part-winnings(
         # the double play draw
         @dnums = $dobj.nums2.keys.sort;
     }
+    $cash;
 } # end sub calc-part-winnings
 
 sub calc-winnings(
@@ -265,7 +268,7 @@ sub do-status(
     }
 
     my @draws  = [];
-    # two data lines per draw ticked
+    # two data lines per draw ticket
     my ($line1, $line2);
 
     $line1 = "";
@@ -294,9 +297,16 @@ sub do-status(
 
         if $line1 {
             # then this should be line2 and the data
-            $line2 = $line;
             # for the next draw object is complete
-            my $dobj = SixNumberFactory $line1, $line2;
+            $line2 = $line;
+            my $dobj = PB-Draw.new: :nums($line1), :nums2($line2);
+            unless $dobj ~~ PB-Draw {
+                print qq:to/HERE/;
+                FATAL: Unable to instantiate a PB::Draw object.
+                       Exiting...
+                HERE
+                exit(1);
+            }
             @draws.push: $dobj;
 
             # finally, zero the two lines ready for the next draw
@@ -337,7 +347,15 @@ sub do-status(
         }
 
         # data for next ticket object is complete
-        my $tobj = SixNumberFactory $line1;
+        my $tobj = PB-Ticket.new: :nums($line1);
+        unless $tobj ~~ /PB\-Ticket/ {
+            print qq:to/HERE/;
+            FATAL: The intended draw object failed to instantiate.
+                   Exiting...
+            HERE
+            exit(1);
+        }
+
         @tickets.push: $tobj;
 
         # reset $line1
@@ -350,9 +368,17 @@ sub do-status(
     for @tickets -> $tobj {
         for @draws -> $dobj {
             my $money = calc-winnings :$tobj, :$dobj, :$debug;
+            if $money {
+                say "Wow, ticket X won $money on draw on {$dobj.date}";
+            }
+            else {
+                say "Aw, ticket X won nothing on draw on {$dobj.date}";
+            }
+
             $cash += $money;
         }
     }
+    
 
 } # end sub do-status
 

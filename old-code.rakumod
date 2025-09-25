@@ -64,7 +64,6 @@ class LNum does Lottery is export {
             # 9
             [\h+ (\w\w)]? # qp, dp, or pp
 
-
             \h*
 
             $/ {
