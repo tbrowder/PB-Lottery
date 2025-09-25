@@ -195,6 +195,33 @@ sub do-pick(
     :$debug,
 ) is export {
     say "Entering sub do-pick";
+
+    # pick and sort the first five numbers
+    my @pick = (1..69).pick(5).sort({$^a cmp $^b});
+
+    # add the power ball pick
+    my $pick = (1..26).pick;
+    @pick.push: $pick;
+    say "pick 6: {@pick}" if 0 or $debug;
+
+    # stringify for our use
+    my ($s1, $s2);
+    for @pick.kv -> $i, $n is copy {
+        if $i {
+            # add a space to the existing string
+            $s1 ~= " ";
+            $s2 ~= " ";
+        }
+
+        $s1 ~= $n;
+        if $n.chars < 2 {
+            # add a leading zero
+            $n = "0$n";
+        }
+        $s2 ~= $n;
+    }
+    say "random: $s1"; 
+    say "random: $s2 # with 2 chars per number"; 
 }
 
 sub do-enter-pick(
