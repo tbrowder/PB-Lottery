@@ -109,7 +109,8 @@ sub split-powerball-line(
                 die unless { 
                     $v ~~ / \d\d\d\d '-' \d\d '-' \d\d /;
                 }
-                @w2.push: $v;
+                my $date = Date.new: $v;
+                @w2.push: $date;
             }
             when * == 8 {
                 $v .= lc;
@@ -149,53 +150,40 @@ sub split-powerball-line(
     $s1, $s2, $s3, $s4; # $s4 may be empty
 } # end of sub split-powerball-line
 
-sub set-draw-numsh(
-    Str $s
-) {
-    my @parts = split-powerball-line $s;
-    my %h;
-}
-sub set-draw-numsh2(
-    Str $s
-) {
-    my %h;
-}
-sub set-ticket-numsh(
-    Str $s
-) {
-    my %h;
-}
-sub set-date(
-    Str $s
+sub create-numhash(
+    Str $s,
+    :$no-date,
 ) {
     my Date $date;
+    my ($s1, $s2, $s3, $s4) = split-powerball-line $s;
+    
+    my %h;
 }
 
 class PB-Draw is export {
-    has Str  $.nums  is required;
-    has Str  $.nums2 is required;
+    has Str  $.numbers-str  is required;
+    has Str  $.numbers-str2 is required;
 
-    has Hash %.numsh;
-    has Hash %.nums2h;
+    has Hash %.numbers-hash;
+    has Hash %.numbers-hash2;
     has Date $.date;
 
     submethod TWEAK {
-        %!numsh = set-draw-numsh $!nums; 
-        %!nums2h = set-draw-numsh2 $!nums2; 
-        $!date = set-date $!nums;
+        (%!numbers-hash, $!date) = create-numhash $!numbers-str; 
+         %!numbers-hash2         = create-numhash $!numbers-str2, :no-date; 
     }
 }
 
 class PB-Ticket is export {
-    has Str  $.nums is required;
+    has Str  $.numbers-str is required;
 
-    has Hash %.numsh;
+    has Hash %.numbers-hash;
     has Date $.date;
+
     has Bool $.is-qp;
 
     submethod TWEAK {
-        %!numsh = set-ticket-numsh $!nums; 
-        $!date = set-date $!nums;
+        (%!numbers-hash, $!date) = create-numhash $!numbers-str; 
     }
 }
 
