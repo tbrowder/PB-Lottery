@@ -95,13 +95,21 @@ sub split-powerball-line(
             when * < 6 {
                 # a number from 1..69
                 $v = trim-leading-zeros $v;
+                die unless { 0 < $v <= 69 }
+                @w1.push: $v;
             }
             when * == 6 {
                 # a number from 1..26
                 $v = trim-leading-zeros $v;
+                die unless { 0 < $v <= 26 }
+                @w1.push: $v;
             }
             when * == 7 {
                 # the date: yyyy-mm-dd
+                die unless { 
+                    $v ~~ / \d\d\d\d '-' \d\d '-' \d\d /;
+                }
+                @w2.push: $v;
             }
             when * == 8 {
                 $v .= lc;
@@ -111,28 +119,34 @@ sub split-powerball-line(
                         my $msg = "Type '$v' is not recognized.";
                         throw-err $msg; 
                     }
+                    @w3.push: $v;
+                }
+                else {
+                    if %valid-types{$v}:exists {
+                        @w3.push: $v;
+                    }
+                    else {
+                        @w4.push: $v;
+                    }
                 }
             }
             default {
                 $v .= lc;
+                if %valid-types{$v}:exists {
+                    @w3.push: $v;
+                }
+                else {
+                    @w4.push: $v;
+                }
             }
         }
-        if $i > 6 {
-            @w2.push: $v;       
-        }
-        else {
-            @w1.push: $v;       
-        }
-    }
-
-    unless @w1.elems == 7 {
-        my $msg = "The input string '$s0' has less than seven words";
-        throw-err $msg;
     }
 
     my $s1 = @w1.join(' ').lc;
-    my $s2 = @w1.join(' ').lc;
-    $s1, $s2; # $s2 may be empty
+    my $s2 = @w2.join(' ').lc;
+    my $s3 = @w3.join(' ').lc;
+    my $s4 = @w4.join(' ').lc;
+    $s1, $s2, $s3, $s4; # $s4 may be empty
 } # end of sub split-powerball-line
 
 sub set-draw-numsh(
