@@ -243,11 +243,7 @@ sub do-enter-draw(
     if  $res ~~ /^ \h* (\d\d\d\d '-' \d\d '-' \d\d) \h* $/ {
     }
     else {
-        print qq:to/HERE/;
-        FATAL: Invalid date entry: '$res'.
-               Exiting...
-        HERE
-        exit(1);
+        my $msg = "Invalid date entry: '$res'";
     }
 }
 
@@ -282,12 +278,8 @@ sub do-status(
         my @words = $line.words;
         my $nw = @words.elems;
         unless $nw == 8 {
-            print qq:to/HERE/;
-            FATAL: Invalid draw line '$line'.
-                     It has $nw words but should have eight (8).
-                   Exiting...
-            HERE
-            exit(1);
+            my $msg = "Invalid draw line '$line'.\n It has $nw words but should have eight (8)";
+            throw-err $msg;
         }
 
         if 0 or $debug {
@@ -301,11 +293,8 @@ sub do-status(
             $line2 = $line;
             my $dobj = PB-Draw.new: :nums($line1), :nums2($line2);
             unless $dobj ~~ PB-Draw {
-                print qq:to/HERE/;
-                FATAL: Unable to instantiate a PB::Draw object.
-                       Exiting...
-                HERE
-                exit(1);
+                my $msg = "Unable to instantiate a PB::Draw object";
+                throw-err $msg;
             }
             @draws.push: $dobj;
 
@@ -338,22 +327,15 @@ sub do-status(
         my @words = $line.words;
         my $nw = @words.elems;
         unless $nw >= 8 {
-            print qq:to/HERE/;
-            FATAL: Invalid draw line '$line'.
-                     It has $nw words but should have at least eight (8).
-                   Exiting...
-            HERE
-            exit(1);
+            my $msg = "Invalid draw line '$line'.\n It has $nw words but should have at least eight (8).";
+            throw-err $msg;
         }
 
         # data for next ticket object is complete
         my $tobj = PB-Ticket.new: :nums($line1);
         unless $tobj ~~ /PB\-Ticket/ {
-            print qq:to/HERE/;
-            FATAL: The intended draw object failed to instantiate.
-                   Exiting...
-            HERE
-            exit(1);
+            my $msg = "The intended draw object failed to instantiate.";
+            throw-err $msg;
         }
 
         @tickets.push: $tobj;

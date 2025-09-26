@@ -2,6 +2,14 @@ unit module PB-Lottery::Subs;
 
 use Text::Utils :strip-comment;
 
+sub throw-err(
+    $msg
+) is export {
+    die qq:to/HERE/;
+    FATAL: $msg
+    HERE
+}
+
 # in Subs:
 sub trim-zeros(
     $s is copy 
@@ -46,10 +54,8 @@ sub Lstr2info-hash(
         }
     }
     else {
-        die qq:to/HERE/;
-        FATAL: Unrecognized line format: |$s|
-               Exiting...
-        HERE
+        my $msg = "Unrecognized line format: |$s|";
+        throw-err $msg;
     }
 
     my @nums = $s.words[0..^6];

@@ -1,10 +1,139 @@
 unit module PB-Lottery::Classes;
 
+use Text::Utils :strip-comment;
+
+=begin comment
 # need some helper subs to parse input strings...
 # see old-code* for pieces
+
+# all valid entry lines (space-separated tokens):
+
+# the first seven entries are required for ALL entry types
+nn nn nn nn nn nn yyyy-mm-dd
+
+# additional tokens:
+
+# draw number 1 of 2 
+nx # where n must be one of: 2..5, 10
+# draw number 2 of 2 
+dp # mandatory, indicates it's the double play draw
+
+# ticket 
+# none or up to three of: pp dp qp
+# where:
+#   pp = power play
+#   dp = double play
+#   qp = quick pick (if the numbers were so produced)
+
+        if $!entry ~~ /^
+            \h* (\d+) # 0 - first number
+            \h+ (\d+) # 1 - second number
+            \h+ (\d+) # 2 - third number
+            \h+ (\d+) # 3 - fourth number
+            \h+ (\d+) # 4 - fifth number
+            \h+ (\d+) # 5 - sixth number
+
+            # the date is required
+            # 6 - seventh word
+            [\h+ (\d\d\d\d '-' \d\d '-' \d\d)]
+
+            # one to three more two-char entries
+            # depending on the base type: draw or ticket
+
+            # 7 - eighth word
+            # This mandatory entry is a bit confusing because
+            # Florida's Power Ball lottery has a double play
+            # option which requires a draw object to have two
+            # lines and each could have a separate type.
+            # I just decided the second draw entry must use the 'dp'
+            # code as the only valid one.
+            # On a ticket entry the seventh code must be 'dp' or 'pb'.
+            # Then any additional entries should not be a duplicate
+            # of the seventh entry.
+            [\h+ (\w\w)] # required (lottery type): 'pb' or 'dp'
+            
+            # 
+            # 8 - ninth word
+            [\h+ (\w\w)]? # dp, pb, or qp
+            # 9
+            [\h+ (\w\w)]? # dp, dp, or qp
+
+=end comment
+
+# recognized "type" words
+# (lower-cased)
+my %valid-types = set <
+    2x 3x 4x 5x 10x
+    pb dp
+>;
+
+sub split-line(
+    Str $s, #= the raw line with 8..11 tokens
+    :$debug,
+    --> List # returns three or four strings (
+) {
+    my $s0 = strip-comment $s;
+    my @w = $s0.words;
+    my $nw = @w.elems;
+    unless $nw >= 8 {
+        my $msg = "String '$s0' has less than eight words";
+        throw-err $msg;
+    }
+
+    my @w1 = []; # first six should be numbers
+    my @w2 = []; # seventh should be the date
+    my @w3 = []; # eighth should be type
+    my @w4 = []; # any extra type info
+
+    my %types-used; # one to three: Nx pb dp
+    for @w.kv -> $i, $v is copy{
+        with $i {
+            when * < 6 {
+                # a number from 1..69
+                $v = trim-zeros $v;
+            }
+            when * == 6 {
+                # a number from 1..26
+                $v = trim-zeros $v;
+            }
+            when * == 7 {
+                # the date: yyyy-mm-dd
+            }
+            when * == 8 {
+                $v .= lc;
+                # must be the type if only 8 words
+                if $nw == 8 {
+                    unless %valid-types{$v}:exists {
+                        my $msg = "Type '$v' is not recognized.";
+                        throw-err $msg; 
+                    }
+                }
+            }
+            default {
+                $v .= lc;
+            }
+        }
+        if $i > 6 {
+            @w2.push: $v;       
+        }
+        else {
+            @w1.push: $v;       
+        }
+    }
+    unless @w1.elems == 7 {
+        my $msg = "The input string '$s0' has less than seven words";
+        throw-err $msg;
+    }
+
+    my $s1 = @w1.join(' ').lc;
+    my $s2 = @w1.join(' ').lc;
+    $s1, $s2; # $s2 may be empty
+} # end of sub split-line
+
 sub set-draw-numsh(
     Str $s
 ) {
+    my @parts = split-line $s;
     my %h;
 }
 sub set-draw-numsh2(

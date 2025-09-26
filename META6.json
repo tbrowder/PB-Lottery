@@ -15,6 +15,7 @@
   "provides": {
     "PB-Lottery": "lib/PB-Lottery.rakumod",
     "PB-Lottery::Classes": "lib/PB-Lottery/Classes.rakumod",
+    "PB-Lottery::Indy": "lib/PB-Lottery/Indy.rakumod",
     "PB-Lottery::Subs": "lib/PB-Lottery/Subs.rakumod"
   },
   "resources": [
