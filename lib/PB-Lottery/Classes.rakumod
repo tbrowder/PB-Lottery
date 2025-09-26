@@ -89,6 +89,7 @@ sub split-powerball-line(
     my @w3 = []; # eighth should be type
     my @w4 = []; # any extra type info
 
+    my Date $date;
     my %types-used; # one to three: Nx pb dp
     for @w.kv -> $i, $v is copy {
         with $i {
@@ -109,7 +110,7 @@ sub split-powerball-line(
                 die unless { 
                     $v ~~ / \d\d\d\d '-' \d\d '-' \d\d /;
                 }
-                my $date = Date.new: $v;
+                $date = Date.new: $v;
                 @w2.push: $date;
             }
             when * == 8 {
@@ -144,7 +145,7 @@ sub split-powerball-line(
     }
 
     my $s1 = @w1.join(' ').lc;
-    my $s2 = @w2.join(' ').lc;
+    my $s2 = @w2.join(' ').lc; # a valid Date string
     my $s3 = @w3.join(' ').lc;
     my $s4 = @w4.join(' ').lc;
     $s1, $s2, $s3, $s4; # $s4 may be empty
@@ -154,10 +155,55 @@ sub create-numhash(
     Str $s,
     :$no-date,
 ) {
-    my Date $date;
     my ($s1, $s2, $s3, $s4) = split-powerball-line $s;
+    my $date = Date.new: $s2;
     
+    # $s1 contains the first 6 numbers
+    # $s3 contains the Lottery type code
+    # $s4 contains up to two other codes
+
+    my @nums = $s1.words;
+    my $nw = @nums.elems;
+    unless $nw == 6 {
+        my $msg = "String '$s1' contains $nw parts, expected 6";
+        throw-err $msg;
+    }
+
     my %h;
+    @nums .= sort({ $^a cmp $^b });
+    for ('a'..'f').kv -> $i, $alpha {
+        my $num = @nums[$i];
+        if $num.chars == 1 {
+            # add a leading zero
+            $num = "0$num";
+        }
+        %h{$alpha} = $num;
+    }
+    if $s4 {
+        # add extra pieces
+        my @w = $s4.words;
+        my $nw = @w.elems;
+        unless (1 <= $nw <= 3) {
+            my $msg = "String '$s4' contains $nw parts, expected 1 to 3";
+            throw-err $msg;
+        }
+        for @w.kv -> $i, $v {
+            my $alpha;
+            with $i {
+                when * == 0 { $alpha = 'g' }
+                when * == 1 { $alpha = 'h' }
+                when * == 2 { $alpha = 'i' }
+            }
+            %h{$alpha} = $v;
+        }
+    }
+
+    if $no-date {
+        return %h;
+    }
+    else {
+        return %h, $date;
+    }
 }
 
 class PB-Draw is export {
