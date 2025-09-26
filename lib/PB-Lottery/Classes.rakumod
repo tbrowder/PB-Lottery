@@ -62,14 +62,16 @@ dp # mandatory, indicates it's the double play draw
 
 =end comment
 
-# recognized "type" words
-# (lower-cased)
+# Recognized Powerball "type" words
+# (prefer lower-cased)
 my %valid-types = set <
     2x 3x 4x 5x 10x
-    pb dp
+    2X 3X 4X 5X 10X
+    pb Pb pB PB 
+    dp Dp dP DP
 >;
 
-sub split-line(
+sub split-powerball-line(
     Str $s, #= the raw line with 8..11 tokens
     :$debug,
     --> List # returns three or four strings (
@@ -131,12 +133,12 @@ sub split-line(
     my $s1 = @w1.join(' ').lc;
     my $s2 = @w1.join(' ').lc;
     $s1, $s2; # $s2 may be empty
-} # end of sub split-line
+} # end of sub split-powerball-line
 
 sub set-draw-numsh(
     Str $s
 ) {
-    my @parts = split-line $s;
+    my @parts = split-powerball-line $s;
     my %h;
 }
 sub set-draw-numsh2(
