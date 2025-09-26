@@ -4,7 +4,7 @@ unit module PB-Lottery::Indy;
 # only on Rsku core or external
 # distributions.
 
-sub trim-zeros(
+sub trim-leading-zeros(
     $s is copy 
     #--> UInt
 ) is export {
@@ -12,7 +12,7 @@ sub trim-zeros(
         $s ~~ s/^0//;
     }
     $s;
-} # end sub trim-zeros
+} # end sub trim-leading-zeros
 
 sub throw-err(
     $msg

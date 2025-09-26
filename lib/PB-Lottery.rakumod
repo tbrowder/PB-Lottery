@@ -482,12 +482,12 @@ class LNum does Lottery is export {
             $/ {
 
             # need to trim leading zeros, if any
-            %!nums<a> = trim-zeros +$0;
-            %!nums<b> = trim-zeros +$1;
-            %!nums<c> = trim-zeros +$2;
-            %!nums<d> = trim-zeros +$3;
-            %!nums<e> = trim-zeros +$4;
-            %!nums<f> = trim-zeros +$5; # the Power Ball
+            %!nums<a> = trim-leading-zeros +$0;
+            %!nums<b> = trim-leading-zeros +$1;
+            %!nums<c> = trim-leading-zeros +$2;
+            %!nums<d> = trim-leading-zeros +$3;
+            %!nums<e> = trim-leading-zeros +$4;
+            %!nums<f> = trim-leading-zeros +$5; # the Power Ball
             # the date is now mandatory
             $dt = ~$6;
             say "date = '$dt'" if $debug;

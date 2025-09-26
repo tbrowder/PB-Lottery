@@ -92,11 +92,11 @@ sub split-line(
         with $i {
             when * < 6 {
                 # a number from 1..69
-                $v = trim-zeros $v;
+                $v = trim-leading-zeros $v;
             }
             when * == 6 {
                 # a number from 1..26
-                $v = trim-zeros $v;
+                $v = trim-leading-zeros $v;
             }
             when * == 7 {
                 # the date: yyyy-mm-dd
