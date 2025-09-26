@@ -2,6 +2,8 @@ unit module PB-Lottery::Classes;
 
 use Text::Utils :strip-comment;
 
+use PB-Lottery::Indy;
+
 =begin comment
 # need some helper subs to parse input strings...
 # see old-code* for pieces
@@ -86,7 +88,7 @@ sub split-line(
     my @w4 = []; # any extra type info
 
     my %types-used; # one to three: Nx pb dp
-    for @w.kv -> $i, $v is copy{
+    for @w.kv -> $i, $v is copy {
         with $i {
             when * < 6 {
                 # a number from 1..69
@@ -120,6 +122,7 @@ sub split-line(
             @w1.push: $v;       
         }
     }
+
     unless @w1.elems == 7 {
         my $msg = "The input string '$s0' has less than seven words";
         throw-err $msg;

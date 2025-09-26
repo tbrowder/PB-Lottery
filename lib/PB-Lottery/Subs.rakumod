@@ -2,24 +2,7 @@ unit module PB-Lottery::Subs;
 
 use Text::Utils :strip-comment;
 
-sub throw-err(
-    $msg
-) is export {
-    die qq:to/HERE/;
-    FATAL: $msg
-    HERE
-}
-
-# in Subs:
-sub trim-zeros(
-    $s is copy 
-    --> UInt
-) is export {
-    if $s ~~ /^0/ {
-        $s ~~ s/^0//;
-    }
-    $s;
-} # end sub trim-zeros
+use PB-Lottery::Indy;
 
 # in Subs:
 sub Lstr2info-hash(

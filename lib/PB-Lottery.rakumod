@@ -5,6 +5,7 @@ use Test;
 
 use PB-Lottery::Classes;
 use PB-Lottery::Subs;
+use PB-Lottery::Indy;
 
 =begin comment
 # use a class generator
@@ -278,7 +279,8 @@ sub do-status(
         my @words = $line.words;
         my $nw = @words.elems;
         unless $nw == 8 {
-            my $msg = "Invalid draw line '$line'.\n It has $nw words but should have eight (8)";
+            my $msg = "Invalid draw line '$line'.\n";
+            $msg ~= " It has $nw words but should have eight (8)";
             throw-err $msg;
         }
 
@@ -327,7 +329,8 @@ sub do-status(
         my @words = $line.words;
         my $nw = @words.elems;
         unless $nw >= 8 {
-            my $msg = "Invalid draw line '$line'.\n It has $nw words but should have at least eight (8).";
+            my $msg = "Invalid draw line '$line'.\n";
+            $msg ~= " It has $nw words but should have eight (8)";
             throw-err $msg;
         }
 
@@ -360,7 +363,6 @@ sub do-status(
             $cash += $money;
         }
     }
-    
 
 } # end sub do-status
 
