@@ -15,12 +15,12 @@ nn nn nn nn nn nn yyyy-mm-dd
 
 # additional tokens:
 
-# draw number 1 of 2 
+# draw number 1 of 2
 nx # where n must be one of: 2..5, 10
-# draw number 2 of 2 
+# draw number 2 of 2
 dp # mandatory, indicates it's the double play draw
 
-# ticket 
+# ticket
 # none or up to three of: pp dp qp
 # where:
 #   pp = power play
@@ -53,8 +53,8 @@ dp # mandatory, indicates it's the double play draw
             # Then any additional entries should not be a duplicate
             # of the seventh entry.
             [\h+ (\w\w)] # required (lottery type): 'pb' or 'dp'
-            
-            # 
+
+            #
             # 8 - ninth word
             [\h+ (\w\w)]? # dp, pb, or qp
             # 9
@@ -67,7 +67,7 @@ dp # mandatory, indicates it's the double play draw
 my %valid-types = set <
     2x 3x 4x 5x 10x
     2X 3X 4X 5X 10X
-    pb Pb pB PB 
+    pb Pb pB PB
     dp Dp dP DP
 >;
 
@@ -89,10 +89,11 @@ sub split-powerball-line(
     my @w3 = []; # eighth should be type
     my @w4 = []; # any extra type info
 
-    my Date $date;
+#   my Date $date;
     my %types-used; # one to three: Nx pb dp
     for @w.kv -> $i, $v is copy {
-        with $i {
+        my $n = $i + 1;
+        with $n {
             when * < 6 {
                 # a number from 1..69
                 $v = trim-leading-zeros $v;
@@ -107,11 +108,12 @@ sub split-powerball-line(
             }
             when * == 7 {
                 # the date: yyyy-mm-dd
-                die unless { 
+                die unless {
                     $v ~~ / \d\d\d\d '-' \d\d '-' \d\d /;
                 }
-                $date = Date.new: $v;
-                @w2.push: $date;
+#               $date = Date.new: $v;
+#               @w2.push: $date;
+                @w2.push: $v;
             }
             when * == 8 {
                 $v .= lc;
@@ -119,7 +121,7 @@ sub split-powerball-line(
                 if $nw == 8 {
                     unless %valid-types{$v}:exists {
                         my $msg = "Type '$v' is not recognized.";
-                        throw-err $msg; 
+                        throw-err $msg;
                     }
                     @w3.push: $v;
                 }
@@ -145,7 +147,7 @@ sub split-powerball-line(
     }
 
     my $s1 = @w1.join(' ').lc;
-    my $s2 = @w2.join(' ').lc; # a valid Date string
+    my $s2 = @w2.head; # a valid Date string
     my $s3 = @w3.join(' ').lc;
     my $s4 = @w4.join(' ').lc;
     $s1, $s2, $s3, $s4; # $s4 may be empty
@@ -153,12 +155,13 @@ sub split-powerball-line(
 
 sub create-numhash(
     Str $s,
-    :$no-date,
+    --> Hash
 ) {
     my ($s1, $s2, $s3, $s4) = split-powerball-line $s;
-    my $date = Date.new: $s2;
-    
+#   my $date = Date.new: $s2;
+
     # $s1 contains the first 6 numbers
+    # $s2 contains the date string
     # $s3 contains the Lottery type code
     # $s4 contains up to two other codes
 
@@ -179,6 +182,8 @@ sub create-numhash(
         }
         %h{$alpha} = $num;
     }
+    # the date
+    %h<DATE> = $s3;
     if $s4 {
         # add extra pieces
         my @w = $s4.words;
@@ -198,13 +203,8 @@ sub create-numhash(
         }
     }
 
-    if $no-date {
-        return %h;
-    }
-    else {
-        return %h, $date;
-    }
-}
+    %h
+} # end of sub create-numhash
 
 class PB-Draw is export {
     has Str  $.numbers-str  is required;
@@ -214,9 +214,11 @@ class PB-Draw is export {
     has Hash %.numbers-hash2;
     has Date $.date;
 
+    my $dummy;
+
     submethod TWEAK {
-        (%!numbers-hash, $!date) = create-numhash $!numbers-str; 
-         %!numbers-hash2         = create-numhash $!numbers-str2, :no-date; 
+        %!numbers-hash  = create-numhash $!numbers-str;
+        %!numbers-hash2 = create-numhash $!numbers-str2;
     }
 }
 
@@ -229,8 +231,6 @@ class PB-Ticket is export {
     has Bool $.is-qp;
 
     submethod TWEAK {
-        (%!numbers-hash, $!date) = create-numhash $!numbers-str; 
+        (%!numbers-hash, $!date) = create-numhash $!numbers-str;
     }
 }
-
-

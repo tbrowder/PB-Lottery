@@ -121,10 +121,10 @@ sub calc-winnings(
 
             # so so we have a Power Ball match or not?
             if $is-draw-power-ball and $is-self-power-ball {
-                ++$pb-match if $dnum == $tnum;
+                $pb-match += 1 if $dnum == $tnum;
             }
             elsif not $is-draw-power-ball {
-                ++$num-match if $dnum == $tnum;
+                $num-match += 1 if $dnum == $tnum;
             }
             else {
                 next;
@@ -224,8 +224,8 @@ sub do-pick(
         }
         $s2 ~= $n;
     }
-    say "random: $s1"; 
-    say "random: $s2 # with 2 chars per number"; 
+    say "random: $s1";
+    say "random: $s2 # with 2 chars per number";
 }
 
 sub do-enter-pick(
@@ -293,7 +293,7 @@ sub do-status(
             # then this should be line2 and the data
             # for the next draw object is complete
             $line2 = $line;
-            my $dobj = PB-Draw.new: :nums($line1), :nums2($line2);
+            my $dobj = PB-Draw.new: :numbers-str($line1), :numbers-str2($line2);
             unless $dobj ~~ PB-Draw {
                 my $msg = "Unable to instantiate a PB::Draw object";
                 throw-err $msg;
@@ -330,12 +330,12 @@ sub do-status(
         my $nw = @words.elems;
         unless $nw >= 8 {
             my $msg = "Invalid draw line '$line'.\n";
-            $msg ~= " It has $nw words but should have eight (8)";
+            $msg ~= " It has $nw words but should have eight (8) or more";
             throw-err $msg;
         }
 
         # data for next ticket object is complete
-        my $tobj = PB-Ticket.new: :nums($line1);
+        my $tobj = PB-Ticket.new: :numbers-str($line1);
         unless $tobj ~~ /PB\-Ticket/ {
             my $msg = "The intended draw object failed to instantiate.";
             throw-err $msg;
@@ -532,7 +532,7 @@ class LNum does Lottery is export {
         my $t = "";
         my $num = 0;
         for @k -> $k {
-            ++$num;
+            $num += 1;
             # interject codes if applicable
             if $num == 1 {
                 $t ~= " $id";
@@ -594,10 +594,10 @@ class LNum does Lottery is export {
 
                 # so so we have a Power Ball match or not?
                 if $is-draw-power-ball and $is-self-power-ball {
-                    ++$pb-match if $dnum == $mnum;
+                    $pb-match += 1 if $dnum == $mnum;
                 }
                 elsif not $is-draw-power-ball {
-                    ++$num-match if $dnum == $mnum;
+                    $num-match += 1 if $dnum == $mnum;
                 }
                 else {
                     next;
