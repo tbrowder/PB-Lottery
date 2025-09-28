@@ -86,10 +86,7 @@ It is stripped of all characters to yield an integer value of dollars. Note the 
 
   * 1,400m
 
-iten
-====
-
-1,400,000t
+  * 1,400,000t
 
   * 1,400,000,000.00
 
