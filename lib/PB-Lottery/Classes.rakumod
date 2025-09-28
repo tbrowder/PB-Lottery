@@ -4,6 +4,8 @@ use Text::Utils :strip-comment;
 
 use PB-Lottery::Indy;
 
+my $F = $?FILE.IO.basename;
+
 =begin comment
 #========================================================
 #========================================================
@@ -69,14 +71,19 @@ class PB-Draw is export {
     has Str $.numbers-str  is required;
     has Str $.numbers-str2 is required;
 
-    has Hash %.numbers-hash;
-    has Hash %.numbers-hash2;
+    has      %.numbers-hash;
+    has      %.numbers-hash2;
     has Date $.date;
     has Str  $.type;
 
+    has $debug = 0;
+
     submethod TWEAK {
-        %!numbers-hash  = create-numhash $!numbers-str;
-        %!numbers-hash2 = create-numhash $!numbers-str2;
+        my $s  = $!numbers-str;
+        my $s2 = $!numbers-str2;
+
+        %!numbers-hash  = create-numhash $s,  :$debug;
+        %!numbers-hash2 = create-numhash $s2, :$debug;
         $!date = Date.new: %!numbers-hash<DATE>;
         $!type = %!numbers-hash<TYPE>;
     }
@@ -85,7 +92,7 @@ class PB-Draw is export {
 class PB-Ticket is export {
     has Str  $.numbers-str is required;
 
-    has Hash %.numbers-hash;
+    has      %.numbers-hash;
     has Date $.date;
     has Str  $.type;
 

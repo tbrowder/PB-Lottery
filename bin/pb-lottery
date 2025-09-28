@@ -67,7 +67,11 @@ for @*ARGS {
     }
 }
 
-if $debug { say "DEBUG: early exit"; exit; }
+if 0 and $debug { 
+    my $f = $?FILE.IO.basename;
+    say "DEBUG: early exit in file '$f'"; 
+    exit; 
+}
 
 if $status {
     do-status $pdir, :$all, :$debug;

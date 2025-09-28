@@ -1,3 +1,5 @@
+Hash is not sorting numbers correctly
+
 Tighten rules for determining winnings
 
 Add tests for the draw and ticket classes

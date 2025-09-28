@@ -7,6 +7,8 @@ use PB-Lottery::Classes;
 use PB-Lottery::Subs;
 use PB-Lottery::Indy;
 
+my $F = $?FILE.IO.basename;
+
 =begin comment
 # use a class generator
 sub Factory(
@@ -285,8 +287,10 @@ sub do-status(
         }
 
         if 0 or $debug {
-            say "a draw line:";
-            say "  $line";
+            print qq:to/HERE/;
+            DEBUG in file '$F'           
+                a draw line: |$line|
+            HERE
         }
 
         if $line1 {
