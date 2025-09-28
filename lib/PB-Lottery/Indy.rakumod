@@ -257,3 +257,48 @@ sub create-numhash(
 
     %h
 } # end of sub create-numhash
+
+sub get-dollars(
+    Str $m is copy,
+    :$debug,
+    --> UInt
+) is export {
+    # reduce input money amounts in integer values
+    # example inputs allowed
+    # $1.4b
+    # 1,400m
+    # 1,400,000t
+    # 1,400,000,000.00
+
+    # remove any leading currency chars
+    $m ~~ s/^ '$'//;
+    # remove any commas
+    $m ~~ s:g/','//;
+
+    my $mult = 1.0;
+
+    # consider any suffixes
+    with $m.comb.tail.lc {
+        when * eq 'b' { 
+            $mult = 1_000_000_000;
+            $m ~~ s/:i b $//;
+        }
+        when * eq 'm' { 
+            $mult = 1_000_000;
+            $m ~~ s/:i m $//;
+        }
+        when * eq 't' { 
+            $mult = 1_000;
+            $m ~~ s/:i t $//;
+        }
+    }
+
+    # convert to a Numeric
+    my $num = $m.Numeric;
+
+    # apply the multiplier
+    $num *= $mult;
+
+    $num .= UInt;
+}
+

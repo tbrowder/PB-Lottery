@@ -3,13 +3,18 @@
 NAME
 ====
 
-**PB-Lottery** - Provides routines for handling play of US Power Ball lottery game
+**PB-Lottery** - Provides routines for handling play of US Power Ball lottery games
 
 SYNOPSIS
 ========
 
 ```raku
-use PB-Lottery;
+# execute the installed bin file
+$ pb-lottery status
+# OUTPUT
+...reports results of your
+valid lottery tickets for each of
+the recorded draw results...
 ```
 
 DESCRIPTION
@@ -21,9 +26,9 @@ It uses two separate data records, in defined formats (see below), for your tick
 
 The drawing records must be in a file named `drawings.txt` and your ticket records must be in a file named `my-tickets.txt`.
 
-This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run, and the `draws.txt` file must exist in order to check your results.
+This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run, and the `draws.txt` and c<my-tickets.txt> files must exist in order to check your results.
 
-Note if you use the script to update any of those files it should create a '.bak' version of the base file. It should NOT continue any updates if that file already exists. It is recommended to keep your data files under *Git* management.
+Note if you use the script to interactively update any of those files, it should create a '.bak' version of the existing base file. It should abort if that file already exists. It is recommended to keep your data files under *Git* management.
 
 Ticket file format
 ------------------
@@ -69,17 +74,36 @@ Note the Power Ball lottery's **draw** record is slightly different from the use
     03 16 29 61 69 22 2025-09-03 2x # <= the Power Ball draw & multiplier
     07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw
 
+If desired, you can also enter the jackpot value as a string **after** the mutiplier on the first line. For example:
+
+    # draw on 2025-09-03
+    03 16 29 61 69 22 2025-09-03 2x $1.4B  <= the Power Ball jackpot
+    07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw
+
+It is stripped of all characters to yield an integer value of dollars. Note the entered value must have no spaces, and it may be in varying formats. All the following formats represent the same value:
+
+  * $1.4b
+
+  * 1,400m
+
+iten
+====
+
+1,400,000t
+
+  * 1,400,000,000.00
+
 Account data
 ------------
 
 A third file is created to show results of the user's play. Its name is **my-financials.txt** and it shows total costs and other data for the period of play.
 
-As of the writing, the cost of a ticket is $2. It costs $1 to add the Power Play option, and it costs $1 to add the Double Play option. Neither option depends upon the other.
-
 Ticket costs
 ------------
 
-The basic cost of a Power Ball lottery ticket is $2. The Florida Lottery offers optional add-ons to increase potential winnings (other states may offer similar options) but the author has not attempted to handle any other state's programs).
+As of this writing, the basic cost of a Power Ball lottery ticket is $2. The Florida Lottery offers optional add-ons to increase potential winnings (other states may offer similar options) but the author has not attempted to handle any other state's programs).
+
+It costs $1 to add the Power Play option, and it costs $1 to add the Double Play option. Neither option depends upon the other.
 
 **Table 1. Add-on options**
 

@@ -2,14 +2,17 @@
 
 =head1 NAME
 
-B<PB-Lottery> - Provides routines for handling play of US Power Ball lottery game
+B<PB-Lottery> - Provides routines for handling play of US Power Ball lottery games
 
 =head1 SYNOPSIS
 
 =begin code :lang<raku>
-
-use PB-Lottery;
-
+# execute the installed bin file
+$ pb-lottery status
+# OUTPUT
+...reports results of your
+valid lottery tickets for each of
+the recorded draw results...
 =end code
 
 =head1 DESCRIPTION
@@ -26,11 +29,11 @@ ticket records must be in a file named C<my-tickets.txt>.
 
 This program expects your two data files to be in a directory pointed
 to by the environment variable B<PB_LOTTERY_PRIVATE_DIR>. That directory B<must>
-exist in order for the program to run, and the C<draws.txt> file must exist
-in order to check your results.
+exist in order for the program to run, and the C<draws.txt> and c<my-tickets.txt>
+files must exist in order to check your results.
 
-Note if you use the script to update any of those files it should create
-a '.bak' version of the base file. It should NOT continue any updates
+Note if you use the script to interactively update any of those files, 
+it should create a '.bak' version of the existing base file. It should abort 
 if that file already exists. It is recommended to keep your data files
 under I<Git> management.
 
@@ -88,24 +91,43 @@ text file in the following format (note two draw dates are shown):
 
 =end code
 
+If desired, you can also enter the jackpot value as a string
+B<after> the mutiplier on the first line. For example:
+
+=begin code
+# draw on 2025-09-03
+03 16 29 61 69 22 2025-09-03 2x $1.4B  <= the Power Ball jackpot
+07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw
+=end code
+
+It is stripped of all characters to yield an
+integer value of dollars.
+Note the entered value must have no spaces, and it
+may be in varying formats. All the following formats
+represent the same value:
+
+=item $1.4b
+=item 1,400m
+=iten 1,400,000t
+=item 1,400,000,000.00
+
 =head2 Account data
 
 A third file is created to show results of the user's
 play. Its name is B<my-financials.txt> and it shows
 total costs and other data for the period of play.
 
-As of the writing, the cost of a ticket is $2. It costs
-$1 to add the Power Play option, and it costs $1 to
-add the Double Play option. Neither option depends upon
-the other.
-
 =head2 Ticket costs
 
-The basic cost of a Power Ball lottery ticket is $2.
+As of this writing, the basic cost of a Power Ball lottery ticket is $2.
 The Florida Lottery offers optional add-ons to increase
 potential winnings (other states may offer similar options)
 but the author has not attempted to handle any other
 state's programs).
+
+It costs $1 to add the Power Play option, and it costs $1 to
+add the Double Play option. Neither option depends upon
+the other.
 
 B<Table 1. Add-on options>
 =begin table
@@ -114,7 +136,6 @@ Add-on | Cost | Function
 Power Play | +1$ per play | Multiplies non-jackpot prizes 2, 3, 4, 5, or even 10 times, depending upon on the multiplier drawn.  A Match 5 prize with Power Play is automatically increased to $2 million.
 Double Play | +1$ per play | Gives you a second chance to win with your same numbers in a separate drawing that occurs right after the main Powerball drawing. This feature has a top prize of $10 million.
 =end table
-
 
 =head2 Finding results
 
