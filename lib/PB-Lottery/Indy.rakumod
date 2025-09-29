@@ -5,15 +5,25 @@ use Text::Utils :strip-comment;
 my $F = $?FILE.IO.basename;
 
 # All items here MUST be dependent
-# only on Rsku core or external
+# only upon Raku core or external
 # distributions.
 
 # Recognized Powerball "type" words
 # (prefer lower-cased)
-our %valid-types is export = set <
+
+# a valid ticket actually doesn't need 
+# anything but the 6 numbers and the valid
+# date
+our %valid-ticket-types is export = set <
+    dp Dp dP DP
+    pp Pp pP PP
+    qp Qp qP QP
+>;
+
+our %valid-draw-types is export = set <
     2x 3x 4x 5x 10x
     2X 3X 4X 5X 10X
-    pb Pb pB PB
+
     dp Dp dP DP
 >;
 
@@ -48,22 +58,42 @@ sub throw-err(
 } # end sub throw-err
 
 sub split-powerball-line(
-    Str $s, #= the raw line with 8..11 tokens
+    # caller is sub create-numhash
+    Str $s, #= the raw line with 7..11 tokens
+    :$is-ticket = False,
     :$debug,
-    --> List # returns three or four strings (
+    --> List # returns four strings (
 ) is export {
+    my ($min-words, %valid-types);
+    if $is-ticket {
+        $min-words = 7;
+        %valid-types = %valid-draw-types;
+    }
+    else {
+        $min-words = 8;
+        %valid-types = %valid-ticket-types;
+    }
+
+
     my $s0 = strip-comment $s;
     my @w = $s0.words;
     my $nw = @w.elems;
-    unless $nw >= 8 {
-        my $msg = "String '$s0' has less than eight words";
+    if $nw == 0 {
+        note qq:to/HERE/;
+        DEBUG: EMPTY input line!
+               How did it get here in sub split-powerball-line?
+        HERE
+        return [];
+    }
+    unless $nw >= $min-words {
+        my $msg = "String '$s0' has less than $min-words words";
         throw-err $msg;
     }
 
     my @w1 = []; # first six should be numbers
     my @w2 = []; # seventh should be the date string "yyyy-mm-dd"
     my @w3 = []; # eighth should be type
-    my @w4 = []; # any extra type info
+    my @w4 = []; # any extra type or jackpot info
 
     my %types-used; # one to three: Nx pb dp
     for @w.kv -> $i, $v is copy {
@@ -157,16 +187,25 @@ sub split-powerball-line(
 } # end of sub split-powerball-line
 
 sub create-numhash(
+    # this sub is called in TWEAK for draw and ticket objects
     Str $s,
+    :$is-ticket = False,
     :$debug,
     --> Hash
 ) is export {
+    my $min-words = $is-ticket ?? 7 !! 8;
+ 
     my ($s1, $s2, $s3, $s4) = split-powerball-line $s, :$debug;
-
+    unless $s ~~ /\S/ {
+        my $msg = "Cannot create a numhash from an empty string.";
+        throw-err $msg;
+    }
+    
     # $s1 contains the first 6 numbers
     # $s2 contains the date string
     # $s3 contains the Lottery type code
-    # $s4 contains up to two other codes
+    # $s4 contains up to two other codes or the jackpot info
+    #     or it may be blank
 
     my @nums;
     for $s1.words -> $v is copy {
@@ -189,6 +228,7 @@ sub create-numhash(
     # from the test file: t/data/good/draws.txt
     # good draw formats:
     09 12 22 41 61 25 2025-08-27 4x # <== power play multiplier
+    09 12 22 41 61 25 2025-08-27 4x jackpot # <== jackpot string
     =end comment
 
     if $debug {
@@ -223,20 +263,31 @@ sub create-numhash(
     %h<TYPE> = $s3;
     if $s4 {
         # add extra pieces
+
+       
         my @w = $s4.words;
         my $nw = @w.elems;
         unless (1 <= $nw <= 3) {
             my $msg = "String '$s4' contains $nw parts, expected 1 to 3";
             throw-err $msg;
         }
-        for @w.kv -> $i, $v {
-            my $alpha;
-            with $i {
-                when * == 0 { $alpha = 'g' }
-                when * == 1 { $alpha = 'h' }
-                when * == 2 { $alpha = 'i' }
+
+        # if the type is Nx, then any extra piece is expected
+        #   to be a jackpot 
+        if %h<TYPE> ~~ /:i x/ {
+            my $s = @w.head;
+            %h<JACKPOT> = get-dollars $s;
+        }
+        else {
+            for @w.kv -> $i, $v {
+                my $alpha;
+                with $i {
+                    when * == 0 { $alpha = 'g' }
+                    when * == 1 { $alpha = 'h' }
+                    when * == 2 { $alpha = 'i' }
+                }
+                %h{$alpha} = $v;
             }
-            %h{$alpha} = $v;
         }
     }
 

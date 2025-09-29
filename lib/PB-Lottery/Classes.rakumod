@@ -99,7 +99,7 @@ class PB-Ticket is export {
     has Bool $.is-qp;
 
     submethod TWEAK {
-        %!numbers-hash = create-numhash $!numbers-str;
+        %!numbers-hash = create-numhash $!numbers-str, :is-ticket(True);;
         $!date = Date.new: %!numbers-hash<DATE>;
         $!type = %!numbers-hash<TYPE>;
     }

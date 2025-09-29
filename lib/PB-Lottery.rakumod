@@ -272,7 +272,7 @@ sub do-status(
 
     $line1 = "";
     $line2 = "";
-    # 28 37 42 50 53 19 2025-09-13 ?x
+    # 28 37 42 50 53 19 2025-09-13 ?x ?jackpot
     # 03 06 20 34 49 12 2025-09-13 dp
     for @dlines.kv -> $i, $line is copy {
         $line = strip-comment $line;
@@ -280,9 +280,9 @@ sub do-status(
 
         my @words = $line.words;
         my $nw = @words.elems;
-        unless $nw == 8 {
+        unless (7 < $nw < 10)  {
             my $msg = "Invalid draw line '$line'.\n";
-            $msg ~= " It has $nw words but should have eight (8)";
+            $msg ~= " It has $nw words but should have 8 or 9";
             throw-err $msg;
         }
 
@@ -305,9 +305,10 @@ sub do-status(
             @draws.push: $dobj;
 
             # finally, zero the two lines ready for the next draw
-            $line1 = $line2 = "";
+            $line1 = "";
+            $line2 = "";
         }
-        elsif not $line1 {
+        else {
             # this should be the first data line for
             # next draw object
             $line1 = $line;
@@ -316,6 +317,10 @@ sub do-status(
 
     # read all the valid tickets (picks)...
     my $tfil   = "$pdir/my-tickets.txt";
+    unless $tfil.IO.r {
+        my $msg = "Ticket file '$tfil' not found.";
+        throw-err $msg;
+    }
     my @tlines = $tfil.IO.slurp.lines;
 
     $line1 = "";
@@ -349,6 +354,10 @@ sub do-status(
 
         # reset $line1
         $line1 = "";
+    }
+    unless @tickets.elems {
+        my $msg = "Ticket file '$tfil' is empty.";
+        throw-err $msg;
     }
 
     say "Calculating winnings...";

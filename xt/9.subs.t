@@ -22,12 +22,12 @@ isa-ok $od, PB-Draw, "valid PB-Draw object";
 # the ticket object
 my $s3 = "21 06 24 32 17     02 2025-09-22 dp";
 my %h3 = create-numhash $s3;
-is %h3<a>, 6;
-is %h3<b>, 17;
-is %h3<c>, 21;
-is %h3<d>, 24;
-is %h3<e>, 32;
-is %h3<f>, 2;
+is %h3<a>, 6, "value is 6";
+is %h3<b>, 17, "value is 17";
+is %h3<c>, 21, "value is 21";
+is %h3<d>, 24, "value is 24";
+is %h3<e>, 32, "value is 32";
+is %h3<f>, 2, "value is 2";
 
 isa-ok %h3, Hash, "good hash type";
 my $ot = PB-Ticket.new: :numbers-str($s3);
