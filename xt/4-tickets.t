@@ -21,3 +21,4 @@ for @t -> $t {
     isa-ok $to, PB-Ticket;
 }
 
+done-testing;

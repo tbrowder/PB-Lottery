@@ -11,14 +11,19 @@ my $F = $?FILE.IO.basename;
 # Recognized Powerball "type" words
 # (prefer lower-cased)
 
-# a valid ticket actually doesn't need 
-# anything but the 6 numbers and the valid
-# date
+# in order to accomodate other lottery
+# types, we require a ticket to
+# have at least one of:
+#   pp dp pb
+# all of which are exclusive to
+# the Power Ball lottery in Florida
 our %valid-ticket-types is export = set <
     dp Dp dP DP
     pp Pp pP PP
-    qp Qp qP QP
+    pb Pb pB PB
+
 >;
+#   qp Qp qP QP
 
 our %valid-draw-types is export = set <
     2x 3x 4x 5x 10x
@@ -59,21 +64,22 @@ sub throw-err(
 
 sub split-powerball-line(
     # caller is sub create-numhash
-    Str $s, #= the raw line with 7..11 tokens
+    Str $s, #= the raw line with 8..11 tokens
     :$is-ticket = False,
     :$debug,
     --> List # returns four strings (
 ) is export {
-    my ($min-words, %valid-types);
+    my ($min-words, %valid-types, $typ);
     if $is-ticket {
-        $min-words = 7;
-        %valid-types = %valid-draw-types;
-    }
-    else {
+        $typ = "ticket";
         $min-words = 8;
         %valid-types = %valid-ticket-types;
     }
-
+    else {
+        $min-words = 8;
+        $typ = "draw";
+        %valid-types = %valid-draw-types;
+    }
 
     my $s0 = strip-comment $s;
     my @w = $s0.words;
@@ -81,7 +87,7 @@ sub split-powerball-line(
     if $nw == 0 {
         note qq:to/HERE/;
         DEBUG: EMPTY input line!
-               How did it get here in sub split-powerball-line?
+               How did it get here in sub split-powerball-line of type $typ?
         HERE
         return [];
     }
@@ -95,7 +101,7 @@ sub split-powerball-line(
     my @w3 = []; # eighth should be type
     my @w4 = []; # any extra type or jackpot info
 
-    my %types-used; # one to three: Nx pb dp
+#   my %types-used; 
     for @w.kv -> $i, $v is copy {
         $v .= trim;
         my $n = $i + 1;
@@ -128,7 +134,7 @@ sub split-powerball-line(
                 # must be the type if only 8 words
                 if $nw == 8 {
                     unless %valid-types{$v}:exists {
-                        my $msg = "Type '$v' is not recognized.";
+                        my $msg = "Type '$v' is not recognized for a $typ.";
                         throw-err $msg;
                     }
                     @w3.push: $v;
@@ -162,7 +168,7 @@ sub split-powerball-line(
     my $s3 = @w3.join(' ').lc;
     my $s4;
     if @w4.elems {
-        $s4 = .join(' ').lc;
+        $s4 = @w4.join(' ').lc;
     }
     else {
         $s4 = "";
@@ -193,11 +199,19 @@ sub create-numhash(
     :$debug,
     --> Hash
 ) is export {
-    my $min-words = $is-ticket ?? 7 !! 8;
- 
-    my ($s1, $s2, $s3, $s4) = split-powerball-line $s, :$debug;
+    my ($min-words, %valid-types, $typ);
+    if $is-ticket {
+        $typ = "ticket";
+        $min-words = 8;
+    }
+    else {
+        $min-words = 8;
+        $typ = "draw";
+    }
+
+    my ($s1, $s2, $s3, $s4) = split-powerball-line $s, :$is-ticket, :$debug;
     unless $s ~~ /\S/ {
-        my $msg = "Cannot create a numhash from an empty string.";
+        my $msg = "Cannot create a numhash from an empty string for a $typ type.";
         throw-err $msg;
     }
     
@@ -216,7 +230,7 @@ sub create-numhash(
     }
     my $nw = @nums.elems;
     unless $nw == 6 {
-        my $msg = "String '$s1' contains $nw parts, expected 6";
+        my $msg = "String '$s1' contains $nw parts for type $typ, expected 6";
         throw-err $msg;
     }
 
@@ -263,7 +277,6 @@ sub create-numhash(
     %h<TYPE> = $s3;
     if $s4 {
         # add extra pieces
-
        
         my @w = $s4.words;
         my $nw = @w.elems;
