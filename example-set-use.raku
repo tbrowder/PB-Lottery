@@ -13,6 +13,7 @@ my $e = set(1..6);
 is ($a (<) $c), True, "proper subset";
 is ($c (<) $c), False, "not proper subset";
 is ($c (<=) $c), True, "in set";
+is ($c !(<=) $c), False, "in set";
 
 # other set operations
 my $j = $a (&) $b; # intersection
