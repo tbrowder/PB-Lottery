@@ -17,8 +17,8 @@ my @t = [
 ];
 
 for @t -> $t {
-    my $to = PB-Ticket.new: :numbers-str($t);
-    isa-ok $to, PB-Ticket;
+    my $to = PB-Lottery::Classes::PB-Ticket.new: :numbers-str($t);
+    isa-ok $to, PB-Lottery::Classes::PB-Ticket;
 }
 
 done-testing;

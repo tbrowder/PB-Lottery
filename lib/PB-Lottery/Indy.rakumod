@@ -199,7 +199,7 @@ sub create-numhash(
     :$debug,
     --> Hash
 ) is export {
-    my ($min-words, %valid-types, $typ);
+    my ($min-words, $typ);
     if $is-ticket {
         $typ = "ticket";
         $min-words = 8;
@@ -209,11 +209,11 @@ sub create-numhash(
         $typ = "draw";
     }
 
-    my ($s1, $s2, $s3, $s4) = split-powerball-line $s, :$is-ticket, :$debug;
     unless $s ~~ /\S/ {
         my $msg = "Cannot create a numhash from an empty string for a $typ type.";
         throw-err $msg;
     }
+    my ($s1, $s2, $s3, $s4) = split-powerball-line $s, :$is-ticket, :$debug;
     
     # $s1 contains the first 6 numbers
     # $s2 contains the date string
@@ -221,7 +221,7 @@ sub create-numhash(
     # $s4 contains up to two other codes or the jackpot info
     #     or it may be blank
 
-    my @nums;
+    my @nums = [];
     for $s1.words -> $v is copy {
         $v.trim;
         $v = trim-leading-zeros $v;
@@ -236,7 +236,7 @@ sub create-numhash(
 
     my %h;
     my $PB = @nums.pop; # the tail is the power ball
-    @nums .= sort({ $^a cmp $^b });
+    @nums .= sort({ $^a <=> $^b });
 
     =begin comment
     # from the test file: t/data/good/draws.txt
@@ -244,24 +244,6 @@ sub create-numhash(
     09 12 22 41 61 25 2025-08-27 4x # <== power play multiplier
     09 12 22 41 61 25 2025-08-27 4x jackpot # <== jackpot string
     =end comment
-
-    if $debug {
-        say "DEBUG in file '$F'";
-        say "Checking proper numerical sort for the first five numbers...";
-        for @nums.kv -> $i, $v is copy {
-            $v .= Int;
-            with $i {
-                my $msg = "expected $v";
-                =begin comment
-                when * == 0 { die $msg unless $v == 9  }
-                when * == 1 { die $msg unless $v == 12 }
-                when * == 2 { die $msg unless $v == 22 }
-                when * == 3 { die $msg unless $v == 41 }
-                when * == 4 { die $msg unless $v == 61 }
-                =end comment
-            }
-        }
-    }
 
     # now rejoin them
     @nums.push: $PB;

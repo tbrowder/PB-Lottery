@@ -46,11 +46,11 @@ sub calc-part-winnings(
     # If part == 2, check the user's ticket against the the double play ticket
     if $part == 1 {
         # the power ball draw
-        @dnums = $dobj.nums.keys.sort;
+        @dnums = $dobj.numbers-hash.keys.sort;
     }
     else {
         # the double play draw
-        @dnums = $dobj.nums2.keys.sort;
+        @dnums = $dobj.numbers-hash2.keys.sort;
     }
     $cash;
 } # end sub calc-part-winnings
@@ -66,7 +66,7 @@ sub calc-winnings(
     # calculate any winnings (may be estimates).
 
     # ensure we start with cash = 0
-    my ($cash, $cash1, $cash2) = 0, 0, 0;;
+    my ($cash, $cash1, $cash2) = 0, 0, 0;
 
     $cash1 = calc-part-winnings :$tobj, :$dobj, :part(1);
     $cash2 = calc-part-winnings :$tobj, :$dobj, :part(2);
@@ -297,8 +297,14 @@ sub do-status(
             # then this should be line2 and the data
             # for the next draw object is complete
             $line2 = $line;
-            my $dobj = PB-Draw.new: :numbers-str($line1), :numbers-str2($line2);
-            unless $dobj ~~ PB-Draw {
+            unless ($line1 ~~ /\S/) and ($line2 ~~ /\S/) {
+                my $msg = "Unable to create a PB-Draw object with an empty line";
+                throw-err $msg;
+            }
+
+            my $dobj = PB-Lottery::Classes::PB-Draw.new: :numbers-str($line1), :numbers-str2($line2);
+
+            unless $dobj ~~ PB-Lottery::Classes::PB-Draw {
                 my $msg = "Unable to instantiate a PB::Draw object";
                 throw-err $msg;
             }
@@ -315,6 +321,9 @@ sub do-status(
         }
     }
 
+    # no longer need $line1, $line2
+    $line1 = $line2 = -1;
+
     # read all the valid tickets (picks)...
     my $tfil   = "$pdir/my-tickets.txt";
     unless $tfil.IO.r {
@@ -323,11 +332,11 @@ sub do-status(
     }
     my @tlines = $tfil.IO.slurp.lines;
 
-    $line1 = "";
     if 0 or $debug {
         say "ticket lines:";
         say "  $_" for @tlines;
     }
+
     my @tickets  = [];
     # 03 06 20 34 49 12 2025-09-13 dp pb qp
     for @tlines.kv -> $i, $line is copy {
@@ -344,7 +353,7 @@ sub do-status(
         }
 
         # data for next ticket object is complete
-        my $tobj = PB-Ticket.new: :numbers-str($line1);
+        my $tobj = PB-Lottery::Classes::PB-Ticket.new: :numbers-str($line);
         unless $tobj ~~ /PB\-Ticket/ {
             my $msg = "The intended draw object failed to instantiate.";
             throw-err $msg;

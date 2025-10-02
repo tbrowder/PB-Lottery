@@ -68,8 +68,11 @@ my $F = $?FILE.IO.basename;
 #========================================================
 #========================================================
 
+class PB-nums   {...}
+class PB-Draw   {...}
+class PB-Ticket {...}
 
-class PBnums is export { 
+class PB-nums { 
     has Str  $.num-str is required;  # "00 00 00 00 00 00"; 
     has      %.num-hash of UInt;     # keys: 'a..f
 
@@ -105,7 +108,7 @@ class PBnums is export {
     }
 }
 
-class PB-Draw is export {
+class PB-Draw {
     has Str $.numbers-str  is required;
     has Str $.numbers-str2 is required;
 
@@ -127,7 +130,7 @@ class PB-Draw is export {
     }
 } # end of class PB-Draw
 
-class PB-Ticket is export {
+class PB-Ticket {
     has Str  $.numbers-str is required;
 
     has      %.numbers-hash;
@@ -137,6 +140,10 @@ class PB-Ticket is export {
     has Bool $.is-qp;
 
     submethod TWEAK {
+        unless $!numbers-str ~~ /\S/ {
+            my $msg = "Cannot create a PB-Ticket object with an empty input string";
+            throw-err $msg;
+        }
         %!numbers-hash = create-numhash $!numbers-str, :is-ticket(True);
         $!date = Date.new: %!numbers-hash<DATE>;
         $!type = %!numbers-hash<TYPE>;
