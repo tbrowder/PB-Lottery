@@ -1,10 +1,15 @@
 use Test;
 
-use PB-Lottery;
+my @modules = <
+    PB-Lottery
+    PB-Lottery::Subs
+    PB-Lottery::Draw
+    PB-Lottery::Nums
+    PB-Lottery::Ticket
+>;
 
-isa-ok PB-Lottery, PB-Lottery;
-isa-ok PB-Lottery::Classes, PB-Lottery::Classes;
-isa-ok PB-Lottery::Subs, PB-Lottery::Subs;
-isa-ok PB-Lottery::Indy, PB-Lottery::Indy;
+plan @modules.elems;
 
-done-testing;
+for @modules {
+    use-ok "$_", "Module '$_' can be used okay";
+}
