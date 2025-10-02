@@ -3,8 +3,10 @@ use Test;
 use Text::Utils;
 
 use PB-Lottery;
-use PB-Lottery::Classes;
-use PB-Lottery::Indy;
+use PB-Lottery::Draw;
+use PB-Lottery::Ticket;
+use PB-Lottery::Nums;
+use PB-Lottery::Subs;
 
 # valid ticket strings
 my @t = [
@@ -17,8 +19,8 @@ my @t = [
 ];
 
 for @t -> $t {
-    my $to = PB-Lottery::Classes::PB-Ticket.new: :numbers-str($t);
-    isa-ok $to, PB-Lottery::Classes::PB-Ticket;
+    my $to = PB-Lottery::Ticket.new: :numbers-str($t);
+    isa-ok $to, PB-Lottery::Ticket;
 }
 
 done-testing;

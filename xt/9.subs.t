@@ -3,8 +3,9 @@ use Test;
 use Text::Utils :strip-comment;
 
 use PB-Lottery;
-use PB-Lottery::Classes;
-use PB-Lottery::Indy;
+use PB-Lottery::Ticket;
+use PB-Lottery::Draw;
+use PB-Lottery::Nums;
 use PB-Lottery::Subs;
 
 is 1, 1, "sanity check";
@@ -16,8 +17,9 @@ my %h1 = create-numhash $s1;
 isa-ok %h1, Hash, "good hash type";
 my %h2 = create-numhash $s2;
 isa-ok %h2, Hash, "good hash type";
-my $od = PB-Lottery::Classes::PB-Draw.new: :numbers-str($s1), :numbers-str2($s2);
-isa-ok $od, PB-Lottery::Classes::PB-Draw, "valid Draw object";
+
+my $od = PB-Lottery::Draw.new: :numbers-str($s1), :numbers-str2($s2);
+isa-ok $od, PB-Lottery::Draw, "valid Draw object";
 
 # the ticket object
 my $s3 = "21 06 24 32 17     02 2025-09-22 dp";
@@ -30,7 +32,7 @@ is %h3<e>, 32, "value is 32";
 is %h3<f>, 2, "value is 2";
 
 isa-ok %h3, Hash, "good hash type";
-my $ot = PB-Lottery::Classes::PB-Ticket.new: :numbers-str($s3);
-isa-ok $ot, PB-Lottery::Classes::PB-Ticket, "valid Ticket object";
+my $ot = PB-Lottery::Ticket.new: :numbers-str($s3);
+isa-ok $ot, PB-Lottery::Ticket, "valid Ticket object";
 
 done-testing;

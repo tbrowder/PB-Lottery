@@ -1,13 +1,14 @@
 unit module PB-Lottery;
 
+my $F = $?FILE.IO.basename;
+
 use Text::Utils :strip-comment;
 use Test;
 
-use PB-Lottery::Classes;
 use PB-Lottery::Subs;
-use PB-Lottery::Indy;
-
-my $F = $?FILE.IO.basename;
+use PB-Lottery::Draw;
+use PB-Lottery::Ticket;
+use PB-Lottery::Nums;
 
 =begin comment
 # use a class generator
@@ -34,8 +35,8 @@ sub Factory(
 =end comment
 
 sub calc-part-winnings(
-    :$tobj!, #= the ticket object
-    :$dobj!, #= the draw object
+PB-Lottery::Ticket    :$tobj!, #= the ticket object
+PB-Lottery::Draw    :$dobj!, #= the draw object
     :$part! where * ~~ /1|2/,
     :$debug,
     --> Numeric #= return part winnings for this ticket/draw combo
@@ -56,8 +57,8 @@ sub calc-part-winnings(
 } # end sub calc-part-winnings
 
 sub calc-winnings(
-    :$tobj!, #= the ticket object
-    :$dobj!, #= the draw object
+PB-Lottery::Ticket    :$tobj!, #= the ticket object
+PB-Lottery::Draw    :$dobj!, #= the draw object
     :$debug,
     --> Numeric #= return winnings for this ticket/draw combo
 ) is export {
@@ -288,7 +289,7 @@ sub do-status(
 
         if 0 or $debug {
             print qq:to/HERE/;
-            DEBUG in file '$F'           
+            DEBUG in file '$F'
                 a draw line: |$line|
             HERE
         }
@@ -302,10 +303,10 @@ sub do-status(
                 throw-err $msg;
             }
 
-            my $dobj = PB-Lottery::Classes::PB-Draw.new: :numbers-str($line1), :numbers-str2($line2);
+            my $dobj = PB-Lottery::Draw.new: :numbers-str($line1), :numbers-str2($line2);
 
-            unless $dobj ~~ PB-Lottery::Classes::PB-Draw {
-                my $msg = "Unable to instantiate a PB::Draw object";
+            unless $dobj ~~ PB-Lottery::Draw {
+                my $msg = "Unable to instantiate a Draw object";
                 throw-err $msg;
             }
             @draws.push: $dobj;
@@ -353,8 +354,8 @@ sub do-status(
         }
 
         # data for next ticket object is complete
-        my $tobj = PB-Lottery::Classes::PB-Ticket.new: :numbers-str($line);
-        unless $tobj ~~ /PB\-Ticket/ {
+        my $tobj = PB-Lottery::Ticket.new: :numbers-str($line);
+        unless $tobj ~~ PB-Lottery::Ticket {
             my $msg = "The intended draw object failed to instantiate.";
             throw-err $msg;
         }

@@ -30,7 +30,7 @@ my $F = $?FILE.IO.basename;
 # where:
 #   pp = power play
 #   dp = double play
-#   pb = power ball 
+#   pb = power ball
 #   qp = quick pick (if the numbers were so produced)
 #
 #       if $!entry ~~ /^
@@ -68,12 +68,14 @@ my $F = $?FILE.IO.basename;
 #========================================================
 #========================================================
 
+=finish
+
 class PB-nums   {...}
 class PB-Draw   {...}
 class PB-Ticket {...}
 
-class PB-nums { 
-    has Str  $.num-str is required;  # "00 00 00 00 00 00"; 
+class PB-nums {
+    has Str  $.num-str is required;  # "00 00 00 00 00 00";
     has      %.num-hash of UInt;     # keys: 'a..f
 
     submethod TWEAK {
@@ -91,7 +93,7 @@ class PB-nums {
             }
 
             # other requirements
-            my $res = %!num-hash{$k};           
+            my $res = %!num-hash{$k};
             if $i < 5 {
                 # range is 1..69
                 die "FATAL: int $res is out of range 1..69" unless {0 < $res < 70}
@@ -104,7 +106,7 @@ class PB-nums {
         # the first 5 numbers must be unique
   #     die "FATAL: The first 5 numbers must be unique" unless {
 	my @arr = [%!num-hash.keys<a>..%!num-hash<e>];
-            
+
     }
 }
 

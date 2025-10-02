@@ -3,7 +3,7 @@ use Test;
 use Text::Utils :strip-comment;
 
 use PB-Lottery;
-use PB-Lottery::Indy;
+use PB-Lottery::Subs;
 
 my ($env-var, $pdir);
 

@@ -1,7 +1,7 @@
 use Test;
 
 use PB-Lottery;
-use PB-Lottery::Indy;
+use PB-Lottery::Subs;
 
 my ($env-var, $pdir);
 

@@ -1,5 +1,7 @@
 unit module PB-Lottery::Indy;
 
+=finish
+
 use Text::Utils :strip-comment;
 
 my $F = $?FILE.IO.basename;
@@ -46,7 +48,7 @@ sub trim-leading-zeros(
         # a '09' is sneaking through
         if $s.comb.head == 0 {
             die "FATAL: First char is a zero";
-        }   
+        }
     }
     =end comment
 
@@ -101,13 +103,13 @@ sub split-powerball-line(
     my @w3 = []; # eighth should be type
     my @w4 = []; # any extra type or jackpot info
 
-#   my %types-used; 
+#   my %types-used;
     for @w.kv -> $i, $v is copy {
         $v .= trim;
         my $n = $i + 1;
         my $msg = "n=$n";
         with $n {
-      
+
             when * < 6 {
                 # a number from 1..69
                 $v = trim-leading-zeros $v;
@@ -214,7 +216,7 @@ sub create-numhash(
         throw-err $msg;
     }
     my ($s1, $s2, $s3, $s4) = split-powerball-line $s, :$is-ticket, :$debug;
-    
+
     # $s1 contains the first 6 numbers
     # $s2 contains the date string
     # $s3 contains the Lottery type code
@@ -259,7 +261,7 @@ sub create-numhash(
     %h<TYPE> = $s3;
     if $s4 {
         # add extra pieces
-       
+
         my @w = $s4.words;
         my $nw = @w.elems;
         unless (1 <= $nw <= 3) {
@@ -268,7 +270,7 @@ sub create-numhash(
         }
 
         # if the type is Nx, then any extra piece is expected
-        #   to be a jackpot 
+        #   to be a jackpot
         if %h<TYPE> ~~ /:i x/ {
             my $s = @w.head;
             %h<JACKPOT> = get-dollars $s;
@@ -325,15 +327,15 @@ sub get-dollars(
 
     # consider any suffixes
     with $m.comb.tail.lc {
-        when * eq 'b' { 
+        when * eq 'b' {
             $mult = 1_000_000_000;
             $m ~~ s/:i b $//;
         }
-        when * eq 'm' { 
+        when * eq 'm' {
             $mult = 1_000_000;
             $m ~~ s/:i m $//;
         }
-        when * eq 't' { 
+        when * eq 't' {
             $mult = 1_000;
             $m ~~ s/:i t $//;
         }

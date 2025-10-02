@@ -2,7 +2,9 @@ use Test;
 
 use PB-Lottery;
 use PB-Lottery::Subs;
-use PB-Lottery::Classes;
+use PB-Lottery::Draw;
+use PB-Lottery::Ticket;
+use PB-Lottery::Nums;
 
 isa-ok PB-Lottery, PB-Lottery;
 

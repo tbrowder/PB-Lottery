@@ -1,6 +1,6 @@
 use Test;
 
-use PB-Lottery::Indy;
+use PB-Lottery::Subs;
 
 my $set5s = set(1..69);
 my $setpb = set(1..26);
