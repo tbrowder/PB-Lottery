@@ -18,16 +18,10 @@ $pdir    = %*ENV{$env-var}; # hack
 my $all   = 0;
 my $debug = 0;
 
-# read the status of the "good" draws and tickets
-lives-ok {
-    do-status $pdir;
-}, "good read of existing data";
-
 my @dlines = "$pdir/draws.txt".IO.lines;
 for @dlines -> $line is copy {
     $line = strip-comment $line;
     next unless $line ~~ /\S/;
-    $line = $line.words[0..^6].join;
     my $o = PB-Lottery::Numbers.new: :numbers-str($line);
     isa-ok $o, PB-Lottery::Numbers;
 }
@@ -36,10 +30,8 @@ my @tlines = "$pdir/my-tickets.txt".IO.lines;
 for @tlines -> $line is copy {
     $line = strip-comment $line;
     next unless $line ~~ /\S/;
-    $line = $line.words[0..^6].join;
     my $o = PB-Lottery::Numbers.new: :numbers-str($line);
     isa-ok $o, PB-Lottery::Numbers;
 }
 
 done-testing;
-
