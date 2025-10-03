@@ -64,7 +64,7 @@ sub throw-err(
 
 sub split-powerball-line(
     # caller is sub create-numhash
-    Str $s, #= the raw line with 8..11 tokens
+    Str $s, #= the raw line with 8..12 tokens
     :$is-ticket = False,
     :$debug,
     --> List # returns four strings (
@@ -217,7 +217,7 @@ sub create-numhash(
     # $s1 contains the first 6 numbers
     # $s2 contains the date string
     # $s3 contains the Lottery type code
-    # $s4 contains up to two other codes or the jackpot info
+    # $s4 contains up to two other codes or the jackpot info or the paid info
     #     or it may be blank
 
     my @nums = [];
@@ -240,8 +240,9 @@ sub create-numhash(
     =begin comment
     # from the test file: t/data/good/draws.txt
     # good draw formats:
+    1  2  3  4  5  6  7          8  9
     09 12 22 41 61 25 2025-08-27 4x # <== power play multiplier
-    09 12 22 41 61 25 2025-08-27 4x jackpot # <== jackpot string
+    09 12 22 41 61 25 2025-08-27 4x $jackpot # <== optional jackpot string
     =end comment
 
     # now rejoin them

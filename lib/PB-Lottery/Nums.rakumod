@@ -6,10 +6,19 @@ use Text::Utils :strip-comment;
 
 use PB-Lottery::Subs;
 
-has Str  $.num-str is required;  # "00 00 00 00 00 00";
-has      %.num-hash of UInt;     # keys: 'a..f
+has Str $.num-str is required;  # "00 00 00 00 00 00";
+
+#has     %.num-hash of UInt;     # keys: 'a..f
+
+has Set $.nums5; # the five lottery numbers
+has Set $.pb;    # the powerball
 
 submethod TWEAK {
+    my @w   = str2intlist $!num-str;
+    $!pb    = @w.pop.Set;
+    $!nums5 = @w.Set;
+
+    =begin comment
     my @w = $!num-str.words;
     my @a = 'a'..'f';
     for @w.kv -> $i, $v is copy {
@@ -36,4 +45,5 @@ submethod TWEAK {
     }
     # the first 5 numbers must be unique
     my @arr = [%!num-hash.keys<a>..%!num-hash<e>];
+    =end comment
 }

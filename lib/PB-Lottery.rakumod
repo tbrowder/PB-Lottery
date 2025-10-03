@@ -35,8 +35,8 @@ sub Factory(
 =end comment
 
 sub calc-part-winnings(
-PB-Lottery::Ticket    :$tobj!, #= the ticket object
-PB-Lottery::Draw    :$dobj!, #= the draw object
+    PB-Lottery::Ticket :$tobj!, #= the ticket object
+    PB-Lottery::Draw   :$dobj!, #= the draw object
     :$part! where * ~~ /1|2/,
     :$debug,
     --> Numeric #= return part winnings for this ticket/draw combo
@@ -45,6 +45,10 @@ PB-Lottery::Draw    :$dobj!, #= the draw object
     my @dnums;
     # If part == 1, check the user's ticket against the power ball ticket
     # If part == 2, check the user's ticket against the the double play ticket
+
+    # TODO this should be a simple matter of comparing two sets
+    #      modify the two classes to already have the sets
+
     if $part == 1 {
         # the power ball draw
         @dnums = $dobj.numbers-hash.keys.sort;
@@ -57,8 +61,8 @@ PB-Lottery::Draw    :$dobj!, #= the draw object
 } # end sub calc-part-winnings
 
 sub calc-winnings(
-PB-Lottery::Ticket    :$tobj!, #= the ticket object
-PB-Lottery::Draw    :$dobj!, #= the draw object
+    PB-Lottery::Ticket :$tobj!, #= the ticket object
+    PB-Lottery::Draw   :$dobj!, #= the draw object
     :$debug,
     --> Numeric #= return winnings for this ticket/draw combo
 ) is export {
@@ -258,7 +262,7 @@ sub do-status(
 ) is export {
     say "Entering sub do-status";
     # read all the draws...
-    say "  Reading latest draw and associated valid tickets...";
+    say "Reading latest draw and associated valid tickets...";
 
     my $dfil   = "$pdir/draws.txt";
     my @dlines = $dfil.IO.slurp.lines;
@@ -328,7 +332,7 @@ sub do-status(
     $line1 = $line2 = -1;
 
     # read all the valid tickets (picks)...
-    my $tfil   = "$pdir/my-tickets.txt";
+    my $tfil = "$pdir/my-tickets.txt";
     unless $tfil.IO.r {
         my $msg = "Ticket file '$tfil' not found.";
         throw-err $msg;
@@ -382,10 +386,10 @@ sub do-status(
             # See lib/*/Subs for the actual calculations
             my $money = calc-winnings :$tobj, :$dobj, :$debug;
             if $money {
-                say "   Wow, ticket X won $money on draw on {$dobj.date}";
+                say "    Wow, ticket X won $money on draw on {$dobj.date}";
             }
             else {
-                say "   Aw, ticket X won nothing on draw on {$dobj.date}";
+                say "    Aw, ticket X won nothing on draw on {$dobj.date}";
             }
 
             $cash += $money;
