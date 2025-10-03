@@ -8,11 +8,13 @@ use PB-Lottery::Subs;
 
 has Str $.numbers-str is required;  # "00 00 00 00 00 00";
 
-has Set $.numbers5; # the five lottery numbers
-has Set $.pb;       # the powerball
+has     $.numbers5 is built; # the five lottery numbers
+has     $.pb       is built;       # the powerball
 
 submethod TWEAK {
-    my @w      = str2intlist $!numbers-str;
+    my $s = $!numbers-str;
+    $s = $s.words[0..^6].join(' ');
+    my @w      = str2intlist $s;
     $!pb       = @w.pop.Set;
     $!numbers5 = @w.Set;
 

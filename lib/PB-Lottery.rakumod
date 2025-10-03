@@ -10,30 +10,6 @@ use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 
-=begin comment
-# use a class generator
-sub Factory(
-    Str  $nums,
-    Str  $nums2?, # if defined, this is the double play and this is a PB draw
-    Date :$date,
-) is export {
-    # Each call returns a single class object. The general process
-    # should be:
-    #   read all the valid owner tickets, getting a list of ticket
-    #     objects
-    #   read the draw numbers, geting a list of draw object
-    #   check results of each ticket against each draw
-    my $o;
-    if $nums2.defined {
-        $o = PB-Draw.new: :$nums, :$nums2, :$date;
-    }
-    else {
-        $o = PB-Ticket.new: :$nums, :$date;
-    }
-    $o;
-}
-=end comment
-
 sub calc-part-winnings(
     PB-Lottery::Ticket :$tobj!, #= the ticket object
     PB-Lottery::Draw   :$dobj!, #= the draw object
@@ -49,12 +25,22 @@ sub calc-part-winnings(
     # TODO this should be a simple matter of comparing two sets
     #      modify the two classes to already have the sets
 
+    my $Nset = set(1..69);
+    my $Pset = set(1..26);
+
+    # the PB-Lottery::Numbers objects
+    my $TN = $tobj.N;
+
+    my ($DN, $DN2);
+
     if $part == 1 {
         # the power ball draw
+        $DN = $dobj.N;
         @dnums = $dobj.numbers-hash.keys.sort;
     }
     else {
         # the double play draw
+        $DN = $dobj.N2;
         @dnums = $dobj.numbers-hash2.keys.sort;
     }
     $cash;
@@ -136,7 +122,7 @@ sub calc-winnings(
             else {
                 next;
                 # no matches, so go to next user number
-                # for this tickes
+                # for this ticket
                 die "FATAL: no pb match so what action to take?";
             }
         } # end of this ticket
@@ -199,6 +185,7 @@ sub calc-winnings(
         HERE
     }
 =end comment
+
 } # end sub calc-winnings
 
 sub do-pick(
@@ -308,7 +295,7 @@ sub do-status(
                 throw-err $msg;
             }
 
-            my $dobj = PB-Lottery::Draw.new: :numbers-str($line1), 
+            my $dobj = PB-Lottery::Draw.new: :numbers-str($line1),
                                              :numbers-str2($line2);
 
             unless $dobj ~~ PB-Lottery::Draw {
@@ -326,6 +313,11 @@ sub do-status(
             # next draw object
             $line1 = $line;
         }
+    } # end of creating a list of Draw objects
+
+    unless @draws.elems {
+        my $msg = "Draw file '$dfil' is empty.";
+        throw-err $msg;
     }
 
     # no longer need $line1, $line2
@@ -355,23 +347,20 @@ sub do-status(
         my @words = $line.words;
         my $nw = @words.elems;
         unless $nw >= 8 {
-            my $msg = "Invalid draw line '$line'.\n";
+            my $msg = "Invalid ticket line '$line'.\n";
             $msg ~= " It has $nw words but should have eight (8) or more";
             throw-err $msg;
         }
 
-        # data for next ticket object is complete
+        # data for next Ticket object is complete
         my $tobj = PB-Lottery::Ticket.new: :numbers-str($line);
         unless $tobj ~~ PB-Lottery::Ticket {
-            my $msg = "The intended draw object failed to instantiate.";
+            my $msg = "The intended ticket object failed to instantiate.";
             throw-err $msg;
         }
 
         @tickets.push: $tobj;
-
-        # reset $line1
-        $line1 = "";
-    }
+    } # end of the loop creating the valid Ticket objects
 
     unless @tickets.elems {
         my $msg = "Ticket file '$tfil' is empty.";
@@ -383,8 +372,9 @@ sub do-status(
     my $cash = 0;
     for @tickets -> $tobj {
         for @draws -> $dobj {
-            # See lib/*/Subs for the actual calculations
+            # The calc subs are in this module...
             my $money = calc-winnings :$tobj, :$dobj, :$debug;
+
             if $money {
                 say "    Wow, ticket X won $money on draw on {$dobj.date}";
             }
@@ -395,7 +385,7 @@ sub do-status(
             $cash += $money;
         }
     }
-    say "  Total winnings of \$$cash for the given list."
+    say "  Total winnings of \$$cash for the given lists."
 
 } # end sub do-status
 
