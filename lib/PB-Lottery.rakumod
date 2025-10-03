@@ -273,6 +273,7 @@ sub do-status(
 
     $line1 = "";
     $line2 = "";
+    # 1  2  3  4  5  6  7          8  9
     # 28 37 42 50 53 19 2025-09-13 ?x ?jackpot
     # 03 06 20 34 49 12 2025-09-13 dp
     for @dlines.kv -> $i, $line is copy {
@@ -303,7 +304,8 @@ sub do-status(
                 throw-err $msg;
             }
 
-            my $dobj = PB-Lottery::Draw.new: :numbers-str($line1), :numbers-str2($line2);
+            my $dobj = PB-Lottery::Draw.new: :numbers-str($line1), 
+                                             :numbers-str2($line2);
 
             unless $dobj ~~ PB-Lottery::Draw {
                 my $msg = "Unable to instantiate a Draw object";
@@ -338,8 +340,9 @@ sub do-status(
         say "  $_" for @tlines;
     }
 
-    my @tickets  = [];
-    # 03 06 20 34 49 12 2025-09-13 dp pb qp
+    my @tickets = [];
+    # 1  2  3  4  5  6  7          8  9  10 11   12
+    # 03 06 20 34 49 12 2025-09-13 dp pb qp paid $dollars
     for @tlines.kv -> $i, $line is copy {
         $line = strip-comment $line;
         next unless $line ~~ /\S/;
@@ -365,6 +368,7 @@ sub do-status(
         # reset $line1
         $line1 = "";
     }
+
     unless @tickets.elems {
         my $msg = "Ticket file '$tfil' is empty.";
         throw-err $msg;
@@ -375,17 +379,19 @@ sub do-status(
     my $cash = 0;
     for @tickets -> $tobj {
         for @draws -> $dobj {
+            # See lib/*/Subs for the actual calculations
             my $money = calc-winnings :$tobj, :$dobj, :$debug;
             if $money {
-                say "Wow, ticket X won $money on draw on {$dobj.date}";
+                say "   Wow, ticket X won $money on draw on {$dobj.date}";
             }
             else {
-                say "Aw, ticket X won nothing on draw on {$dobj.date}";
+                say "   Aw, ticket X won nothing on draw on {$dobj.date}";
             }
 
             $cash += $money;
         }
     }
+    say "  A total of \$$cash for the given list."
 
 } # end sub do-status
 
