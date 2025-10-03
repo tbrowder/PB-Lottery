@@ -4,7 +4,7 @@ my @modules = <
     PB-Lottery
     PB-Lottery::Subs
     PB-Lottery::Draw
-    PB-Lottery::Nums
+    PB-Lottery::Numbers
     PB-Lottery::Ticket
 >;
 

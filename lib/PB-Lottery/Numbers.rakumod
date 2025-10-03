@@ -1,4 +1,4 @@
-unit class PB-Lottery::Nums;
+unit class PB-Lottery::Numbers;
 
 my $F = $?FILE.IO.basename;
 
@@ -6,17 +6,15 @@ use Text::Utils :strip-comment;
 
 use PB-Lottery::Subs;
 
-has Str $.num-str is required;  # "00 00 00 00 00 00";
+has Str $.numbers-str is required;  # "00 00 00 00 00 00";
 
-#has     %.num-hash of UInt;     # keys: 'a..f
-
-has Set $.nums5; # the five lottery numbers
-has Set $.pb;    # the powerball
+has Set $.numbers5; # the five lottery numbers
+has Set $.pb;       # the powerball
 
 submethod TWEAK {
-    my @w   = str2intlist $!num-str;
-    $!pb    = @w.pop.Set;
-    $!nums5 = @w.Set;
+    my @w      = str2intlist $!numbers-str;
+    $!pb       = @w.pop.Set;
+    $!numbers5 = @w.Set;
 
     =begin comment
     my @w = $!num-str.words;

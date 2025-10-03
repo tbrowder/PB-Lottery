@@ -5,7 +5,7 @@ use Text::Utils;
 use PB-Lottery;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
-use PB-Lottery::Nums;
+use PB-Lottery::Numbers;
 use PB-Lottery::Subs;
 
 # valid ticket strings

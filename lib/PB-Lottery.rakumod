@@ -8,7 +8,7 @@ use Test;
 use PB-Lottery::Subs;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
-use PB-Lottery::Nums;
+use PB-Lottery::Numbers;
 
 =begin comment
 # use a class generator

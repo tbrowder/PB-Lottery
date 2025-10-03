@@ -5,7 +5,7 @@ use Text::Utils :strip-comment;
 use PB-Lottery;
 use PB-Lottery::Ticket;
 use PB-Lottery::Draw;
-use PB-Lottery::Nums;
+use PB-Lottery::Numbers;
 use PB-Lottery::Subs;
 
 is 1, 1, "sanity check";
