@@ -395,7 +395,7 @@ sub do-status(
             $cash += $money;
         }
     }
-    say "  A total of \$$cash for the given list."
+    say "  Total winnings of \$$cash for the given list."
 
 } # end sub do-status
 

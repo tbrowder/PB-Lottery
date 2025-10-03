@@ -4,7 +4,7 @@ use PB-Lottery;
 use PB-Lottery::Subs;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
-use PB-Lottery::Nums;
+use PB-Lottery::Numbers;
 
 # check for required env var
 my $env-var = "PB_LOTTERY_PRIVATE_DIR";

@@ -1,11 +1,3 @@
-Hash is not sorting numbers correctly
+Remove redundant tests
 
-Tighten rules for determining winnings
-
-Add tests for the draw and ticket classes
-
-Use method "matches" as a template
-for a sub to check for any 
-winnings.
-
-
+Ensure docs match current uses
