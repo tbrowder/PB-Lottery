@@ -101,7 +101,6 @@ sub split-powerball-line(
     my @w3 = []; # eighth should be type
     my @w4 = []; # any extra type or jackpot info
 
-#   my %types-used;
     for @w.kv -> $i, $v is copy {
         $v .= trim;
         my $n = $i + 1;

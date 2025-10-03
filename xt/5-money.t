@@ -9,9 +9,6 @@ my $m1 = <$1.4b>;
 my $n1 = get-dollars $m1;
 is $n1, $res;
 
-done-testing;
-=finish
-
 # 1,400m
 my $m2 = "1,400m";
 $m2 = get-dollars $m2;
@@ -28,4 +25,3 @@ $m4 = get-dollars $m4;
 is $m4, $res;
 
 done-testing;
-
