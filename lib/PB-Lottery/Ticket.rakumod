@@ -9,23 +9,21 @@ use PB-Lottery::Numbers;
 
 has Str  $.numbers-str is required;
 has Date $.date;
-
-has PB-Lottery::Numbers $.N; # fill in TWEAK
-
-has      %.numbers-hash;
 has Str  $.type;
 has Bool $.is-qp;
 
+has PB-Lottery::Numbers $.N; # fill in TWEAK
+
 submethod TWEAK {
-    my $s  = $!numbers-str;
-    unless $s ~~ /\S/ {
-        my $msg = "Cannot create a PB-Draw object with an empty input string";
+    unless $!numbers-str ~~ /\S/ {
+        my $msg = "Cannot create a PB-Lottery::Ticket object with an empty input string";
         throw-err $msg;
     }
-    %!numbers-hash = create-numhash $s, :is-ticket(True);
-    $!date = Date.new: %!numbers-hash<DATE>;
-    $!type = %!numbers-hash<TYPE>;
 
-    $s = $s.words[0..^6].join(' '); # only want first six numbers
+    my @w = $!numbers-str.words;
+    $!date = Date.new: @w[6];
+    $!type = @w[7];
+  
+    my $s = @w[0..^6].join(' '); # only want first six numbers
     $!N  = PB-Lottery::Numbers.new: :numbers-str($s);
 }
