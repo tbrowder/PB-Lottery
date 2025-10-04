@@ -9,7 +9,7 @@ use PB-Lottery::Subs;
 has Str $.numbers-str is required;  # "00 00 00 00 00 00";
 
 has Set $.numbers5 is built; # the five lottery numbers
-has Set $.pb       is built;   # the powerball
+has Set $.pb       is built; # the powerball
 
 submethod TWEAK {
     my $s = $!numbers-str;

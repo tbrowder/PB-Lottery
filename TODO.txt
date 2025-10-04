@@ -1,6 +1,5 @@
-Make a function to create a pair of lines to
-use to create a Draw object
-
+Add new classes in order to eliminate the hash
+ + see the Draw and Ticket classes for inspiration
 
 Remove redundant tests
 
