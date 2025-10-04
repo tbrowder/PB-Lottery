@@ -29,18 +29,33 @@ sub calc-part-winnings(
     my $Pset = set(1..26);
 
     # the PB-Lottery::Numbers objects
-    my $TN = $tobj.N;
+    my $tn5set = $tobj.N.numbers5;
+    my $tpbset = $tobj.N.pb;
 
-    my ($DN, $DN2);
-
+    my ($dn5set, $dpbset);
+    my ($n5set, $pbset);
     if $part == 1 {
         # the power ball draw
-        $DN = $dobj.N;
+        say "    Evaluating the power ball draw..." if 1 or $debug;
+        $dn5set = $dobj.N.numbers5;
+        $dpbset = $dobj.N.pb;
+
+        # get the union of the draw and ticket sets
+        $n5set = $tn5set (^) $dn5set;
+        $pbset = $tpbset (^) $dpbset;
+
         @dnums = $dobj.numbers-hash.keys.sort;
     }
     else {
         # the double play draw
-        $DN = $dobj.N2;
+        say "    Evaluating the double play draw..." if 1 or $debug;
+        $dn5set = $dobj.N2.numbers5;
+        $dpbset = $dobj.N2.pb;
+
+        # get the union of the draw and ticket sets
+        $n5set = $tn5set (^) $dn5set;
+        $pbset = $tpbset (^) $dpbset;
+
         @dnums = $dobj.numbers-hash2.keys.sort;
     }
     $cash;
