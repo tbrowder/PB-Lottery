@@ -34,6 +34,8 @@ sub calc-part-winnings(
 
     my ($dn5set, $dpbset);
     my ($n5set, $pbset);
+    my ($nn, $np);
+
     if $part == 1 {
         # the power ball draw
         say "    Evaluating the power ball draw..." if 1 or $debug;
@@ -43,6 +45,16 @@ sub calc-part-winnings(
         # get the union of the draw and ticket sets
         $n5set = $tn5set (^) $dn5set;
         $pbset = $tpbset (^) $dpbset;
+
+        $nn = $n5set.elems;
+        $np = $pbset.elems;
+
+        if $nn or $np {
+            print qq:to/HERE/;
+                $nn number matches of the Power Ball draw
+                    $np match of its power ball
+            HERE
+        }
 
         @dnums = $dobj.numbers-hash.keys.sort;
     }
@@ -55,6 +67,16 @@ sub calc-part-winnings(
         # get the union of the draw and ticket sets
         $n5set = $tn5set (^) $dn5set;
         $pbset = $tpbset (^) $dpbset;
+
+        $nn = $n5set.elems;
+        $np = $pbset.elems;
+
+        if $nn or $np {
+            print qq:to/HERE/;
+                $nn number matches of the Double Play draw
+                    $np match of its power ball
+            HERE
+        }
 
         @dnums = $dobj.numbers-hash2.keys.sort;
     }
