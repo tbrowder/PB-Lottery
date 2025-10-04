@@ -291,126 +291,10 @@ sub do-status(
     my $dfil = "$pdir/draws.txt";
     my $tfil = "$pdir/my-tickets.txt";
 
-# create a sub to produce each of the list of Draw
-# and Ticket objects
+    # create a sub to produce each of the list of Draw
+    # and Ticket objects
     my @tickets = get-ticket-objects $tfil;
     my @draws   = get-draw-objects $dfil;
-
-=begin comment
-    my @dlines = $dfil.IO.slurp.lines;
-    if 0 or $debug {
-        say "draw lines:";
-        say "  $_" for @dlines;
-    }
-
-    my @draws  = [];
-    # two data lines per draw ticket
-    my ($line1, $line2);
-
-    $line1 = "";
-    $line2 = "";
-    # 1  2  3  4  5  6  7          8  9
-    # 28 37 42 50 53 19 2025-09-13 ?x ?jackpot
-    # 03 06 20 34 49 12 2025-09-13 dp
-    for @dlines.kv -> $i, $line is copy {
-        $line = strip-comment $line;
-        next unless $line ~~ /\S/;
-
-        my @words = $line.words;
-        my $nw = @words.elems;
-        unless (7 < $nw < 10)  {
-            my $msg = "Invalid draw line '$line'.\n";
-            $msg ~= " It has $nw words but should have 8 or 9";
-            throw-err $msg;
-        }
-
-        if 0 or $debug {
-            print qq:to/HERE/;
-            DEBUG in file '$F'
-                a draw line: |$line|
-            HERE
-        }
-
-        if $line1 {
-            # then this should be line2 and the data
-            # for the next draw object is complete
-            $line2 = $line;
-            unless ($line1 ~~ /\S/) and ($line2 ~~ /\S/) {
-                my $msg = "Unable to create a PB-Draw object with an empty line";
-                throw-err $msg;
-            }
-
-            my $dobj = PB-Lottery::Draw.new: :numbers-str($line1),
-                                             :numbers-str2($line2);
-
-            unless $dobj ~~ PB-Lottery::Draw {
-                my $msg = "Unable to instantiate a Draw object";
-                throw-err $msg;
-            }
-            @draws.push: $dobj;
-
-            # finally, zero the two lines ready for the next draw
-            $line1 = "";
-            $line2 = "";
-        }
-        else {
-            # this should be the first data line for
-            # next draw object
-            $line1 = $line;
-        }
-    } # end of creating a list of Draw objects
-
-    unless @draws.elems {
-        my $msg = "Draw file '$dfil' is empty.";
-        throw-err $msg;
-    }
-
-    # no longer need $line1, $line2
-    $line1 = $line2 = -1;
-
-    # read all the valid tickets (picks)...
-    unless $tfil.IO.r {
-        my $msg = "Ticket file '$tfil' not found.";
-        throw-err $msg;
-    }
-    my @tlines = $tfil.IO.slurp.lines;
-
-    if 0 or $debug {
-        say "ticket lines:";
-        say "  $_" for @tlines;
-    }
-
-    my @tickets = [];
-    # 1  2  3  4  5  6  7          8  9  10 11   12
-    # 03 06 20 34 49 12 2025-09-13 dp pb qp paid $dollars
-    for @tlines.kv -> $i, $line is copy {
-        $line = strip-comment $line;
-        next unless $line ~~ /\S/;
-
-        # one line per ticket
-        my @words = $line.words;
-        my $nw = @words.elems;
-        unless $nw >= 8 {
-            my $msg = "Invalid ticket line '$line'.\n";
-            $msg ~= " It has $nw words but should have eight (8) or more";
-            throw-err $msg;
-        }
-
-        # data for next Ticket object is complete
-        my $tobj = PB-Lottery::Ticket.new: :numbers-str($line);
-        unless $tobj ~~ PB-Lottery::Ticket {
-            my $msg = "The intended ticket object failed to instantiate.";
-            throw-err $msg;
-        }
-
-        @tickets.push: $tobj;
-    } # end of the loop creating the valid Ticket objects
-
-    unless @tickets.elems {
-        my $msg = "Ticket file '$tfil' is empty.";
-        throw-err $msg;
-    }
-=end comment
 
     say "Calculating winnings...";
 
@@ -558,9 +442,6 @@ sub get-draw-objects(
     }
 } # end of sub get-draw-objects
 
-
-#=begin comment
-=finish
 # old stuff to steal from
 sub get-multiple-powerball-plays(
     $nplays,
@@ -601,7 +482,6 @@ sub get-random-powerball-play(
     }
     $num ~= " $pball";
 } # sub get-random-powerball-play
-
 
 =finish
 sub show-tickets(
