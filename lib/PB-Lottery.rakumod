@@ -42,9 +42,9 @@ sub calc-part-winnings(
         $dn5set = $dobj.N.numbers5;
         $dpbset = $dobj.N.pb;
 
-        # get the union of the draw and ticket sets
-        $n5set = $tn5set (^) $dn5set;
-        $pbset = $tpbset (^) $dpbset;
+        # get the intersection of the draw and ticket sets
+        $n5set = $tn5set (&) $dn5set;
+        $pbset = $tpbset (&) $dpbset;
 
         $nn = $n5set.elems;
         $np = $pbset.elems;
@@ -64,9 +64,9 @@ sub calc-part-winnings(
         $dn5set = $dobj.N2.numbers5;
         $dpbset = $dobj.N2.pb;
 
-        # get the union of the draw and ticket sets
-        $n5set = $tn5set (^) $dn5set;
-        $pbset = $tpbset (^) $dpbset;
+        # get the intersection of the draw and ticket sets
+        $n5set = $tn5set (&) $dn5set;
+        $pbset = $tpbset (&) $dpbset;
 
         $nn = $n5set.elems;
         $np = $pbset.elems;
