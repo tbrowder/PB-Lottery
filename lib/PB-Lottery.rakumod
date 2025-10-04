@@ -56,7 +56,7 @@ sub calc-part-winnings(
             HERE
         }
 
-        @dnums = $dobj.numbers-hash.keys.sort;
+#       @dnums = $dobj.numbers-hash.keys.sort;
     }
     else {
         # the double play draw
@@ -78,7 +78,7 @@ sub calc-part-winnings(
             HERE
         }
 
-        @dnums = $dobj.numbers-hash2.keys.sort;
+#       @dnums = $dobj.numbers-hash2.keys.sort;
     }
     $cash;
 } # end sub calc-part-winnings
