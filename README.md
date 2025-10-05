@@ -26,7 +26,7 @@ It uses two separate data records, in defined formats (see below), for your tick
 
 The drawing records must be in a file named `draws.txt` and your ticket records must be in a file named `my-tickets.txt`.
 
-This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run, and the `draws.txt` and c<my-tickets.txt> files must exist in order to check your results.
+This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run, and the `draws.txt` and `my-tickets.txt` files must exist in order to check your results.
 
 Note if you use the script to interactively update any of those files, it should create a '.bak' version of the existing base file. It should abort if that file already exists. It is recommended to keep your data files under *Git* management.
 
