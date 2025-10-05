@@ -24,7 +24,7 @@ Saturday.
 It uses two separate data records, in defined formats (see below), for
 your tickets and the Power Ball drawings.
 
-The drawing records must be in a file named C<drawings.txt> and your
+The drawing records must be in a file named C<draws.txt> and your
 ticket records must be in a file named C<my-tickets.txt>.
 
 This program expects your two data files to be in a directory pointed
@@ -51,20 +51,25 @@ in the following format:
 # The seventh entry is the date the ticket is valid through and must
 # be in yyyy-mm-dd format.
 
-# The remainder of the ticket line may contain one, two, or three
-# optional two-character codes:
+# The remainder of the ticket line must contain at least one
+# and up to several additional tokens:
 
 #   pp  (for the 'Power Play' add-on option)
 #   dp  (for the 'Double Play' add-on option)
+#   pb  (only needed if your ticket doesn't have the 'pp' or 'dp' options)
 #   qp  (for your records if you used the 'quick pick' method)
+#   paid (use this token to prevent the ticket from being tallied in
+#         the 'status' routine)
 
 # Any hash mark ('#') on a line starts a comment and
-# it and the # remainder of that line are ignored.
+# it and the remainder of that line are ignored.
 # Blank lines are ignored.
 
-# A valid example:
+# Valid examples:
 
+ 02 20 32 45 47 06 2025-09-22 pb # <== no add-ons
  02 20 32 45 47 06 2025-09-22 pp dp qp
+ 02 20 32 45 47 06 2025-09-22 pp dp qp paid # 
 
 =end code
 
@@ -111,7 +116,7 @@ represent the same value:
 =item 1,400,000t
 =item 1,400,000,000.00
 
-=head2 Account data
+=head2 Account data (not yet implemented)
 
 A third file is created to show results of the user's
 play. Its name is B<my-financials.txt> and it shows
@@ -121,7 +126,7 @@ total costs and other data for the period of play.
 
 As of this writing, the basic cost of a Power Ball lottery ticket is $2.
 The Florida Lottery offers optional add-ons to increase
-potential winnings (other states may offer similar options)
+potential winnings (other states may offer similar options,
 but the author has not attempted to handle any other
 state's programs).
 
@@ -139,7 +144,7 @@ Double Play | +1$ per play | Gives you a second chance to win with your same num
 
 =head2 Finding results
 
-In the author's state of Florida, Power Ball lottery results can be
+In the author's state of Florida, Power Ball lottery results may be
 found at L<https://floridalottery.com>.  Other states will have their
 own lottery sites, but the results for any Power Ball lottery should be
 the same on each states' lottery site for the same date.

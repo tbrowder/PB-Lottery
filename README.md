@@ -24,7 +24,7 @@ DESCRIPTION
 
 It uses two separate data records, in defined formats (see below), for your tickets and the Power Ball drawings.
 
-The drawing records must be in a file named `drawings.txt` and your ticket records must be in a file named `my-tickets.txt`.
+The drawing records must be in a file named `draws.txt` and your ticket records must be in a file named `my-tickets.txt`.
 
 This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run, and the `draws.txt` and c<my-tickets.txt> files must exist in order to check your results.
 
@@ -43,20 +43,25 @@ Your lottery ticket records must be in a text file in the following format:
     # The seventh entry is the date the ticket is valid through and must
     # be in yyyy-mm-dd format.
 
-    # The remainder of the ticket line may contain one, two, or three
-    # optional two-character codes:
+    # The remainder of the ticket line must contain at least one
+    # and up to several additional tokens:
 
     #   pp  (for the 'Power Play' add-on option)
     #   dp  (for the 'Double Play' add-on option)
+    #   pb  (only needed if your ticket doesn't have the 'pp' or 'dp' options)
     #   qp  (for your records if you used the 'quick pick' method)
+    #   paid (use this token to prevent the ticket from being tallied in
+    #         the 'status' routine)
 
     # Any hash mark ('#') on a line starts a comment and
-    # it and the # remainder of that line are ignored.
+    # it and the remainder of that line are ignored.
     # Blank lines are ignored.
 
-    # A valid example:
+    # Valid examples:
 
+     02 20 32 45 47 06 2025-09-22 pb # <== no add-ons
      02 20 32 45 47 06 2025-09-22 pp dp qp
+     02 20 32 45 47 06 2025-09-22 pp dp qp paid #
 
 Draw file format
 ----------------
@@ -90,15 +95,15 @@ It is stripped of all characters to yield an integer value of dollars. Note the 
 
   * 1,400,000,000.00
 
-Account data
-------------
+Account data (not yet implemented)
+----------------------------------
 
 A third file is created to show results of the user's play. Its name is **my-financials.txt** and it shows total costs and other data for the period of play.
 
 Ticket costs
 ------------
 
-As of this writing, the basic cost of a Power Ball lottery ticket is $2. The Florida Lottery offers optional add-ons to increase potential winnings (other states may offer similar options) but the author has not attempted to handle any other state's programs).
+As of this writing, the basic cost of a Power Ball lottery ticket is $2. The Florida Lottery offers optional add-ons to increase potential winnings (other states may offer similar options, but the author has not attempted to handle any other state's programs).
 
 It costs $1 to add the Power Play option, and it costs $1 to add the Double Play option. Neither option depends upon the other.
 
@@ -116,7 +121,7 @@ It costs $1 to add the Power Play option, and it costs $1 to add the Double Play
 Finding results
 ---------------
 
-In the author's state of Florida, Power Ball lottery results can be found at [https://floridalottery.com](https://floridalottery.com). Other states will have their own lottery sites, but the results for any Power Ball lottery should be the same on each states' lottery site for the same date.
+In the author's state of Florida, Power Ball lottery results may be found at [https://floridalottery.com](https://floridalottery.com). Other states will have their own lottery sites, but the results for any Power Ball lottery should be the same on each states' lottery site for the same date.
 
 AUTHOR
 ======
