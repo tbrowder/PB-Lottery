@@ -9,17 +9,11 @@ use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 
 my $debug = 0;
-my ($env-var, $pdir);
-
-# good tests
-%*ENV<PB_LOTTERY_PRIVATE_DIR> = "t/data/good";
-$env-var = "PB_LOTTERY_PRIVATE_DIR";
-$pdir    = %*ENV{$env-var}; # hack
 
 my $all   = 0;
 
 # start with this ticket and modify it to get 0 to max winnings
-my @tlines = [
+my @tlines-raw = [
     # $i == 0 match
     "11 12 13 14 15 11 2000-01-01 pp dp",
 
@@ -43,6 +37,15 @@ my @tlines = [
     "01 02 03 04 05 01 2000-01-01 pp dp",
 ];
 
+my @tlines = [];
+# strip comments from the strings above
+
+for @tlines-raw -> $line is copy {
+    $line = strip-comment $line;
+    next unless $line ~~ /\S/;
+    @tlines.push: $line;
+}
+
 my @d = [
     "01 02 03 04 05 01 2000-01-01 pb 3x 100m",
     "01 02 03 04 05 01 2000-01-01 dp",
@@ -51,11 +54,16 @@ my @d = [
 my $dobj = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
 isa-ok $dobj, PB-Lottery::Draw;
 
-for @tlines.kv -> $i, $s is copy {
-    $s = strip-comment $s;
-    next unless $s ~~ /\S/;
-    my $tobj = PB-Lottery::Ticket.new: :numbers-str($s);
-    isa-ok $tobj, PB-Lottery::Ticket;
+for @tlines.kv -> $i, $s {
+   
+   my $tobj = PB-Lottery::Ticket.new: :numbers-str($s);
+   isa-ok $tobj, PB-Lottery::Ticket;
+
+   my $cash = calc-winnings :$tobj, :$dobj;
+   if $cash.defined {
+       isa-ok $cash, Numeric;
+       #isa-ok $cash, Any;
+   }
 }
 
 done-testing;

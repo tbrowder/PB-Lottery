@@ -89,7 +89,7 @@ sub calc-part-winnings(
 
     if $part == 1 {
         # the power ball draw
-        say "    Evaluating the power ball draw..." if 1 or $debug;
+        say "    Evaluating the power ball draw..." if 0 or $debug;
         $dn5set = $dobj.N.numbers5;
         $dpbset = $dobj.N.pb;
 
@@ -110,7 +110,7 @@ sub calc-part-winnings(
     }
     else {
         # the double play draw
-        say "    Evaluating the double play draw..." if 1 or $debug;
+        say "    Evaluating the double play draw..." if 0 or $debug;
         $dn5set = $dobj.N2.numbers5;
         $dpbset = $dobj.N2.pb;
 
@@ -148,7 +148,7 @@ sub calc-winnings(
     $cash2 = calc-part-winnings :$tobj, :$dobj, :part(2);
     $cash  = $cash1 + $cash2;
 
-=begin comment
+    =begin comment
     # calc-dp-winnings
     # rules are complicated
     # winning matches and prizes:
@@ -269,15 +269,16 @@ sub calc-winnings(
         Our ticket: No winning tickets.
         HERE
     }
-=end comment
+    =end comment
 
+    $cash;
 } # end sub calc-winnings
 
 sub do-pick(
     $pdir, #= private directory
     :$debug,
 ) is export {
-    say "Entering sub do-pick";
+    say "Entering sub do-pick" if $debug;
 
     # pick and sort the first five numbers
     my @pick = (1..69).pick(5).sort({$^a cmp $^b});
@@ -303,22 +304,22 @@ sub do-pick(
         }
         $s2 ~= $n;
     }
-    say "random: $s1";
-    say "random: $s2 # with 2 chars per number";
+    say "random: $s1" if $debug;
+    say "random: $s2 # with 2 chars per number" if $debug;
 }
 
 sub do-enter-pick(
     $pdir, #= private directory
     :$debug,
 ) is export {
-    say "Entering sub do-enter-pick";
+    say "Entering sub do-enter-pick" if $debug;
 }
 
 sub do-enter-draw(
     $pdir, #= private directory
     :$debug,
 ) is export {
-    say "Entering sub do-enter-draw";
+    say "Entering sub do-enter-draw" if $debug;
     my $res = prompt "Enter date of the draw (yyyy-mm-dd): ";
     if  $res ~~ /^ \h* (\d\d\d\d '-' \d\d '-' \d\d) \h* $/ {
     }
@@ -332,10 +333,10 @@ sub do-status(
     :$all, #= show latest only unless true
     :$debug,
 ) is export {
-    say "Entering sub do-status";
+    say "Entering sub do-status" if $debug;
     # read all the draws...
-    say "Reading latest draw and associated valid tickets in directory:";
-    say "  $pdir";
+    say "Reading latest draw and associated valid tickets in directory:" if $debug;
+    say "  $pdir" if $debug;
 
     my $dfil = "$pdir/draws.txt";
     my $tfil = "$pdir/my-tickets.txt";
@@ -345,7 +346,7 @@ sub do-status(
     my @tickets = get-ticket-objects $tfil;
     my @draws   = get-draw-objects $dfil;
 
-    say "Calculating winnings...";
+    say "Calculating winnings..." if $debug;
 
     my $cash = 0;
     for @tickets -> $tobj {
@@ -354,16 +355,16 @@ sub do-status(
             my $money = calc-winnings :$tobj, :$dobj, :$debug;
 
             if $money {
-                say "    Wow, ticket X won $money on draw on {$dobj.date}";
+                say "    Wow, ticket X won $money on draw on {$dobj.date}" if $debug;
             }
             else {
-                say "    Aw, ticket X won nothing on draw on {$dobj.date}";
+                say "    Aw, ticket X won nothing on draw on {$dobj.date}" if $debug;
             }
 
             $cash += $money;
         }
     }
-    say "  Total winnings of \$$cash for the given lists."
+    say "  Total winnings of \$$cash for the given lists." if $debug
 
 } # end sub do-status
 

@@ -1,3 +1,5 @@
+Use 'ticket' and 'draw' as args to sub calc-winnings
+
 Add test to calculate the money in t/data/good/*txt
 
 Add new classes in order to eliminate the hash
