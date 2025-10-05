@@ -13,7 +13,8 @@ has Str $.numbers-str2 is required;
 has Date $.date;
 has Str  $.type;
 has Str  $.type2;
-has      $.jackpot; # optional
+has      $.jackpot; # optional, but desired
+has      $nx;       # is required as part of the main draw
 
 has PB-Lottery::Numbers $.N;  # fill in TWEAK
 has PB-Lottery::Numbers $.N2; # fill in TWEAK
@@ -37,21 +38,26 @@ submethod TWEAK {
     $s   = @w2[0..^6].join(' '); # only want first six numbers
     $!N2 = PB-Lottery::Numbers.new: :numbers-str($s);
 
-#   $!date = Date.new: %!numbers-hash<DATE>; # the seventh word in each string
-#                                            #   (are they the same in each string?)
     $!date = Date.new: @w[6];
 
-#=begin comment
     my $d2 = Date.new: @w2[6];
     unless $!date === $d2 {
         my $msg = "The two dates are not the same: '$!date', '$d2'";
         throw-err $msg;
     }
-#=end comment
 
-#   $!type = %!numbers-hash<TYPE>;           # the eighth word in each string
-#                                            #   (are they the same in each string?)
-    $!type  = @w[7];
+    $!type  = @w[7]; # the Nx factor
+    $!nx    = @w[7];
+    if  $!type ~~ /^:i \h* (\d+) x \h* $/ {
+        $!nx = +$0.UInt;
+        unless $!nx ~~ /2|3|4|5|10/ {
+            die "Power Play factor '$!nx' should be 2, 3, 4, 5, or 10";
+        }
+    }
+    else {
+        die "Power Play factor not determined in type string '$!type'";
+    }
+
     $!type2 = @w2[7];
     unless $!type !=== $!type2 {
         my $msg = "The two types should NOT be the same: '$!type', '$!type2'";

@@ -34,31 +34,36 @@ sub calc-part-winnings(
 
     my ($dn5set, $dpbset);
     my ($n5set, $pbset);
-    my ($nn, $np);
+    my ($nn, $np, $nx);
 
 
 =begin comment
-    # calc-dp-winnings
-    # rules are complicated
-    # winning matches and prizes:
+# calc-dp-winnings
+# rules are complicated
+# winning matches and prizes:
 
-    # for the main draw:
-    #   1 numbers + pb or just pb      $4
-    #   2 numbers + pb or 3 numbers    $7
-    #   3 numbers + pb or 4 numbers    $100
-    #   4 numbers + pb                 $50,000
-    #   5 numbers                      $1,000,000 # power play
-    #   5 numbers + pb                 current jackpot
+# The power-play option multiplies non-jackpot prizes
+# by the advertised multiplier for the main draw only.
+#
+# For the main draw:
+#   1 numbers + pb or just pb      $4
+#   2 numbers + pb or 3 numbers    $7
+#   3 numbers + pb or 4 numbers    $100
+#   4 numbers + pb                 $50,000
+#   5 numbers                      $1,000,000
+#   5 numbers + pb                 current jackpot
+#
+# For the second draw for the double play option.
+#   1 numbers + pb or just pb      $4
+#   2 numbers + pb or 3 numbers    $7
+#   3 numbers + pb or 4 numbers    $100
+#   4 numbers + pb                 $50,000
+#   5 numbers                      $1,000,000
+#   5 numbers + pb                 $10,000,000
+=end comment
 
-    # for the second draw for $1,000,000 # power play
-        # analyze results...
-        # winning matches and prizes:
-        #   1 numbers + pb or just pb      $4
-        #   2 numbers + pb or 3 numbers    $7
-        #   3 numbers + pb or 4 numbers    $100
-        #   4 numbers + pb                 $50,000
-        #   5 numbers                      $1,000,000
-        #   5 numbers + pb                 current jackpot
+=begin comment
+
         if $pb-match {
             # auto win?
             # 0 or 1 num = $4
@@ -100,6 +105,8 @@ sub calc-part-winnings(
         $nn = $n5set.elems;
         $np = $pbset.elems;
 
+        # get the Nx factor
+        
         if $nn or $np {
             print qq:to/HERE/;
                 $nn number matches of the Power Ball draw
@@ -153,76 +160,25 @@ sub calc-winnings(
     # rules are complicated
     # winning matches and prizes:
 
-    # for the main draw:
+    # For the main draw:
     #   1 numbers + pb or just pb      $4
     #   2 numbers + pb or 3 numbers    $7
     #   3 numbers + pb or 4 numbers    $100
     #   4 numbers + pb                 $50,000
-    #   5 numbers                      $1,000,000 # power play
+    #   5 numbers                      $1,000,000
     #   5 numbers + pb                 current jackpot
+    # Note the non-jackpot prizes will be increased
+    # by the Nx factor but only for the main
+    # Power Ball draw.
 
-    # for the second draw for $1,000,000 # power play
+    # For the second draw for the double play:
+    #   1 numbers + pb or just pb      $4
+    #   2 numbers + pb or 3 numbers    $7
+    #   3 numbers + pb or 4 numbers    $100
+    #   4 numbers + pb                 $50,000
+    #   5 numbers                      $1,000,000
+    #   5 numbers + pb                 $10,000,000
 
-    # the power ball draw
-    my @pb = $dobj.nums.keys.sort;
-    # the double play draw
-    my @dp = $dobj.nums2.keys.sort;
-
-    my @t = $tobj.nums.keys.sort;
-    my $pb-match  = 0;
-    my $num-match = 0;
-    my $is-draw1-power-ball;
-    my $is-draw2-power-ball;
-    my $is-ticket-power-ball;
-
-    # iterate over the ticket numbers
-    TICKET: for @t -> $t {
-
-        $is-ticket-power-ball = False;
-        # keys: a..f
-        if $d eq "f" {
-            $is-ticket-power-ball = True;
-        }
-
-        for @t -> $t {
-            $is-ticket-power-ball = False;
-            # keys: a..f
-            if $t eq "f" {
-                $is-ticket-power-ball = True;
-            }
-            my $tnum = $tobj.nums{$k};
-
-        #=== main play ===
-        # iterate over the first draw set of numbers
-
-        my $dnum = $dobj.nums{$d};
-
-            # so so we have a Power Ball match or not?
-            if $is-draw-power-ball and $is-self-power-ball {
-                $pb-match += 1 if $dnum == $tnum;
-            }
-            elsif not $is-draw-power-ball {
-                $num-match += 1 if $dnum == $tnum;
-            }
-            else {
-                next;
-                # no matches, so go to next user number
-                # for this ticket
-                die "FATAL: no pb match so what action to take?";
-            }
-        } # end of this ticket
-
-        # analyze results...
-        # winning matches and prizes:
-        #   1 numbers + pb or just pb      $4
-        #   2 numbers + pb or 3 numbers    $7
-        #   3 numbers + pb or 4 numbers    $100
-        #   4 numbers + pb                 $50,000
-        #   5 numbers                      $1,000,000
-        #   5 numbers + pb                 current jackpot
-        if $pb-match {
-            # auto win?
-            # 0 or 1 num = $4
             # 2 nums = $7
             # 3 nums = $100
             # 4 nums = $50,000
