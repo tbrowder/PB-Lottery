@@ -36,6 +36,57 @@ sub calc-part-winnings(
     my ($n5set, $pbset);
     my ($nn, $np);
 
+
+=begin comment
+    # calc-dp-winnings
+    # rules are complicated
+    # winning matches and prizes:
+
+    # for the main draw:
+    #   1 numbers + pb or just pb      $4
+    #   2 numbers + pb or 3 numbers    $7
+    #   3 numbers + pb or 4 numbers    $100
+    #   4 numbers + pb                 $50,000
+    #   5 numbers                      $1,000,000 # power play
+    #   5 numbers + pb                 current jackpot
+
+    # for the second draw for $1,000,000 # power play
+        # analyze results...
+        # winning matches and prizes:
+        #   1 numbers + pb or just pb      $4
+        #   2 numbers + pb or 3 numbers    $7
+        #   3 numbers + pb or 4 numbers    $100
+        #   4 numbers + pb                 $50,000
+        #   5 numbers                      $1,000,000
+        #   5 numbers + pb                 current jackpot
+        if $pb-match {
+            # auto win?
+            # 0 or 1 num = $4
+            # 2 nums = $7
+            # 3 nums = $100
+            # 4 nums = $50,000
+            # 5 nums = current jackpot
+            with $num-match {
+                when $_ == 0 { $cash = 4 }
+                when $_ == 1 { $cash = 4 }
+                when $_ == 2 { $cash = 7 }
+                when $_ == 3 { $cash = 100 }
+                when $_ == 4 { $cash = 50_000 }
+                when $_ == 5 { $cash = 2_000_000 } # jackpot
+            }
+        }
+        elsif $num-match {
+            # 3 nums = $7
+            # 4 nums = $100
+            # 5 nums = $1,000,000
+            with $num-match {
+                when $_ == 3 { $cash = 7 }
+                when $_ == 4 { $cash = 100 }
+                when $_ == 5 { $cash = 1_000_000 }
+            }
+        }
+=end comment
+
     if $part == 1 {
         # the power ball draw
         say "    Evaluating the power ball draw..." if 1 or $debug;
@@ -56,7 +107,6 @@ sub calc-part-winnings(
             HERE
         }
 
-#       @dnums = $dobj.numbers-hash.keys.sort;
     }
     else {
         # the double play draw
@@ -77,8 +127,6 @@ sub calc-part-winnings(
                     $np match of its power ball
             HERE
         }
-
-#       @dnums = $dobj.numbers-hash2.keys.sort;
     }
     $cash;
 } # end sub calc-part-winnings
@@ -286,7 +334,8 @@ sub do-status(
 ) is export {
     say "Entering sub do-status";
     # read all the draws...
-    say "Reading latest draw and associated valid tickets...";
+    say "Reading latest draw and associated valid tickets in directory:";
+    say "  $pdir";
 
     my $dfil = "$pdir/draws.txt";
     my $tfil = "$pdir/my-tickets.txt";
