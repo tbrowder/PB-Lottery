@@ -11,12 +11,13 @@ use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 
 sub calc-part-winnings(
-    PB-Lottery::Ticket :$tobj!, #= the ticket object
-    PB-Lottery::Draw   :$dobj!, #= the draw object
+    PB-Lottery::Ticket :$ticket!, #= the ticket object
+    PB-Lottery::Draw   :$draw!,   #= the draw object
     :$part! where * ~~ /1|2/,
     :$debug,
     --> Numeric #= return part winnings for this ticket/draw combo
 ) is export {
+    
     my $cash = 0;
     my @dnums;
     # If part == 1, check the user's ticket against the power ball ticket
@@ -29,8 +30,8 @@ sub calc-part-winnings(
     my $Pset = set(1..26);
 
     # the PB-Lottery::Numbers objects
-    my $tn5set = $tobj.N.numbers5;
-    my $tpbset = $tobj.N.pb;
+    my $tn5set = $ticket.N.numbers5;
+    my $tpbset = $ticket.N.pb;
 
     my ($dn5set, $dpbset);
     my ($n5set, $pbset);
@@ -95,8 +96,8 @@ sub calc-part-winnings(
     if $part == 1 {
         # the power ball draw
         say "    Evaluating the power ball draw..." if 0 or $debug;
-        $dn5set = $dobj.N.numbers5;
-        $dpbset = $dobj.N.pb;
+        $dn5set = $draw.N.numbers5;
+        $dpbset = $draw.N.pb;
 
         # get the intersection of the draw and ticket sets
         $n5set = $tn5set (&) $dn5set;
@@ -118,8 +119,8 @@ sub calc-part-winnings(
     else {
         # the double play draw
         say "    Evaluating the double play draw..." if 0 or $debug;
-        $dn5set = $dobj.N2.numbers5;
-        $dpbset = $dobj.N2.pb;
+        $dn5set = $draw.N2.numbers5;
+        $dpbset = $draw.N2.pb;
 
         # get the intersection of the draw and ticket sets
         $n5set = $tn5set (&) $dn5set;
@@ -139,8 +140,8 @@ sub calc-part-winnings(
 } # end sub calc-part-winnings
 
 sub calc-winnings(
-    PB-Lottery::Ticket :$tobj!, #= the ticket object
-    PB-Lottery::Draw   :$dobj!, #= the draw object
+    PB-Lottery::Ticket :$ticket!, #= the ticket object
+    PB-Lottery::Draw   :$draw!,   #= the draw object
     :$debug,
     --> Numeric #= return winnings for this ticket/draw combo
 ) is export {
@@ -151,8 +152,8 @@ sub calc-winnings(
     # ensure we start with cash = 0
     my ($cash, $cash1, $cash2) = 0, 0, 0;
 
-    $cash1 = calc-part-winnings :$tobj, :$dobj, :part(1);
-    $cash2 = calc-part-winnings :$tobj, :$dobj, :part(2);
+    $cash1 = calc-part-winnings :$ticket, :$draw, :part(1);
+    $cash2 = calc-part-winnings :$ticket, :$draw, :part(2);
     $cash  = $cash1 + $cash2;
 
     =begin comment
@@ -213,13 +214,13 @@ sub calc-winnings(
 
     if $show-draw {
         print qq:to/HERE/;
-          The draw  : {$dobj.show.chomp}
+          The draw  : {$draw.show.chomp}
           Winning tickets
         HERE
     }
     if $cash > 0 {
         print qq:to/HERE/;
-        Our ticket: {$tobj.show.chomp} \# winnings: \$$cash
+        Our ticket: {$ticket.show.chomp} \# winnings: \$$cash
         HERE
     }
     else {
@@ -307,16 +308,16 @@ sub do-status(
     say "Calculating winnings..." if $debug;
 
     my $cash = 0;
-    for @tickets -> $tobj {
-        for @draws -> $dobj {
+    for @tickets -> $ticket {
+        for @draws -> $draw {
             # The calc subs are in this module...
-            my $money = calc-winnings :$tobj, :$dobj, :$debug;
+            my $money = calc-winnings :$ticket, :$draw, :$debug;
 
             if $money {
-                say "    Wow, ticket X won $money on draw on {$dobj.date}" if $debug;
+                say "    Wow, ticket X won $money on draw on {$draw.date}" if $debug;
             }
             else {
-                say "    Aw, ticket X won nothing on draw on {$dobj.date}" if $debug;
+                say "    Aw, ticket X won nothing on draw on {$draw.date}" if $debug;
             }
 
             $cash += $money;
@@ -361,13 +362,13 @@ sub get-ticket-objects(
         }
 
         # data for next Ticket object is complete
-        my $tobj = PB-Lottery::Ticket.new: :numbers-str($line);
-        unless $tobj ~~ PB-Lottery::Ticket {
+        my $ticket = PB-Lottery::Ticket.new: :numbers-str($line);
+        unless $ticket ~~ PB-Lottery::Ticket {
             my $msg = "The intended ticket object failed to instantiate.";
             throw-err $msg;
         }
 
-        @tickets.push: $tobj;
+        @tickets.push: $ticket;
     } # end of the loop creating the valid Ticket objects
 
     unless @tickets.elems {
@@ -424,14 +425,14 @@ sub get-draw-objects(
                 throw-err $msg;
             }
 
-            my $dobj = PB-Lottery::Draw.new: :numbers-str($line1),
+            my $draw = PB-Lottery::Draw.new: :numbers-str($line1),
                                              :numbers-str2($line2);
 
-            unless $dobj ~~ PB-Lottery::Draw {
+            unless $draw ~~ PB-Lottery::Draw {
                 my $msg = "Unable to instantiate a Draw object";
                 throw-err $msg;
             }
-            @draws.push: $dobj;
+            @draws.push: $draw;
 
             # finally, zero the two lines ready for the next draw
             $line1 = "";
