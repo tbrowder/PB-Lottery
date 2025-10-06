@@ -160,29 +160,31 @@ sub calc-winnings(
     # rules are complicated
     # winning matches and prizes:
 
-    # For the main draw:
-    #   1 numbers + pb or just pb      $4
-    #   2 numbers + pb or 3 numbers    $7
-    #   3 numbers + pb or 4 numbers    $100
-    #   4 numbers + pb                 $50,000
-    #   5 numbers                      $1,000,000
-    #   5 numbers + pb                 current jackpot
+    # For the main draw                                power play
+    #   5 numbers + pb                 current jackpot N/A
+    #   5 numbers                      $1,000,000      *= 2 (constant)
+    #   4 numbers + pb                 $50,000         *= x
+    #   4 numbers                      $100            *= x
+    #   3 numbers + pb                 $100            *= x
+    #   3 numbers                      $7              *= x
+    #   2 numbers + pb                 $7              *= x
+    #   1 number  + pb                 $4              *= x
+    #   pb only                        $4              *= x
     # Note the non-jackpot prizes will be increased
     # by the Nx factor but only for the main
     # Power Ball draw.
 
     # For the second draw for the double play:
-    #   1 numbers + pb or just pb      $4
-    #   2 numbers + pb or 3 numbers    $7
-    #   3 numbers + pb or 4 numbers    $100
-    #   4 numbers + pb                 $50,000
-    #   5 numbers                      $1,000,000
     #   5 numbers + pb                 $10,000,000
+    #   5 numbers                      $500,000
+    #   4 numbers + pb                 $500   
+    #   4 numbers                      $20 
+    #   3 numbers + pb                 $20 
+    #   3 numbers                      $10
+    #   2 numbers + pb                 $10
+    #   1 number  + pb                 $7
+    #   pb only                        $7
 
-            # 2 nums = $7
-            # 3 nums = $100
-            # 4 nums = $50,000
-            # 5 nums = current jackpot
             with $num-match {
                 when $_ == 0 { $cash = 4 }
                 when $_ == 1 { $cash = 4 }
