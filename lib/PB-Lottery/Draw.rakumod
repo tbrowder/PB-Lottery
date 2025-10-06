@@ -56,7 +56,10 @@ submethod TWEAK {
         }
     }
     else {
-        die "Power Play factor not determined in type string '$!type'";
+        die qq:to/HERE/;
+        Power Play factor not determined in type string '$!type'
+          the full line: |$!numbers-str|
+        HERE
     }
 
     $!type2 = @w2[7];

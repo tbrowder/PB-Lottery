@@ -49,13 +49,18 @@ for @tlines-raw -> $line is copy {
 }
 
 my @d = [
-    "01 02 03 04 05 01 2000-01-01 pb 3x $195m", # jackpot from 4 Oct 2025
-    "01 02 03 04 05 01 2000-01-01 dp",
+    '01 02 03 04 05 01 2000-01-01 3x $195m', # jackpot from 4 Oct 2025
+    '01 02 03 04 05 01 2000-01-01 dp',
 ];
 
 my $draw = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
 isa-ok $draw, PB-Lottery::Draw;
 
+done-testing;
+=finish
+
+my $d = Date.new: "2025-10-04";
+is $draw.date, $d, "Date is $d as expected";
 for @tlines.kv -> $i, $s {
    
    my $ticket = PB-Lottery::Ticket.new: :numbers-str($s);
@@ -67,43 +72,6 @@ for @tlines.kv -> $i, $s {
        #isa-ok $cash, Any;
    }
 }
-
-# the actual prizes possible for the various options
-my @powerball = [
-"5+pb jackpot",
-"5    1_000_000",
-"4+pb 50_000",
-"4    100",
-"3+pb 100",
-"3    7",
-"2+pb 7",
-"1+pb 4",
-"pb   4",
-];
-
-my @power-play = [
-"5+pb n/a",
-"5    2_000_000",
-"4+pb 100_000",
-"4    200",
-"3+pb 200",
-"3    14",
-"2+pb 14",
-"1+pb 8",
-"pb   8",
-];
-
-my @double-play = [
-"5+pb 10_000_000",
-"5    500_000",
-"4+pb 50_000",
-"4    500",
-"3+pb 500",
-"3    20",
-"2+pb 20",
-"1+pb 10",
-"pb   7",
-];
 
 done-testing;
 

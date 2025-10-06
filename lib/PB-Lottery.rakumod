@@ -38,62 +38,7 @@ sub calc-part-winnings(
     my ($n5set, $pbset);
     my ($nn, $np, $nx);
 
-
-=begin comment
-# calc-dp-winnings
-# rules are complicated
-# winning matches and prizes:
-
-# The power-play option multiplies non-jackpot prizes
-# by the advertised multiplier for the main draw only.
-#
-# For the main draw:
-#   1 numbers + pb or just pb      $4
-#   2 numbers + pb or 3 numbers    $7
-#   3 numbers + pb or 4 numbers    $100
-#   4 numbers + pb                 $50,000
-#   5 numbers                      $1,000,000
-#   5 numbers + pb                 current jackpot
-#
-# For the second draw for the double play option.
-#   1 numbers + pb or just pb      $4
-#   2 numbers + pb or 3 numbers    $7
-#   3 numbers + pb or 4 numbers    $100
-#   4 numbers + pb                 $50,000
-#   5 numbers                      $1,000,000
-#   5 numbers + pb                 $10,000,000
-=end comment
-
-=begin comment
-
-        if $pb-match {
-            # auto win?
-            # 0 or 1 num = $4
-            # 2 nums = $7
-            # 3 nums = $100
-            # 4 nums = $50,000
-            # 5 nums = current jackpot
-            with $num-match {
-                when $_ == 0 { $cash = 4 }
-                when $_ == 1 { $cash = 4 }
-                when $_ == 2 { $cash = 7 }
-                when $_ == 3 { $cash = 100 }
-                when $_ == 4 { $cash = 50_000 }
-                when $_ == 5 { $cash = 2_000_000 } # jackpot
-            }
-        }
-        elsif $num-match {
-            # 3 nums = $7
-            # 4 nums = $100
-            # 5 nums = $1,000,000
-            with $num-match {
-                when $_ == 3 { $cash = 7 }
-                when $_ == 4 { $cash = 100 }
-                when $_ == 5 { $cash = 1_000_000 }
-            }
-        }
-=end comment
-
+    # calc-dp-winnings
     if $part == 1 {
         # the power ball draw
         say "    Evaluating the power ball draw..." if 0 or $debug;
@@ -108,11 +53,14 @@ sub calc-part-winnings(
         $np = $pbset.elems;
 
         # get the Nx factor
+        $nx = $draw.nx;
         
         if $nn or $np {
             print qq:to/HERE/;
+            The Powerball string: |$draw.numbers-str|
                 $nn number matches of the Power Ball draw
                     $np match of its power ball
+                Nx multiplier: $nx
             HERE
         }
 
@@ -132,6 +80,7 @@ sub calc-part-winnings(
 
         if $nn or $np {
             print qq:to/HERE/;
+            The Double Play string: |$draw.numbers-str2|
                 $nn number matches of the Double Play draw
                     $np match of its power ball
             HERE
@@ -159,56 +108,6 @@ sub calc-winnings(
 
     =begin comment
     # calc-dp-winnings
-    # rules are complicated
-    # winning matches and prizes:
-
-    # For the main draw                   # power play
-    #   5 numbers + pb    current jackpot N/A
-    #   5 numbers         $1,000,000      *= 2 (constant)
-    #   4 numbers + pb    $50,000         *= x
-    #   4 numbers         $100            *= x
-    #   3 numbers + pb    $100            *= x
-    #   3 numbers         $7              *= x
-    #   2 numbers + pb    $7              *= x
-    #   1 number  + pb    $4              *= x
-    #   pb only           $4              *= x
-    # Note the non-jackpot prizes will be increased
-    # by the Nx factor but only for the main
-    # Power Ball draw.
-
-    # For the second draw for the double play:
-    #   5 numbers + pb    $10,000,000
-    #   5 numbers         $500,000
-    #   4 numbers + pb    $500   
-    #   4 numbers         $20 
-    #   3 numbers + pb    $20 
-    #   3 numbers         $10
-    #   2 numbers + pb    $10
-    #   1 number  + pb    $7
-    #   pb only           $7
-
-            with $num-match {
-                when $_ == 0 { $cash = 4 }
-                when $_ == 1 { $cash = 4 }
-                when $_ == 2 { $cash = 7 }
-                when $_ == 3 { $cash = 100 }
-                when $_ == 4 { $cash = 50_000 }
-                when $_ == 5 { $cash = 2_000_000 } # jackpot
-            }
-        }
-        elsif $num-match {
-            # 3 nums = $7
-            # 4 nums = $100
-            # 5 nums = $1,000,000
-            with $num-match {
-                when $_ == 3 { $cash = 7 }
-                when $_ == 4 { $cash = 100 }
-                when $_ == 5 { $cash = 1_000_000 }
-            }
-        }
-
-    } # end of this draw loop
-
     say "pb-match:  $pb-match"  if $debug;
     say "num-match: $num-match" if $debug;
     next unless $cash > 0; #$num-match or $pb-match;
