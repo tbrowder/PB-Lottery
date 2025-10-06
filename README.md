@@ -84,10 +84,12 @@ Note the Power Ball lottery's **draw** record is slightly different from the use
 If desired, you can also enter the jackpot value as a string **after** the mutiplier on the first line. For example:
 
     # draw on 2025-09-03
-    03 16 29 61 69 22 2025-09-03 2x $1.4B  <= the Power Ball jackpot
-    07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw
+    03 16 29 61 69 22 2025-09-03 2x $1.4B  # <= the Power Ball jackpot
+    07 32 39 50 61 04 2025-09-03 dp        # <= the Double Play draw
 
-It is stripped of all characters to yield an integer value of dollars. Note the entered value must have no spaces, and it may be in varying formats. All the following formats represent the same value:
+NOTE: Depending on the data line's string context, you may have to use single quotes on the entire string or escape the US dollar sign. The data lines in the examples are not enclosed by any type of quote so they can be used as is.
+
+The jackpot token is stripped of all characters to yield an integer value of dollars. Note the entered value must have no spaces, and it may be in varying formats. All the following formats represent the same value:
 
   * $1.4b
 

@@ -190,3 +190,35 @@ sub Lstr2info-hash(
 
     %h;
 } # end sub Lstr2info-hash
+
+# sub get-pb-hash:
+# our @power-ball-prizes is export = [
+sub get-pb-hash(
+    --> Hash
+) is export {
+    my %h;
+} # end sub get-pb-hash
+
+# sub get-dp-hash:
+# our @double-play-prizes is export = [
+sub get-dp-hash(
+    --> Hash
+) is export {
+    my %h;
+} # end sub get-dp-hash
+
+# sub get-pp-hash:
+# our @power-play-prizes is export = [
+sub get-pp-hash(
+    --> Hash
+) is export {
+    my %h;
+    for @power-play-prizes.kv -> $i, $line is copy {
+        $line = strip-comment $line;
+        my @w = $line.words;
+        my $code  = @w.head; # the key
+        my $prize = @w.tail; # the value
+        %h{$code} = $prize;
+    }
+    %h; 
+} # end sub get-pp-hash

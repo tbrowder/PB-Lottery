@@ -4,7 +4,9 @@ unit module PB-Lottery::Vars;
 # in strings for decoding.
 
 # the actual prizes possible for the various options
-our  @power-ball-prizes is export = [
+
+# sub get-pb-hash:
+our @power-ball-prizes is export = [
 "5+pb jackpot",
 "5    1_000_000",
 "4+pb 50_000",
@@ -16,6 +18,7 @@ our  @power-ball-prizes is export = [
 "pb   4",
 ];
 
+# sub get-pp-hash:
 our @power-play-prizes is export = [
 "5+pb n/a",
 "5    2_000_000",
@@ -28,6 +31,7 @@ our @power-play-prizes is export = [
 "pb   8",
 ];
 
+# sub get-dp-hash:
 our @double-play-prizes is export = [
 "5+pb 10_000_000",
 "5    500_000",

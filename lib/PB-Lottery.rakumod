@@ -10,6 +10,7 @@ use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 use PB-Lottery::Vars;
+use PB-Lottery::Subs;
 
 sub calc-part-winnings(
     PB-Lottery::Ticket :$ticket!, #= the ticket object
@@ -62,6 +63,11 @@ sub calc-part-winnings(
                     $np match of its power ball
                 Nx multiplier: $nx
             HERE
+
+            # get the coded prizes 
+            my %h;
+            my %pb-hash = ($nn or $np) ?? get-pb-hash() !! %h;
+            my %pp-hash = ($nn or $np) ?? get-pp-hash() !! %h;
         }
 
     }
@@ -84,6 +90,10 @@ sub calc-part-winnings(
                 $nn number matches of the Double Play draw
                     $np match of its power ball
             HERE
+
+            # get the coded prizes 
+            my %h;
+            my %dp-hash = ($nn or $np) ?? get-pb-hash() !! %h;
         }
     }
     $cash;
