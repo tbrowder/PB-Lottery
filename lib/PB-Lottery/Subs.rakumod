@@ -4,6 +4,8 @@ my $F = $?FILE.IO.basename;
 
 use Text::Utils :strip-comment;
 
+use PB-Lottery::Vars;
+
 # All items here MUST be dependent
 # only upon Raku core or external
 # distributions.

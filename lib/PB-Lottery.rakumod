@@ -9,6 +9,7 @@ use PB-Lottery::Subs;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
+use PB-Lottery::Vars;
 
 sub calc-part-winnings(
     PB-Lottery::Ticket :$ticket!, #= the ticket object
@@ -161,30 +162,30 @@ sub calc-winnings(
     # rules are complicated
     # winning matches and prizes:
 
-    # For the main draw                                power play
-    #   5 numbers + pb                 current jackpot N/A
-    #   5 numbers                      $1,000,000      *= 2 (constant)
-    #   4 numbers + pb                 $50,000         *= x
-    #   4 numbers                      $100            *= x
-    #   3 numbers + pb                 $100            *= x
-    #   3 numbers                      $7              *= x
-    #   2 numbers + pb                 $7              *= x
-    #   1 number  + pb                 $4              *= x
-    #   pb only                        $4              *= x
+    # For the main draw                   # power play
+    #   5 numbers + pb    current jackpot N/A
+    #   5 numbers         $1,000,000      *= 2 (constant)
+    #   4 numbers + pb    $50,000         *= x
+    #   4 numbers         $100            *= x
+    #   3 numbers + pb    $100            *= x
+    #   3 numbers         $7              *= x
+    #   2 numbers + pb    $7              *= x
+    #   1 number  + pb    $4              *= x
+    #   pb only           $4              *= x
     # Note the non-jackpot prizes will be increased
     # by the Nx factor but only for the main
     # Power Ball draw.
 
     # For the second draw for the double play:
-    #   5 numbers + pb                 $10,000,000
-    #   5 numbers                      $500,000
-    #   4 numbers + pb                 $500   
-    #   4 numbers                      $20 
-    #   3 numbers + pb                 $20 
-    #   3 numbers                      $10
-    #   2 numbers + pb                 $10
-    #   1 number  + pb                 $7
-    #   pb only                        $7
+    #   5 numbers + pb    $10,000,000
+    #   5 numbers         $500,000
+    #   4 numbers + pb    $500   
+    #   4 numbers         $20 
+    #   3 numbers + pb    $20 
+    #   3 numbers         $10
+    #   2 numbers + pb    $10
+    #   1 number  + pb    $7
+    #   pb only           $7
 
             with $num-match {
                 when $_ == 0 { $cash = 4 }

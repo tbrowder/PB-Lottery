@@ -1,6 +1,7 @@
 use Test;
 
 use PB-Lottery::Subs;
+use PB-Lottery::Vars;
 
 my $res = 1_400_000_000;
 

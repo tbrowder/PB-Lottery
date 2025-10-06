@@ -6,6 +6,7 @@ use Text::Utils :strip-comment;
 
 use PB-Lottery::Subs;
 use PB-Lottery::Numbers;
+use PB-Lottery::Vars;
 
 has Str  $.numbers-str is required;
 has Date $.date;

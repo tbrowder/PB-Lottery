@@ -5,6 +5,7 @@ use PB-Lottery::Subs;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
+use PB-Lottery::Vars;
 
 is 1, 1;
 

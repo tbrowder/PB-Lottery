@@ -4,6 +4,7 @@ use Text::Utils :strip-comment;
 
 use PB-Lottery;
 use PB-Lottery::Subs;
+use PB-Lottery::Vars;
 
 my ($env-var, $pdir);
 
