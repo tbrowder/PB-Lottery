@@ -1,3 +1,5 @@
+Check code hashes for %h<key>:exists before using
+
 Use 'ticket' and 'draw' as args to sub calc-winnings
 
 Add test to calculate the money in t/data/good/*txt
