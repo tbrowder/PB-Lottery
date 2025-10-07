@@ -11,11 +11,9 @@ use PB-Lottery::Vars;
 
 my $debug = 0;
 
-my $all   = 0;
-
 # start with this ticket and modify it to get 0 to max winnings
 # use jackpot value from 4 Oct 2025: $195m
-my @tlines-raw = [
+my @tlines = [
     # $i == 0 match
     "11 12 13 14 15 11 2000-01-01 pp dp",
 
@@ -37,16 +35,8 @@ my @tlines-raw = [
     # max
     # $i == 6 matches
     "01 02 03 04 05 01 2000-01-01 pp dp",
+
 ];
-
-my @tlines = [];
-# strip comments from the strings above
-
-for @tlines-raw -> $line is copy {
-    $line = strip-comment $line;
-    next unless $line ~~ /\S/;
-    @tlines.push: $line;
-}
 
 my @d = [
     '01 02 03 04 05 01 2000-01-01 3x $195m', # jackpot from 4 Oct 2025
@@ -69,9 +59,11 @@ for @tlines.kv -> $i, $s {
    my $s2 = $s0 ~ " pp"; # add power play
    my $s3 = $s0 ~ " dp"; # add double play
    my $s4 = $s;          # pb + pp + dp
+   my $s5 = $s0 ~ " paid"; # ignore it
 
    my ($ticket, $cash, $exp-prize);
-   for ($s1, $s2, $s3, $s4).kv -> $j, $S {
+#  for ($s1, $s2, $s3, $s4).kv -> $j, $S {
+   for ($s1, $s2, $s3, $s4, $s5).kv -> $j, $S {
        $ticket = PB-Lottery::Ticket.new: :numbers-str($S);
        isa-ok $ticket, PB-Lottery::Ticket;
 
@@ -79,8 +71,6 @@ for @tlines.kv -> $i, $s {
        isa-ok $cash, Numeric;
 
        say "Total winnings: $cash":
-#      my $exp-prize = 0; 
-#      is $cash, $exp-prize, "expected $exp-prize";
    }
 }
 
