@@ -71,9 +71,8 @@ sub calc-part-winnings(
             my %pb-hash = ($nn or $np) ?? get-pb-hash() !! %h;
             my %pp-hash = ($nn or $np) ?? get-pp-hash() !! %h;
 
-            # create the code for each
-            my $pb-code = get-pb-code :$n5set, :$pbset;
-            my $pp-code = get-pp-code :$n5set, :$pbset;
+            # create the common code for each
+            my $pb-code = get-prize-code :$n5set, :$pbset;
 
             # get the prize for each
             my $pb-prize = %pb-hash{$pb-code};
@@ -107,7 +106,7 @@ sub calc-part-winnings(
             my %dp-hash = ($nn or $np) ?? get-dp-hash() !! %h;
 
             # create the code for each
-            my $dp-code = get-dp-code :$n5set, :$pbset;
+            my $dp-code = get-prize-code :$n5set, :$pbset;
 
             # get the prize for each
             my $dp-prize = %dp-hash{$dp-code};

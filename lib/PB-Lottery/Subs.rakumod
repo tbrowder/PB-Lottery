@@ -276,7 +276,7 @@ sub get-pp-code(
 "pb   4",
 =end comment
 
-sub get-dp-code(
+sub get-prize-code(
     :$n5set,
     :$pbset,
     --> Str # the code
@@ -296,5 +296,5 @@ sub get-dp-code(
         $code = "pb";
     }
     $code;
-} # end of sub get-dp-code
+} # end of sub get-prize-code
 

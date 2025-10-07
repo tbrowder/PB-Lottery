@@ -58,14 +58,28 @@ isa-ok $draw, PB-Lottery::Draw;
 
 my $d = Date.new: "2000-01-01";
 is $draw.date, $d, "Date is $d as expected";
+
+# the index number of the Ticket lines can be
+# used to check the expected winnings
 for @tlines.kv -> $i, $s {
    
-   my $ticket = PB-Lottery::Ticket.new: :numbers-str($s);
-   isa-ok $ticket, PB-Lottery::Ticket;
+   my $s0 = $s.words[0..^7].join(' ');
+   # make four tickets out of the common string
+   my $s1 = $s0 ~ " pb"; # plain powerball
+   my $s2 = $s0 ~ " pp"; # add power play
+   my $s3 = $s0 ~ " dp"; # add double play
+   my $s4 = $s;          # pb + pp + dp
 
-   my $cash = calc-winnings :$ticket, :$draw;
-   if $cash.defined {
+   my ($ticket, $cash, $exp-prize);
+   for ($s1, $s2, $s3, $s4).kv -> $j, $S {
+       $ticket = PB-Lottery::Ticket.new: :numbers-str($S);
+       isa-ok $ticket, PB-Lottery::Ticket;
+
+       $cash = calc-winnings :$ticket, :$draw;
        isa-ok $cash, Numeric;
+
+#      my $exp-prize = 0; 
+#      is $cash, $exp-prize, "expected $exp-prize";
    }
 }
 
