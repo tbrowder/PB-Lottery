@@ -249,6 +249,8 @@ sub get-pb-code(
 ) is export {
     my @n = $n5set.keys;
     my @p = $pbset.keys;
+
+    my $c = " ";
 } # end of sub get-pb-code
 
 sub get-pp-code(
@@ -258,7 +260,21 @@ sub get-pp-code(
 ) is export {
     my @n = $n5set.keys;
     my @p = $pbset.keys;
+
+    my $c = " ";
 } # end of sub get-pp-code
+
+=begin comment
+"5+pb jackpot",
+"5    1_000_000",
+"4+pb 50_000",
+"4    100",
+"3+pb 100",
+"3    7",
+"2+pb 7",
+"1+pb 4",
+"pb   4",
+=end comment
 
 sub get-dp-code(
     :$n5set,
@@ -267,5 +283,18 @@ sub get-dp-code(
 ) is export {
     my @n = $n5set.keys;
     my @p = $pbset.keys;
+    my $code;
+    my $nn = @n.elems;
+    my $np = @p.elems;
+    if $nn and $np {
+        $code = "{$nn}+pb";
+    }
+    elsif $nn {
+        $code = "{$nn}";
+    }
+    elsif $np {
+        $code = "pb";
+    }
+    $code;
 } # end of sub get-dp-code
 

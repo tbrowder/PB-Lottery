@@ -15,7 +15,7 @@ has Date $.date;
 has Str  $.type;
 has Str  $.type2;
 has      $.jackpot; # optional, but desired
-has      $nx;       # is required as part of the main draw
+has      $.nx;      # is required as part of the main draw
 
 has PB-Lottery::Numbers $.N;  # fill in TWEAK
 has PB-Lottery::Numbers $.N2; # fill in TWEAK

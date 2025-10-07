@@ -57,12 +57,14 @@ sub calc-part-winnings(
         $nx = $draw.nx;
         
         if $nn or $np {
+            if $debug {
             print qq:to/HERE/;
-            The Powerball string: |$draw.numbers-str|
+            The Powerball string: |{$draw.numbers-str}|
                 $nn number matches of the Power Ball draw
                     $np match of its power ball
                 Nx multiplier: $nx
             HERE
+            }
 
             # get the coded prizes 
             my %h;
@@ -92,11 +94,13 @@ sub calc-part-winnings(
         $np = $pbset.elems;
 
         if $nn or $np {
+            if $debug {
             print qq:to/HERE/;
-            The Double Play string: |$draw.numbers-str2|
+            The Double Play string: |{$draw.numbers-str2}|
                 $nn number matches of the Double Play draw
                     $np match of its power ball
             HERE
+            }
 
             # get the coded prizes 
             my %h;

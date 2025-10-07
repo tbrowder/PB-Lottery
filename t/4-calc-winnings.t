@@ -56,10 +56,7 @@ my @d = [
 my $draw = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
 isa-ok $draw, PB-Lottery::Draw;
 
-done-testing;
-=finish
-
-my $d = Date.new: "2025-10-04";
+my $d = Date.new: "2000-01-01";
 is $draw.date, $d, "Date is $d as expected";
 for @tlines.kv -> $i, $s {
    
@@ -69,7 +66,6 @@ for @tlines.kv -> $i, $s {
    my $cash = calc-winnings :$ticket, :$draw;
    if $cash.defined {
        isa-ok $cash, Numeric;
-       #isa-ok $cash, Any;
    }
 }
 
