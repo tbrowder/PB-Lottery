@@ -7,6 +7,7 @@ use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 use PB-Lottery::Subs;
+use PB-Lottery::Vars;
 
 # valid ticket strings
 my @t = [

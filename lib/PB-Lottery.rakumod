@@ -9,14 +9,17 @@ use PB-Lottery::Subs;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
+use PB-Lottery::Vars;
+use PB-Lottery::Subs;
 
 sub calc-part-winnings(
-    PB-Lottery::Ticket :$tobj!, #= the ticket object
-    PB-Lottery::Draw   :$dobj!, #= the draw object
+    PB-Lottery::Ticket :$ticket!, #= the ticket object
+    PB-Lottery::Draw   :$draw!,   #= the draw object
     :$part! where * ~~ /1|2/,
     :$debug,
     --> Numeric #= return part winnings for this ticket/draw combo
 ) is export {
+    
     my $cash = 0;
     my @dnums;
     # If part == 1, check the user's ticket against the power ball ticket
@@ -29,69 +32,20 @@ sub calc-part-winnings(
     my $Pset = set(1..26);
 
     # the PB-Lottery::Numbers objects
-    my $tn5set = $tobj.N.numbers5;
-    my $tpbset = $tobj.N.pb;
+    my $tn5set = $ticket.N.numbers5;
+    my $tpbset = $ticket.N.pb;
 
     my ($dn5set, $dpbset);
     my ($n5set, $pbset);
-    my ($nn, $np);
+    my ($nn, $np, $nx);
+    my ($pb-prize, $pp-prize, $dp-prize) = 0, 0, 0;
 
-
-=begin comment
     # calc-dp-winnings
-    # rules are complicated
-    # winning matches and prizes:
-
-    # for the main draw:
-    #   1 numbers + pb or just pb      $4
-    #   2 numbers + pb or 3 numbers    $7
-    #   3 numbers + pb or 4 numbers    $100
-    #   4 numbers + pb                 $50,000
-    #   5 numbers                      $1,000,000 # power play
-    #   5 numbers + pb                 current jackpot
-
-    # for the second draw for $1,000,000 # power play
-        # analyze results...
-        # winning matches and prizes:
-        #   1 numbers + pb or just pb      $4
-        #   2 numbers + pb or 3 numbers    $7
-        #   3 numbers + pb or 4 numbers    $100
-        #   4 numbers + pb                 $50,000
-        #   5 numbers                      $1,000,000
-        #   5 numbers + pb                 current jackpot
-        if $pb-match {
-            # auto win?
-            # 0 or 1 num = $4
-            # 2 nums = $7
-            # 3 nums = $100
-            # 4 nums = $50,000
-            # 5 nums = current jackpot
-            with $num-match {
-                when $_ == 0 { $cash = 4 }
-                when $_ == 1 { $cash = 4 }
-                when $_ == 2 { $cash = 7 }
-                when $_ == 3 { $cash = 100 }
-                when $_ == 4 { $cash = 50_000 }
-                when $_ == 5 { $cash = 2_000_000 } # jackpot
-            }
-        }
-        elsif $num-match {
-            # 3 nums = $7
-            # 4 nums = $100
-            # 5 nums = $1,000,000
-            with $num-match {
-                when $_ == 3 { $cash = 7 }
-                when $_ == 4 { $cash = 100 }
-                when $_ == 5 { $cash = 1_000_000 }
-            }
-        }
-=end comment
-
     if $part == 1 {
         # the power ball draw
         say "    Evaluating the power ball draw..." if 0 or $debug;
-        $dn5set = $dobj.N.numbers5;
-        $dpbset = $dobj.N.pb;
+        $dn5set = $draw.N.numbers5;
+        $dpbset = $draw.N.pb;
 
         # get the intersection of the draw and ticket sets
         $n5set = $tn5set (&) $dn5set;
@@ -100,19 +54,51 @@ sub calc-part-winnings(
         $nn = $n5set.elems;
         $np = $pbset.elems;
 
+        # get the Nx factor
+        $nx = $draw.nx;
+        
         if $nn or $np {
+            if $debug {
             print qq:to/HERE/;
+            The Powerball string: |{$draw.numbers-str}|
                 $nn number matches of the Power Ball draw
                     $np match of its power ball
+                Nx multiplier: $nx
             HERE
-        }
+            }
 
+            # get the coded prizes 
+            my %h;
+            my %pb-hash = ($nn or $np) ?? get-pb-hash() !! %h;
+            my %pp-hash = ($nn or $np) ?? get-pp-hash() !! %h;
+
+            # create the common code for each
+            my $pb-code = get-prize-code :$n5set, :$pbset;
+
+            # get the prize for each
+            $pb-prize = %pb-hash{$pb-code};
+
+# TODO fix next line
+            say "pb-prize: $pb-prize" if 1 or $debug;
+
+            unless $pb-prize ~~ Numeric {
+                $pb-prize = 0; # TODO fix this...
+            }
+            $pp-prize = %pp-hash{$pb-code};
+
+# TODO fix next line
+            say "pp-prize: $pp-prize" if 1 or $debug;
+
+            unless $pp-prize ~~ Numeric {
+                $pp-prize = 0; # TODO fix this...
+            }
+        }
     }
     else {
         # the double play draw
         say "    Evaluating the double play draw..." if 0 or $debug;
-        $dn5set = $dobj.N2.numbers5;
-        $dpbset = $dobj.N2.pb;
+        $dn5set = $draw.N2.numbers5;
+        $dpbset = $draw.N2.pb;
 
         # get the intersection of the draw and ticket sets
         $n5set = $tn5set (&) $dn5set;
@@ -122,18 +108,38 @@ sub calc-part-winnings(
         $np = $pbset.elems;
 
         if $nn or $np {
+            if $debug {
             print qq:to/HERE/;
+            The Double Play string: |{$draw.numbers-str2}|
                 $nn number matches of the Double Play draw
                     $np match of its power ball
             HERE
+            }
+
+            # get the coded prizes 
+            my %h;
+            my %dp-hash = ($nn or $np) ?? get-dp-hash() !! %h;
+
+            # create the code for each
+            my $dp-code = get-prize-code :$n5set, :$pbset;
+
+            # get the prize for each
+            $dp-prize = %dp-hash{$dp-code};
+
+# TODO fix next line
+            say "dp-prize: $dp-prize" if 1 or $debug;
+
+            unless $dp-prize ~~ Numeric {
+                $dp-prize = 0; # TODO fix this...
+            }
         }
     }
-    $cash;
+    $cash = $pb-prize + $dp-prize + $pp-prize;;
 } # end sub calc-part-winnings
 
 sub calc-winnings(
-    PB-Lottery::Ticket :$tobj!, #= the ticket object
-    PB-Lottery::Draw   :$dobj!, #= the draw object
+    PB-Lottery::Ticket :$ticket!, #= the ticket object
+    PB-Lottery::Draw   :$draw!,   #= the draw object
     :$debug,
     --> Numeric #= return winnings for this ticket/draw combo
 ) is export {
@@ -144,124 +150,25 @@ sub calc-winnings(
     # ensure we start with cash = 0
     my ($cash, $cash1, $cash2) = 0, 0, 0;
 
-    $cash1 = calc-part-winnings :$tobj, :$dobj, :part(1);
-    $cash2 = calc-part-winnings :$tobj, :$dobj, :part(2);
+    $cash1 = calc-part-winnings :$ticket, :$draw, :part(1);
+    $cash2 = calc-part-winnings :$ticket, :$draw, :part(2);
     $cash  = $cash1 + $cash2;
 
     =begin comment
     # calc-dp-winnings
-    # rules are complicated
-    # winning matches and prizes:
-
-    # for the main draw:
-    #   1 numbers + pb or just pb      $4
-    #   2 numbers + pb or 3 numbers    $7
-    #   3 numbers + pb or 4 numbers    $100
-    #   4 numbers + pb                 $50,000
-    #   5 numbers                      $1,000,000 # power play
-    #   5 numbers + pb                 current jackpot
-
-    # for the second draw for $1,000,000 # power play
-
-    # the power ball draw
-    my @pb = $dobj.nums.keys.sort;
-    # the double play draw
-    my @dp = $dobj.nums2.keys.sort;
-
-    my @t = $tobj.nums.keys.sort;
-    my $pb-match  = 0;
-    my $num-match = 0;
-    my $is-draw1-power-ball;
-    my $is-draw2-power-ball;
-    my $is-ticket-power-ball;
-
-    # iterate over the ticket numbers
-    TICKET: for @t -> $t {
-
-        $is-ticket-power-ball = False;
-        # keys: a..f
-        if $d eq "f" {
-            $is-ticket-power-ball = True;
-        }
-
-        for @t -> $t {
-            $is-ticket-power-ball = False;
-            # keys: a..f
-            if $t eq "f" {
-                $is-ticket-power-ball = True;
-            }
-            my $tnum = $tobj.nums{$k};
-
-        #=== main play ===
-        # iterate over the first draw set of numbers
-
-        my $dnum = $dobj.nums{$d};
-
-            # so so we have a Power Ball match or not?
-            if $is-draw-power-ball and $is-self-power-ball {
-                $pb-match += 1 if $dnum == $tnum;
-            }
-            elsif not $is-draw-power-ball {
-                $num-match += 1 if $dnum == $tnum;
-            }
-            else {
-                next;
-                # no matches, so go to next user number
-                # for this ticket
-                die "FATAL: no pb match so what action to take?";
-            }
-        } # end of this ticket
-
-        # analyze results...
-        # winning matches and prizes:
-        #   1 numbers + pb or just pb      $4
-        #   2 numbers + pb or 3 numbers    $7
-        #   3 numbers + pb or 4 numbers    $100
-        #   4 numbers + pb                 $50,000
-        #   5 numbers                      $1,000,000
-        #   5 numbers + pb                 current jackpot
-        if $pb-match {
-            # auto win?
-            # 0 or 1 num = $4
-            # 2 nums = $7
-            # 3 nums = $100
-            # 4 nums = $50,000
-            # 5 nums = current jackpot
-            with $num-match {
-                when $_ == 0 { $cash = 4 }
-                when $_ == 1 { $cash = 4 }
-                when $_ == 2 { $cash = 7 }
-                when $_ == 3 { $cash = 100 }
-                when $_ == 4 { $cash = 50_000 }
-                when $_ == 5 { $cash = 2_000_000 } # jackpot
-            }
-        }
-        elsif $num-match {
-            # 3 nums = $7
-            # 4 nums = $100
-            # 5 nums = $1,000,000
-            with $num-match {
-                when $_ == 3 { $cash = 7 }
-                when $_ == 4 { $cash = 100 }
-                when $_ == 5 { $cash = 1_000_000 }
-            }
-        }
-
-    } # end of this draw loop
-
     say "pb-match:  $pb-match"  if $debug;
     say "num-match: $num-match" if $debug;
     next unless $cash > 0; #$num-match or $pb-match;
 
     if $show-draw {
         print qq:to/HERE/;
-          The draw  : {$dobj.show.chomp}
+          The draw  : {$draw.show.chomp}
           Winning tickets
         HERE
     }
     if $cash > 0 {
         print qq:to/HERE/;
-        Our ticket: {$tobj.show.chomp} \# winnings: \$$cash
+        Our ticket: {$ticket.show.chomp} \# winnings: \$$cash
         HERE
     }
     else {
@@ -349,16 +256,16 @@ sub do-status(
     say "Calculating winnings..." if $debug;
 
     my $cash = 0;
-    for @tickets -> $tobj {
-        for @draws -> $dobj {
+    for @tickets -> $ticket {
+        for @draws -> $draw {
             # The calc subs are in this module...
-            my $money = calc-winnings :$tobj, :$dobj, :$debug;
+            my $money = calc-winnings :$ticket, :$draw, :$debug;
 
             if $money {
-                say "    Wow, ticket X won $money on draw on {$dobj.date}" if $debug;
+                say "    Wow, ticket X won $money on draw on {$draw.date}" if $debug;
             }
             else {
-                say "    Aw, ticket X won nothing on draw on {$dobj.date}" if $debug;
+                say "    Aw, ticket X won nothing on draw on {$draw.date}" if $debug;
             }
 
             $cash += $money;
@@ -403,13 +310,13 @@ sub get-ticket-objects(
         }
 
         # data for next Ticket object is complete
-        my $tobj = PB-Lottery::Ticket.new: :numbers-str($line);
-        unless $tobj ~~ PB-Lottery::Ticket {
+        my $ticket = PB-Lottery::Ticket.new: :numbers-str($line);
+        unless $ticket ~~ PB-Lottery::Ticket {
             my $msg = "The intended ticket object failed to instantiate.";
             throw-err $msg;
         }
 
-        @tickets.push: $tobj;
+        @tickets.push: $ticket;
     } # end of the loop creating the valid Ticket objects
 
     unless @tickets.elems {
@@ -466,14 +373,14 @@ sub get-draw-objects(
                 throw-err $msg;
             }
 
-            my $dobj = PB-Lottery::Draw.new: :numbers-str($line1),
+            my $draw = PB-Lottery::Draw.new: :numbers-str($line1),
                                              :numbers-str2($line2);
 
-            unless $dobj ~~ PB-Lottery::Draw {
+            unless $draw ~~ PB-Lottery::Draw {
                 my $msg = "Unable to instantiate a Draw object";
                 throw-err $msg;
             }
-            @draws.push: $dobj;
+            @draws.push: $draw;
 
             # finally, zero the two lines ready for the next draw
             $line1 = "";

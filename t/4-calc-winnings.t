@@ -7,12 +7,14 @@ use PB-Lottery::Subs;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
+use PB-Lottery::Vars;
 
 my $debug = 0;
 
 my $all   = 0;
 
 # start with this ticket and modify it to get 0 to max winnings
+# use jackpot value from 4 Oct 2025: $195m
 my @tlines-raw = [
     # $i == 0 match
     "11 12 13 14 15 11 2000-01-01 pp dp",
@@ -47,22 +49,38 @@ for @tlines-raw -> $line is copy {
 }
 
 my @d = [
-    "01 02 03 04 05 01 2000-01-01 pb 3x 100m",
-    "01 02 03 04 05 01 2000-01-01 dp",
+    '01 02 03 04 05 01 2000-01-01 3x $195m', # jackpot from 4 Oct 2025
+    '01 02 03 04 05 01 2000-01-01 dp',
 ];
 
-my $dobj = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
-isa-ok $dobj, PB-Lottery::Draw;
+my $draw = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
+isa-ok $draw, PB-Lottery::Draw;
 
+my $d = Date.new: "2000-01-01";
+is $draw.date, $d, "Date is $d as expected";
+
+# the index number of the Ticket lines can be
+# used to check the expected winnings
 for @tlines.kv -> $i, $s {
    
-   my $tobj = PB-Lottery::Ticket.new: :numbers-str($s);
-   isa-ok $tobj, PB-Lottery::Ticket;
+   my $s0 = $s.words[0..^7].join(' ');
+   # make four tickets out of the common string
+   my $s1 = $s0 ~ " pb"; # plain powerball
+   my $s2 = $s0 ~ " pp"; # add power play
+   my $s3 = $s0 ~ " dp"; # add double play
+   my $s4 = $s;          # pb + pp + dp
 
-   my $cash = calc-winnings :$tobj, :$dobj;
-   if $cash.defined {
+   my ($ticket, $cash, $exp-prize);
+   for ($s1, $s2, $s3, $s4).kv -> $j, $S {
+       $ticket = PB-Lottery::Ticket.new: :numbers-str($S);
+       isa-ok $ticket, PB-Lottery::Ticket;
+
+       $cash = calc-winnings :$ticket, :$draw;
        isa-ok $cash, Numeric;
-       #isa-ok $cash, Any;
+
+       say "Total winnings: $cash":
+#      my $exp-prize = 0; 
+#      is $cash, $exp-prize, "expected $exp-prize";
    }
 }
 

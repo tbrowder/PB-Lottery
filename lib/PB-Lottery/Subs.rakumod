@@ -4,6 +4,8 @@ my $F = $?FILE.IO.basename;
 
 use Text::Utils :strip-comment;
 
+use PB-Lottery::Vars;
+
 # All items here MUST be dependent
 # only upon Raku core or external
 # distributions.
@@ -188,3 +190,121 @@ sub Lstr2info-hash(
 
     %h;
 } # end sub Lstr2info-hash
+
+# sub get-pb-hash:
+# our @power-ball-prizes is export = [
+sub get-pb-hash(
+    --> Hash
+) is export {
+    my %h;
+    for @power-ball-prizes.kv -> $i, $line is copy {
+        $line = strip-comment $line;
+        my @w = $line.words;
+        my $code  = @w.head; # the key
+        my $prize = @w.tail; # the value
+        %h{$code} = $prize;
+    }
+    %h; 
+} # end sub get-pb-hash
+
+# sub get-dp-hash:
+# our @double-play-prizes is export = [
+sub get-dp-hash(
+    --> Hash
+) is export {
+    my %h;
+    for @double-play-prizes.kv -> $i, $line is copy {
+        $line = strip-comment $line;
+        my @w = $line.words;
+        my $code  = @w.head; # the key
+        my $prize = @w.tail; # the value
+        %h{$code} = $prize;
+    }
+    %h; 
+} # end sub get-dp-hash
+
+# sub get-pp-hash:
+# our @power-play-prizes is export = [
+sub get-pp-hash(
+    --> Hash
+) is export {
+    my %h;
+    for @power-play-prizes.kv -> $i, $line is copy {
+        $line = strip-comment $line;
+        my @w = $line.words;
+        my $code  = @w.head; # the key
+        my $prize = @w.tail; # the value
+        %h{$code} = $prize;
+    }
+    %h; 
+} # end sub get-pp-hash
+
+# my $pb-code = get-pb-code :$n5set, :$pbset;
+# my $pp-code = get-pp-code :$n5set, :$pbset;
+# my $dp-code = get-dp-code :$n5set, :$pbset;
+sub get-pb-code(
+    :$n5set,
+    :$pbset,
+    --> Str # the code
+) is export {
+    my @n = $n5set.keys;
+    my @p = $pbset.keys;
+
+    my $c = " ";
+} # end of sub get-pb-code
+
+sub get-pp-code(
+    :$n5set,
+    :$pbset,
+    --> Str # the code
+) is export {
+    my @n = $n5set.keys;
+    my @p = $pbset.keys;
+
+    my $c = " ";
+} # end of sub get-pp-code
+
+=begin comment
+"5+pb jackpot",
+"5    1_000_000",
+"4+pb 50_000",
+"4    100",
+"3+pb 100",
+"3    7",
+"2+pb 7",
+"1+pb 4",
+"pb   4",
+=end comment
+
+sub get-prize-code(
+    :$n5set,
+    :$pbset,
+    --> Str # the code
+) is export {
+    my @n = $n5set.keys;
+    my @p = $pbset.keys;
+    my $code;
+    my $nn = @n.elems;
+    my $np = @p.elems;
+    if $nn and $np {
+        $code = "{$nn}+pb";
+    }
+    elsif $nn {
+        $code = "{$nn}";
+    }
+    elsif $np {
+        $code = "pb";
+    }
+    $code;
+} # end of sub get-prize-code
+
+sub exp-prize(
+    :$nm! where * ~~ /^ 0|1|2|3|4|5 $/, # number matches
+    :$np! where * ~~ /^ 0|1 $/,         # power ball match?
+    :$dp,
+    :$pp,
+    --> Numeric    
+) is export {
+    my $prize = 0;
+}
+

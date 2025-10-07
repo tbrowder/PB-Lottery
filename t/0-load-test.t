@@ -6,6 +6,7 @@ my @modules = <
     PB-Lottery::Draw
     PB-Lottery::Numbers
     PB-Lottery::Ticket
+    PB-Lottery::Vars
 >;
 
 plan @modules.elems;

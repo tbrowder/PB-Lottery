@@ -1,6 +1,8 @@
 Check code hashes for %h<key>:exists before using
 
 Use 'ticket' and 'draw' as args to sub calc-winnings
++ use jackpot and all winnings from 4 Oct 2025 for
+  testing in file t/4*t
 
 Add test to calculate the money in t/data/good/*txt
 

@@ -1,6 +1,7 @@
 use Test;
 
 use PB-Lottery::Subs;
+use PB-Lottery::Vars;
 
 my $set5s = set(1..69);
 my $setpb = set(1..26);
