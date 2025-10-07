@@ -28,9 +28,7 @@ The package uses two separate data records, in defined formats (see below), for 
 
 The drawing records must be in a file named `draws.txt` and your ticket records must be in a file named `my-tickets.txt`.
 
-This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run, and the `draws.txt` and `my-tickets.txt` files must exist in order to check your results.
-
-Note if you use the script to interactively update any of those files, it should create a '.bak' version of the existing base file. It should abort if that file already exists. It is recommended to keep your data files under *Git* management.
+This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run, and the `draws.txt` and `my-tickets.txt` files must exist in order to check your results. (It is recommended to keep your data files under *Git* management.)
 
 Ticket file format
 ------------------
@@ -63,7 +61,7 @@ Your lottery ticket records must be in a text file in the following format:
 
      02 20 32 45 47 06 2025-09-22 pb # <== no add-ons
      02 20 32 45 47 06 2025-09-22 pp dp qp
-     02 20 32 45 47 06 2025-09-22 pp dp qp paid #
+     02 20 32 45 47 06 2025-09-22 pp dp qp paid # <== see note above
 
 Draw file format
 ----------------

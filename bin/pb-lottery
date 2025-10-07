@@ -31,13 +31,8 @@ my $edraw  = 0;
 my $epick  = 0;
 my $all    = 0;
 
-if not @*ARGS {
-    print qq:to/HERE/;
-    Usage: {$*PROGRAM.basename} <mode> [options...]
-
-    Modes:
-      pick   - Select a random Power Ball play
-      status - Shows current user results from latest data
+=begin comment
+# not yet used
 
       edraw  - Begin a dialogue to enter a Power Ball draw
                  (not yet implemented)
@@ -48,6 +43,15 @@ if not @*ARGS {
       all    - With mode 'status', if true, show all valid data
                  (including net profit/loss)
       debug
+=end comment
+
+if not @*ARGS {
+    print qq:to/HERE/;
+    Usage: {$*PROGRAM.basename} <mode> [options...]
+
+    Modes:
+      pick   - Select a random Power Ball play
+      status - Shows current user results from current data
 
     HERE
     exit;

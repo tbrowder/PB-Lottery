@@ -12,6 +12,7 @@ has Str  $.numbers-str is required;
 has Date $.date;
 has Str  $.type;
 has Bool $.is-qp;
+has Bool $.paid = False;
 
 has PB-Lottery::Numbers $.N; # fill in TWEAK
 
@@ -27,4 +28,8 @@ submethod TWEAK {
   
     my $s = @w[0..^6].join(' '); # only want first six numbers
     $!N  = PB-Lottery::Numbers.new: :numbers-str($s);
+
+    if $!numbers-str ~~ /:i paid / {
+        $!paid = True;
+    }
 }

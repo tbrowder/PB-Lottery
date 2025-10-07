@@ -80,10 +80,16 @@ sub calc-part-winnings(
             if %pb-hash{$pb-code}:exists {
                 $pb-prize = %pb-hash{$pb-code};
             }
+            else {
+                say "DEBUG: unknown pb-code: $pb-code" if 1 or $debug;
+            }
             say "pb-prize: $pb-prize" if 1 or $debug;
 
             if %pp-hash{$pp-code}:exists {
                 $pp-prize = %pp-hash{$pp-code};
+            }
+            else {
+                say "DEBUG: unknown pp-code: $pp-code" if 1 or $debug;
             }
             say "pp-prize: $pp-prize" if 1 or $debug;
         }
@@ -120,6 +126,9 @@ sub calc-part-winnings(
             # get the prize for it
             if %dp-hash{$dp-code}:exists {
                 $dp-prize = %dp-hash{$dp-code};
+            }
+            else {
+                say "DEBUG: unknown dp-code: $dp-code" if 1 or $debug;
             }
             say "dp-prize: $dp-prize" if 1 or $debug;
         }
@@ -232,8 +241,13 @@ sub do-status(
 ) is export {
     say "Entering sub do-status" if $debug;
     # read all the draws...
-    say "Reading latest draw and associated valid tickets in directory:" if $debug;
-    say "  $pdir" if $debug;
+    say "Calculating winnings..." if 1 or $debug;
+    if 1 or $debug {
+        print qq:to/HERE/;
+        Reading all draws and and associated valid tickets in directory:
+          '$pdir'
+        HERE
+    }
 
     my $dfil = "$pdir/draws.txt";
     my $tfil = "$pdir/my-tickets.txt";
@@ -243,10 +257,11 @@ sub do-status(
     my @tickets = get-ticket-objects $tfil;
     my @draws   = get-draw-objects $dfil;
 
-    say "Calculating winnings..." if $debug;
-
     my $cash = 0;
     for @tickets -> $ticket {
+        # ignore 'paid' tickets
+        next if $ticket.paid;
+
         for @draws -> $draw {
             # The calc subs are in this module...
             my $money = calc-winnings :$ticket, :$draw, :$debug;
@@ -261,7 +276,7 @@ sub do-status(
             $cash += $money;
         }
     }
-    say "  Total winnings of \$$cash for the given lists." if $debug
+    say "  Total winnings of \$$cash for the given lists." if 1 or $debug
 
 } # end sub do-status
 
