@@ -78,6 +78,7 @@ for @tlines.kv -> $i, $s {
        $cash = calc-winnings :$ticket, :$draw;
        isa-ok $cash, Numeric;
 
+       say "Total winnings: $cash":
 #      my $exp-prize = 0; 
 #      is $cash, $exp-prize, "expected $exp-prize";
    }

@@ -298,3 +298,13 @@ sub get-prize-code(
     $code;
 } # end of sub get-prize-code
 
+sub exp-prize(
+    :$nm! where * ~~ /^ 0|1|2|3|4|5 $/, # number matches
+    :$np! where * ~~ /^ 0|1 $/,         # power ball match?
+    :$dp,
+    :$pp,
+    --> Numeric    
+) is export {
+    my $prize = 0;
+}
+

@@ -38,6 +38,7 @@ sub calc-part-winnings(
     my ($dn5set, $dpbset);
     my ($n5set, $pbset);
     my ($nn, $np, $nx);
+    my ($pb-prize, $pp-prize, $dp-prize) = 0, 0, 0;
 
     # calc-dp-winnings
     if $part == 1 {
@@ -75,8 +76,22 @@ sub calc-part-winnings(
             my $pb-code = get-prize-code :$n5set, :$pbset;
 
             # get the prize for each
-            my $pb-prize = %pb-hash{$pb-code};
-            my $pp-prize = %pp-hash{$pb-code};
+            $pb-prize = %pb-hash{$pb-code};
+
+# TODO fix next line
+            say "pb-prize: $pb-prize" if 1 or $debug;
+
+            unless $pb-prize ~~ Numeric {
+                $pb-prize = 0; # TODO fix this...
+            }
+            $pp-prize = %pp-hash{$pb-code};
+
+# TODO fix next line
+            say "pp-prize: $pp-prize" if 1 or $debug;
+
+            unless $pp-prize ~~ Numeric {
+                $pp-prize = 0; # TODO fix this...
+            }
         }
     }
     else {
@@ -109,10 +124,17 @@ sub calc-part-winnings(
             my $dp-code = get-prize-code :$n5set, :$pbset;
 
             # get the prize for each
-            my $dp-prize = %dp-hash{$dp-code};
+            $dp-prize = %dp-hash{$dp-code};
+
+# TODO fix next line
+            say "dp-prize: $dp-prize" if 1 or $debug;
+
+            unless $dp-prize ~~ Numeric {
+                $dp-prize = 0; # TODO fix this...
+            }
         }
     }
-    $cash;
+    $cash = $pb-prize + $dp-prize + $pp-prize;;
 } # end sub calc-part-winnings
 
 sub calc-winnings(
