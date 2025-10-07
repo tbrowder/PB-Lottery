@@ -68,8 +68,15 @@ sub calc-part-winnings(
             my %h;
             my %pb-hash = ($nn or $np) ?? get-pb-hash() !! %h;
             my %pp-hash = ($nn or $np) ?? get-pp-hash() !! %h;
-        }
 
+            # create the code for each
+            my $pb-code = get-pb-code :$n5set, :$pbset;
+            my $pp-code = get-pp-code :$n5set, :$pbset;
+
+            # get the prize for each
+            my $pb-prize = %pb-hash{$pb-code};
+            my $pp-prize = %pp-hash{$pb-code};
+        }
     }
     else {
         # the double play draw
@@ -93,7 +100,13 @@ sub calc-part-winnings(
 
             # get the coded prizes 
             my %h;
-            my %dp-hash = ($nn or $np) ?? get-pb-hash() !! %h;
+            my %dp-hash = ($nn or $np) ?? get-dp-hash() !! %h;
+
+            # create the code for each
+            my $dp-code = get-dp-code :$n5set, :$pbset;
+
+            # get the prize for each
+            my $dp-prize = %dp-hash{$dp-code};
         }
     }
     $cash;

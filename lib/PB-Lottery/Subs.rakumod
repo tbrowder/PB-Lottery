@@ -197,6 +197,14 @@ sub get-pb-hash(
     --> Hash
 ) is export {
     my %h;
+    for @power-ball-prizes.kv -> $i, $line is copy {
+        $line = strip-comment $line;
+        my @w = $line.words;
+        my $code  = @w.head; # the key
+        my $prize = @w.tail; # the value
+        %h{$code} = $prize;
+    }
+    %h; 
 } # end sub get-pb-hash
 
 # sub get-dp-hash:
@@ -205,6 +213,14 @@ sub get-dp-hash(
     --> Hash
 ) is export {
     my %h;
+    for @double-play-prizes.kv -> $i, $line is copy {
+        $line = strip-comment $line;
+        my @w = $line.words;
+        my $code  = @w.head; # the key
+        my $prize = @w.tail; # the value
+        %h{$code} = $prize;
+    }
+    %h; 
 } # end sub get-dp-hash
 
 # sub get-pp-hash:
@@ -222,3 +238,34 @@ sub get-pp-hash(
     }
     %h; 
 } # end sub get-pp-hash
+
+# my $pb-code = get-pb-code :$n5set, :$pbset;
+# my $pp-code = get-pp-code :$n5set, :$pbset;
+# my $dp-code = get-dp-code :$n5set, :$pbset;
+sub get-pb-code(
+    :$n5set,
+    :$pbset,
+    --> Str # the code
+) is export {
+    my @n = $n5set.keys;
+    my @p = $pbset.keys;
+} # end of sub get-pb-code
+
+sub get-pp-code(
+    :$n5set,
+    :$pbset,
+    --> Str # the code
+) is export {
+    my @n = $n5set.keys;
+    my @p = $pbset.keys;
+} # end of sub get-pp-code
+
+sub get-dp-code(
+    :$n5set,
+    :$pbset,
+    --> Str # the code
+) is export {
+    my @n = $n5set.keys;
+    my @p = $pbset.keys;
+} # end of sub get-dp-code
+

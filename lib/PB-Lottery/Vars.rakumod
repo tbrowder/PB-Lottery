@@ -3,7 +3,7 @@ unit module PB-Lottery::Vars;
 # Prizes for the Florida Powerball lottery
 # in strings for decoding.
 
-# the actual prizes possible for the various options
+# The strings contain the actual prizes possible for the various options.
 
 # sub get-pb-hash:
 our @power-ball-prizes is export = [
