@@ -74,24 +74,18 @@ sub calc-part-winnings(
 
             # create the common code for each
             my $pb-code = get-prize-code :$n5set, :$pbset;
+            my $pp-code = get-prize-code :$n5set, :$pbset;
 
             # get the prize for each
-            $pb-prize = %pb-hash{$pb-code};
-
-# TODO fix next line
+            if %pb-hash{$pb-code}:exists {
+                $pb-prize = %pb-hash{$pb-code};
+            }
             say "pb-prize: $pb-prize" if 1 or $debug;
 
-            unless $pb-prize ~~ Numeric {
-                $pb-prize = 0; # TODO fix this...
+            if %pp-hash{$pp-code}:exists {
+                $pp-prize = %pp-hash{$pp-code};
             }
-            $pp-prize = %pp-hash{$pb-code};
-
-# TODO fix next line
             say "pp-prize: $pp-prize" if 1 or $debug;
-
-            unless $pp-prize ~~ Numeric {
-                $pp-prize = 0; # TODO fix this...
-            }
         }
     }
     else {
@@ -120,21 +114,17 @@ sub calc-part-winnings(
             my %h;
             my %dp-hash = ($nn or $np) ?? get-dp-hash() !! %h;
 
-            # create the code for each
+            # create the code for it	
             my $dp-code = get-prize-code :$n5set, :$pbset;
 
-            # get the prize for each
-            $dp-prize = %dp-hash{$dp-code};
-
-# TODO fix next line
-            say "dp-prize: $dp-prize" if 1 or $debug;
-
-            unless $dp-prize ~~ Numeric {
-                $dp-prize = 0; # TODO fix this...
+            # get the prize for it
+            if %dp-hash{$dp-code}:exists {
+                $dp-prize = %dp-hash{$dp-code};
             }
+            say "dp-prize: $dp-prize" if 1 or $debug;
         }
     }
-    $cash = $pb-prize + $dp-prize + $pp-prize;;
+    $cash = $pb-prize + $dp-prize + $pp-prize;
 } # end sub calc-part-winnings
 
 sub calc-winnings(
