@@ -3,8 +3,8 @@ unit class PB-Lottery::Event;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 
-has $.draw of PB-Lottery::Draw      is required;;
-has @.tickets of PB-Lottery::Ticket is required;;
+has $.draw of PB-Lottery::Draw      is required;
+has @.tickets of PB-Lottery::Ticket is required;
 
 has $.date;
 

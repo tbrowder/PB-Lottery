@@ -28,6 +28,13 @@ has      %.numbers-hash2;
 
 has $debug = 0;
 
+method print1() {
+    # called by an Event object
+}
+method print2() {
+    # called by an Event object
+}
+
 submethod TWEAK {
     my @w  = $!numbers-str.words;
     my @w2 = $!numbers-str2.words;

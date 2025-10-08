@@ -16,6 +16,13 @@ has Bool $.paid = False;
 
 has PB-Lottery::Numbers $.N; # fill in TWEAK
 
+method print1() {
+    # called by an Event object
+}
+method print2() {
+    # called by an Event object
+}
+
 submethod TWEAK {
     unless $!numbers-str ~~ /\S/ {
         my $msg = "Cannot create a PB-Lottery::Ticket object with an empty input string";
