@@ -1,3 +1,14 @@
+Remove redundant tests
+
+Ensure the Event can calc-winnings (matches)
+  + create a sub to create the desired
+    output strings?
+    - yes, but add it to Text::Utils!!
+  + move it to the Event class?
+
+
+=completed
+
 Check code hashes for %h<key>:exists before using
 
 Use 'ticket' and 'draw' as args to sub calc-winnings
@@ -9,6 +20,5 @@ Add test to calculate the money in t/data/good/*txt
 Add new classes in order to eliminate the hash
  + see the Draw and Ticket classes for inspiration
 
-Remove redundant tests
 
 Ensure docs match current uses
