@@ -2,6 +2,8 @@ unit module PB-Lottery::Subs;
 
 my $F = $?FILE.IO.basename;
 
+use Test;
+
 use Text::Utils :strip-comment;
 
 use PB-Lottery::Vars;
@@ -33,6 +35,28 @@ our %valid-draw-types is export = set <
 
     dp Dp dP DP
 >;
+
+class SPair {
+    has Str $.L is required;
+    has Str $.R is required;
+}
+
+sub show-string-matches(
+    Str :$Lstr1!,
+    Str :$Lstr2!,
+    Str :$Rstr!,
+    --> List # of Str # the two pairs of show strings
+) is export {
+    # show the draw/ticket in two columns
+    # nn nn nn nn nn nn | nn nn nn nn nn nn # Lstr1 Rstr
+    #                        --    --
+    # nn nn nn nn nn nn | nn nn nn nn nn nn # Lstr2 Rstr
+    #                     --    --                      
+    my $l1 = SPair.new: :L($Lstr1), :R($Rstr); 
+    my $l2 = SPair.new: :L($Lstr2), :R($Rstr); 
+    my $nl1 = PB-Lottery::Numbers.new: :numbers-str($Lstr1);
+    isa-ok $nl1, OP-Lottery::Numbers;
+}
 
 sub trim-leading-zeros(
     $s is copy,

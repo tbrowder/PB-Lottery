@@ -5,7 +5,7 @@ my $F = $?FILE.IO.basename;
 use Text::Utils :strip-comment;
 
 use PB-Lottery::Subs;
-use PB-Lottery::Vars;
+#use PB-Lottery::Vars;
 
 has Str $.numbers-str is required;  # "00 00 00 00 00 00";
 
@@ -18,7 +18,4 @@ submethod TWEAK {
     my @w      = str2intlist $s;
     $!pb       = @w.pop.Set;
     $!numbers5 = @w.Set;
-
-    =begin comment
-    =end comment
 }

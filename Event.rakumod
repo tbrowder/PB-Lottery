@@ -3,8 +3,10 @@ unit class PB-Lottery::Event;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 
+=begin comment
 has $.draw of PB-Lottery::Draw      is required;
 has @.tickets of PB-Lottery::Ticket is required;
+=end comment
 
 has $.date;
 

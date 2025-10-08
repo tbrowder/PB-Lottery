@@ -5,10 +5,9 @@ my $F = $?FILE.IO.basename;
 use Text::Utils :strip-comment;
 use Test;
 
-use PB-Lottery::Subs;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
-use PB-Lottery::Numbers;
+#use PB-Lottery::Numbers;
 use PB-Lottery::Vars;
 use PB-Lottery::Subs;
 
