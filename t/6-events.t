@@ -65,6 +65,13 @@ for @tlines.kv -> $i, $s {
    my $s5 = $s0 ~ " paid"; # ignore it
 
    my ($ticket, $cash, $exp-prize);
+
+   # make a full ticket for the Event test
+   $ticket = PB-Lottery::Ticket.new: :numbers-str($s);
+   @tickets.push: $ticket;
+   # skip the rest for now
+   next;
+   
    for ($s1, $s2, $s3, $s4, $s5).kv -> $j, $S {
        $ticket = PB-Lottery::Ticket.new: :numbers-str($S);
        isa-ok $ticket, PB-Lottery::Ticket;
@@ -75,6 +82,9 @@ for @tlines.kv -> $i, $s {
        say "Total winnings: $cash":
    }
 }
+
+my $e = PB-Lottery::Event.new: :$draw, :@tickets;
+isa-ok $e, PB-Lottery::Event;
 
 done-testing;
 
