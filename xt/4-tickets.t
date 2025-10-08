@@ -3,6 +3,7 @@ use Test;
 use Text::Utils;
 
 use PB-Lottery;
+use PB-Lottery::Event;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;

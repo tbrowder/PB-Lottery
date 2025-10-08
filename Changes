@@ -1,6 +1,13 @@
 Revision history for PB-Lottery
 
 {{$NEXT}}
+    - Add better status reporting
+      + New Event class allows showing
+        draws with all valid ticket results
+        graphically
+      + Add methods to Draw and Ticket classes
+    - Add option "all" to the status mode
+    - Update README 
 
 0.0.1  2025-10-07T18:10:50-05:00
     - Initial version

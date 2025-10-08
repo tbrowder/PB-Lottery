@@ -50,6 +50,8 @@ isa-ok $draw, PB-Lottery::Draw;
 my $d = Date.new: "2000-01-01";
 is $draw.date, $d, "Date is $d as expected";
 
+my @tickets;
+
 # the index number of the Ticket lines can be
 # used to check the expected winnings
 for @tlines.kv -> $i, $s {
@@ -63,7 +65,6 @@ for @tlines.kv -> $i, $s {
    my $s5 = $s0 ~ " paid"; # ignore it
 
    my ($ticket, $cash, $exp-prize);
-#  for ($s1, $s2, $s3, $s4).kv -> $j, $S {
    for ($s1, $s2, $s3, $s4, $s5).kv -> $j, $S {
        $ticket = PB-Lottery::Ticket.new: :numbers-str($S);
        isa-ok $ticket, PB-Lottery::Ticket;

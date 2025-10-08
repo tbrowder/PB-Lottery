@@ -4,6 +4,7 @@ use Text::Utils :strip-comment;
 
 use PB-Lottery;
 use PB-Lottery::Subs;
+use PB-Lottery::Event;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
