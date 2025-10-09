@@ -20,36 +20,16 @@ has      $.nx;      # is required as part of the main draw
 has PB-Lottery::Numbers $.N;  # fill in TWEAK
 has PB-Lottery::Numbers $.N2; # fill in TWEAK
 
-=begin comment
-# don't need the hash for a Draw, do it all in TWEAK
-has      %.numbers-hash;
-has      %.numbers-hash2;
-=end comment
-
 has $debug = 0;
 
 method print1() {
     # called by an Event object
-    my $s = "n: ";
-    for self.N.numbers.kv -> $i, $n is copy {
-        $s ~= " " if $i;
-        if $n.chars == 1 {
-            $n = 0 ~ $n;
-        }
-        $s ~= $n;
-    }
+    my $s = self.N.numbers-str.words[0..^7].join(' ');
     print $s;
 }
 method print2() {
     # called by an Event object
-    my $s;
-    for self.N2.numbers.kv -> $i, $n is copy {
-        $s ~= " " if $i;
-        if $n.chars == 1 {
-            $n = 0 ~ $n;
-        }
-        $s ~= $n;
-    }
+    my $s = self.N2.numbers-str.words[0..^7].join(' ');
     print $s;
 }
 

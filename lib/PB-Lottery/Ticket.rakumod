@@ -18,27 +18,13 @@ has PB-Lottery::Numbers $.N; # fill in TWEAK
 
 method print1() {
     # called by an Event object
-    my $s;
-    for self.N.numbers.kv -> $i, $n is copy {
-        $s ~= " " if $i;
-        if $n.chars == 1 {
-            $n = 0 ~ $n;
-        }
-        $s ~= $n;
-    }
+    my $s = self.N.numbers-str.words[0..^7].join(' ');
     print $s;
 }
 
 method print2() {
     # called by an Event object
-    my $s;
-    for self.N.numbers.kv -> $i, $n is copy {
-        $s ~= " " if $i;
-        if $n.chars == 1 {
-            $n = 0 ~ $n;
-        }
-        $s ~= $n;
-    }
+    my $s = self.N.numbers-str.words[0..^7].join(' ');
     print $s;
 }
 
