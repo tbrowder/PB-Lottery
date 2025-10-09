@@ -2,7 +2,7 @@ unit module PB-Lottery;
 
 my $F = $?FILE.IO.basename;
 
-use Text::Utils :strip-comment;
+use Text::Utils :strip-comment, :str2intlist;
 use Test;
 
 use PB-Lottery::Draw;

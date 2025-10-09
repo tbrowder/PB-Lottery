@@ -2,7 +2,7 @@ unit class PB-Lottery::Numbers;
 
 my $F = $?FILE.IO.basename;
 
-use Text::Utils :strip-comment;
+use Text::Utils :strip-comment, :str2intlist;
 
 use PB-Lottery::Subs;
 #use PB-Lottery::Vars;
