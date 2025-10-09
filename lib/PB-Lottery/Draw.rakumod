@@ -30,9 +30,27 @@ has $debug = 0;
 
 method print1() {
     # called by an Event object
+    my $s = "n: ";
+    for self.N.numbers.kv -> $i, $n is copy {
+        $s ~= " " if $i;
+        if $n.chars == 1 {
+            $n = 0 ~ $n;
+        }
+        $s ~= $n;
+    }
+    print $s;
 }
 method print2() {
     # called by an Event object
+    my $s;
+    for self.N2.numbers.kv -> $i, $n is copy {
+        $s ~= " " if $i;
+        if $n.chars == 1 {
+            $n = 0 ~ $n;
+        }
+        $s ~= $n;
+    }
+    print $s;
 }
 
 submethod TWEAK {

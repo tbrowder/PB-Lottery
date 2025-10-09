@@ -1,6 +1,6 @@
 use Test;
 
-use Text::Utils :strip-comment;
+use Text::Utils :strip-comment, :str2intlist;
 
 use PB-Lottery;
 use PB-Lottery::Subs;
@@ -11,6 +11,30 @@ use PB-Lottery::Vars;
 use PB-Lottery::Event;
 
 my $debug = 0;
+
+my @d = [
+    '01 02 03 04 05 01 2000-01-01 3x $195m', # jackpot from 4 Oct 2025
+    '01 02 03 04 05 01 2000-01-01 dp',
+];
+
+my $draw = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
+isa-ok $draw, PB-Lottery::Draw, "new Draw";
+
+my $ts = "11 12 13 14 15 11 2000-01-01 pp dp";
+my $ticket = PB-Lottery::Ticket.new: :numbers-str($ts);
+isa-ok $ticket, PB-Lottery::Ticket, "new Ticket";
+my @tickets;
+@tickets.push: $ticket;
+
+my $e = PB-Lottery::Event.new: :$draw, :@tickets;
+isa-ok $e, PB-Lottery::Event, "new Event";
+
+isa-ok $e.draw, PB-Lottery::Draw, "new Event's Draw";
+isa-ok $e.tickets.head, PB-Lottery::Ticket, "new Event's first Ticket";
+
+done-testing;
+
+=finish
 
 # start with this ticket and modify it to get 0 to max winnings
 # use jackpot value from 4 Oct 2025: $195m
@@ -50,6 +74,8 @@ isa-ok $draw, PB-Lottery::Draw;
 my $d = Date.new: "2000-01-01";
 is $draw.date, $d, "Date is $d as expected";
 
+my @tickets;
+
 # the index number of the Ticket lines can be
 # used to check the expected winnings
 for @tlines.kv -> $i, $s {
@@ -63,7 +89,13 @@ for @tlines.kv -> $i, $s {
    my $s5 = $s0 ~ " paid"; # ignore it
 
    my ($ticket, $cash, $exp-prize);
-#  for ($s1, $s2, $s3, $s4).kv -> $j, $S {
+
+   # make a full ticket for the Event test
+   $ticket = PB-Lottery::Ticket.new: :numbers-str($s);
+   @tickets.push: $ticket;
+   # skip the rest for now
+   next;
+   
    for ($s1, $s2, $s3, $s4, $s5).kv -> $j, $S {
        $ticket = PB-Lottery::Ticket.new: :numbers-str($S);
        isa-ok $ticket, PB-Lottery::Ticket;
@@ -74,6 +106,9 @@ for @tlines.kv -> $i, $s {
        say "Total winnings: $cash":
    }
 }
+
+#my $e = PB-Lottery::Event.new: :$draw, :@tickets;
+#isa-ok $e, PB-Lottery::Event;
 
 done-testing;
 

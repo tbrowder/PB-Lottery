@@ -1,5 +1,7 @@
 use Test;
 
+use Text::Utils :str2intlist;
+
 use PB-Lottery::Subs;
 use PB-Lottery::Vars;
 

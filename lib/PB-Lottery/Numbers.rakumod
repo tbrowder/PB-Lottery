@@ -13,9 +13,20 @@ has Set $.numbers5 is built; # the five lottery numbers
 has Set $.pb       is built; # the powerball
 
 submethod TWEAK {
-    my $s = $!numbers-str;
-    $s = $s.words[0..^6].join(' ');
-    my @w      = str2intlist $s;
+    my (@w, $s);
+    $s         = $!numbers-str;
+    $s         = $s.words[0..^6].join(' ');
+    @w         = str2intlist $s;
     $!pb       = @w.pop.Set;
     $!numbers5 = @w.Set;
 }
+
+=begin comment
+method print1() {
+    # show
+    # nn nn nn nn nn nn
+    # --    --           # <== matches
+}
+=end comment
+
+

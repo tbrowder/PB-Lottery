@@ -1,12 +1,12 @@
 unit class PB-Lottery::Event;
 
+use Text::Utils :strip-comment, :str2intlist;
+
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 
-=begin comment
 has $.draw of PB-Lottery::Draw      is required;
 has @.tickets of PB-Lottery::Ticket is required;
-=end comment
 
 has $.date;
 
@@ -16,14 +16,16 @@ submethod TWEAK {
 }
 
 method show {
+    my $d = $!draw;
+
     # show the draw/ticket in two columns
     # nn nn nn nn nn nn | nn nn nn nn nn nn
     #                        --    --
     # nn nn nn nn nn nn | nn nn nn nn nn nn
     #                     --    --                      
     for @!tickets -> $t {
-        self.draw.print1; $t.print1;
-        self.draw.print2; $t.print2;
+        $d.print1; $t.print1;
+        $d.print2; $t.print2;
     }
 }
 

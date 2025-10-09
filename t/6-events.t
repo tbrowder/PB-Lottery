@@ -1,6 +1,6 @@
 use Test;
 
-use Text::Utils :strip-comment;
+use Text::Utils :strip-comment, :str2intlist;
 
 use PB-Lottery;
 use PB-Lottery::Subs;
@@ -8,6 +8,7 @@ use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 use PB-Lottery::Vars;
+use PB-Lottery::Event;
 
 my $debug = 0;
 
@@ -81,9 +82,6 @@ for @tlines.kv -> $i, $s {
        say "Total winnings: $cash":
    }
 }
-
-my $e = PB-Lottery::Event.new: :$draw, :@tickets;
-isa-ok $e, PB-Lottery::Event;
 
 done-testing;
 
