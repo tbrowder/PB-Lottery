@@ -1,3 +1,5 @@
+Sort valid tickets by winnings.
+
 Remove redundant tests
 
 Ensure the Event can calc-winnings (matches)

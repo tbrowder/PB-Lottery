@@ -12,10 +12,17 @@ use PB-Lottery::Event;
 
 my $debug = 0;
 
-my @d = [
+my @dlines-raw = [
     '01 02 03 04 05 01 2000-01-01 3x $195m', # jackpot from 4 Oct 2025
     '01 02 03 04 05 01 2000-01-01 dp',
 ];
+
+my @d;
+for @dlines-raw -> $line is copy {
+    $line = strip-comment $line;
+    next unless $line ~~ /\S/;
+    @d.push: $line;
+}
 
 my $draw = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
 isa-ok $draw, PB-Lottery::Draw, "new Draw";
@@ -31,6 +38,14 @@ isa-ok $e, PB-Lottery::Event, "new Event";
 
 isa-ok $e.draw, PB-Lottery::Draw, "new Event's Draw";
 isa-ok $e.tickets.head, PB-Lottery::Ticket, "new Event's first Ticket";
+
+# how to show event results:
+# $e.tickets.head.print1;
+# $e.tickets.head.print2;
+# for the current verion, the following creates a good look:
+# $e.draw.print1; print " | "; $e.draw.print2; say();
+
+$e.show;
 
 done-testing;
 
@@ -63,10 +78,12 @@ my @tlines = [
 
 ];
 
-my @d = [
+my @draw = [
     '01 02 03 04 05 01 2000-01-01 3x $195m', # jackpot from 4 Oct 2025
     '01 02 03 04 05 01 2000-01-01 dp',
 ];
+
+say @d.head;
 
 my $draw = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
 isa-ok $draw, PB-Lottery::Draw;

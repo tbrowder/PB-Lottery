@@ -8,6 +8,8 @@ use PB-Lottery::Numbers;
 use PB-Lottery::Subs;
 use PB-Lottery::Vars;
 
+my $debug = 0;
+
 has Str $.numbers-str  is required;
 has Str $.numbers-str2 is required;
 
@@ -20,16 +22,18 @@ has      $.nx;      # is required as part of the main draw
 has PB-Lottery::Numbers $.N;  # fill in TWEAK
 has PB-Lottery::Numbers $.N2; # fill in TWEAK
 
-has $debug = 0;
-
-method print1() {
+method print1(:$debug) {
     # called by an Event object
-    my $s = self.N.numbers-str.words[0..^7].join(' ');
+    my $s = self.N.numbers-str;
+    if $debug {
+        say "debug: {self.N.numbers-str}";
+        exit(1);
+    }
     print $s;
 }
 method print2() {
     # called by an Event object
-    my $s = self.N2.numbers-str.words[0..^7].join(' ');
+    my $s = self.N2.numbers-str;
     print $s;
 }
 

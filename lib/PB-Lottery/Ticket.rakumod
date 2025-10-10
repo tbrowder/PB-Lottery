@@ -9,8 +9,8 @@ use PB-Lottery::Subs;
 use PB-Lottery::Vars;
 
 has Str  $.numbers-str is required;
-has Date $.date;
-has Str  $.type;
+has Date $.date is built;
+has Str  $.type is built;
 has Bool $.is-qp;
 has Bool $.paid = False;
 
@@ -18,13 +18,13 @@ has PB-Lottery::Numbers $.N; # fill in TWEAK
 
 method print1() {
     # called by an Event object
-    my $s = self.N.numbers-str.words[0..^7].join(' ');
+    my $s = self.N.numbers-str;
     print $s;
 }
 
 method print2() {
     # called by an Event object
-    my $s = self.N.numbers-str.words[0..^7].join(' ');
+    my $s = self.N.numbers-str;
     print $s;
 }
 
