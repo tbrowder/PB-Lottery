@@ -30,14 +30,16 @@ isa-ok $draw, PB-Lottery::Draw, "new Draw";
 my $ts = "11 12 13 14 15 11 2000-01-01 pp dp";
 my $ticket = PB-Lottery::Ticket.new: :numbers-str($ts);
 isa-ok $ticket, PB-Lottery::Ticket, "new Ticket";
-my @tickets;
+my @tickets of PB-Lottery::Ticket;
 @tickets.push: $ticket;
 
 my $e = PB-Lottery::Event.new: :$draw, :@tickets;
 isa-ok $e, PB-Lottery::Event, "new Event";
-
 isa-ok $e.draw, PB-Lottery::Draw, "new Event's Draw";
-isa-ok $e.tickets.head, PB-Lottery::Ticket, "new Event's first Ticket";
+
+for @tickets -> $t {
+    isa-ok $t, PB-Lottery::Ticket, "isa Ticket";
+}
 
 # how to show event results:
 # $e.tickets.head.print1;
@@ -45,7 +47,7 @@ isa-ok $e.tickets.head, PB-Lottery::Ticket, "new Event's first Ticket";
 # for the current verion, the following creates a good look:
 # $e.draw.print1; print " | "; $e.draw.print2; say();
 
-$e.show;
+#$e.show;
 
 done-testing;
 

@@ -10,7 +10,7 @@ has @.tickets of PB-Lottery::Ticket is required;
 
 has $.date;
 
-has @.valid-tickets;
+has @.valid-tickets of PB-Lottery::Ticket is built;
 
 submethod TWEAK {
     $!date = $!draw.date;
@@ -42,17 +42,19 @@ method show(:$all, :$debug) {
     }
 
     for @!valid-tickets -> $t {
-        self.show-matches :draw($!draw), :ticket($t);
-        next;
+        die "FATAL: not a Ticket" unless $t ~~ PB-Lottery::Ticket;
+        self!show-matches: :draw($!draw), :ticket($t);
 
-        $d.print1; print " | "; $t.print1; say();
-        $d.print2; print " | "; $t.print2; say();
+#       $d.print1; print " | "; $t.print1; say();
+#       $d.print2; print " | "; $t.print2; say();
     }
 }
 
-method show-matches(
-    :$draw,
-    :$ticket,
+method !show-matches(
+    :$draw!,
+    :$ticket!,
 ) {
+    my $d = $draw;
+    my $t = $ticket;
 }
 
