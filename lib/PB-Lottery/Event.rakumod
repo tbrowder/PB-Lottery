@@ -70,7 +70,9 @@ sub show-ticket-matches(
 
     my $d = $draw;
     my $t = $ticket;
-
+    show-str-match :Lstr($d.numbers-str), :Rstr($t.numbers-str);
+    show-str-match :Lstr($d.numbers-str), :Rstr($t.numbers-str);
+ 
     =begin comment
     my $Lset1a = $d.N.numbers5; 
     my $Lset1b = $d.N.pb; 
@@ -99,7 +101,9 @@ sub show-ticket-matches(
 } # end sub show-ticket-matches
 
 sub show-str-match(
+    :$Lstr!,
+    :$Rstr!,
 ) {
-# $d.numbers-str, $t.numbers-str => output: the two lines above
+    # $d.numbers-str, $t.numbers-str => output: the two lines above
 } # end sub show-str-match
 
