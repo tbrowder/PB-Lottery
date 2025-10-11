@@ -23,6 +23,11 @@ for @dlines-raw -> $line is copy {
     next unless $line ~~ /\S/;
     @d.push: $line;
 }
+is @d.elems, 2, "have two lines per Draw object";
+isa-ok @d.head, Str, "\@d.head isa Str";
+isa-ok @d.tail, Str, "\@d.tail isa Str";
+is @d.head.chars, 37, "dline1 has 37 chars: '{@d.head}'";
+is @d.tail.chars, 31, "dline2 has 31 chars: '{@d.tail}'";
 
 my $draw = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
 isa-ok $draw, PB-Lottery::Draw, "new Draw";
@@ -30,7 +35,7 @@ isa-ok $draw, PB-Lottery::Draw, "new Draw";
 my $ts = "11 12 13 14 15 11 2000-01-01 pp dp";
 my $ticket = PB-Lottery::Ticket.new: :numbers-str($ts);
 isa-ok $ticket, PB-Lottery::Ticket, "new Ticket";
-my @tickets of PB-Lottery::Ticket;
+my @tickets of PB-Lottery::Ticket = [];
 @tickets.push: $ticket;
 
 my $e = PB-Lottery::Event.new: :$draw, :@tickets;
@@ -47,7 +52,7 @@ for @tickets -> $t {
 # for the current verion, the following creates a good look:
 # $e.draw.print1; print " | "; $e.draw.print2; say();
 
-#$e.show;
+$e.show-matches;
 
 done-testing;
 
