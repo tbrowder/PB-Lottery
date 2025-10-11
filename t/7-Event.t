@@ -17,34 +17,47 @@ my @dlines-raw = [
     '01 02 03 04 05 01 2000-01-01 dp',
 ];
 
-my @d;
+my @tlines-raw = [
+    "11 12 13 14 15 11 2000-01-01 pp dp",
+    "01 12 13 14 15 11 2000-01-01 pp dp",
+    "11 12 13 14 15 01 2000-01-01 pp dp",
+];
+
+my @tlines;
+for @tlines-raw -> $line is copy {
+    $line = strip-comment $line;
+    next unless $line ~~ /\S/;
+    @tlines.push: $line;
+}
+my @dlines;
 for @dlines-raw -> $line is copy {
     $line = strip-comment $line;
     next unless $line ~~ /\S/;
-    @d.push: $line;
+    @dlines.push: $line;
 }
-is @d.elems, 2, "have two lines per Draw object";
-isa-ok @d.head, Str, "\@d.head isa Str";
-isa-ok @d.tail, Str, "\@d.tail isa Str";
-is @d.head.chars, 37, "dline1 has 37 chars: '{@d.head}'";
-is @d.tail.chars, 31, "dline2 has 31 chars: '{@d.tail}'";
+is @dlines.elems, 2, "have two lines per Draw object";
+isa-ok @dlines.head, Str, "\@d.head isa Str";
+isa-ok @dlines.tail, Str, "\@d.tail isa Str";
+is @dlines.head.chars, 37, "dline1 has 37 chars: '{@dlines.head}'";
+is @dlines.tail.chars, 31, "dline2 has 31 chars: '{@dlines.tail}'";
 
-my $draw = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
+my $draw = PB-Lottery::Draw.new: :numbers-str(@dlines.head), 
+           :numbers-str2(@dlines.tail);
 isa-ok $draw, PB-Lottery::Draw, "new Draw";
 
-my $ts = "11 12 13 14 15 11 2000-01-01 pp dp";
-my $ticket = PB-Lottery::Ticket.new: :numbers-str($ts);
-isa-ok $ticket, PB-Lottery::Ticket, "new Ticket";
-my @tickets of PB-Lottery::Ticket = [];
-@tickets.push: $ticket;
-
-my $e = PB-Lottery::Event.new: :$draw, :@tickets;
-isa-ok $e, PB-Lottery::Event, "new Event";
-isa-ok $e.draw, PB-Lottery::Draw, "new Event's Draw";
-
-for @tickets -> $t {
+my @t of PB-Lottery::Ticket = [];
+for @tlines -> $tline {
+    my $t = PB-Lottery::Ticket.new: :numbers-str($tline);
+    isa-ok $t, PB-Lottery::Ticket, "isa new Ticket";
+    @t.push: $t;
+}
+for @t -> $t {
     isa-ok $t, PB-Lottery::Ticket, "isa Ticket";
 }
+
+my $e = PB-Lottery::Event.new: :$draw, :tickets(@t);;
+isa-ok $e, PB-Lottery::Event, "new Event";
+isa-ok $e.draw, PB-Lottery::Draw, "new Event's Draw";
 
 # how to show event results:
 # $e.tickets.head.print1;

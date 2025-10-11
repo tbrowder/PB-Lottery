@@ -216,3 +216,26 @@ sub show-str-match(
 
 
 } # end sub show-str-match
+
+sub intlist2str(
+    List @intlist,
+    :$debug,
+    --> Str
+) {
+    my @list = [];
+    # ensure the incomming list is sorted numerically
+    @list = @intlist.sort({$^a <=> $^b});
+    my Str $s = "";
+    for @list.kv -> $i, $int is copy {
+        $s ~= " " if $i;
+        if $int.chars == 1 {
+            $int = "0$int";
+            $s ~= $int.Str;
+        }
+        else {
+            $s ~= $int.Str;
+        }
+    }
+    $s;
+}
+
