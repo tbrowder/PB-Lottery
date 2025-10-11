@@ -105,5 +105,19 @@ sub show-str-match(
     :$Rstr!,
 ) {
     # $d.numbers-str, $t.numbers-str => output: the two lines above
+    # we will need the raw strings and pieces
+    my @lw = $Lstr.words[0..^6]; # includes the PB word
+    my @rw = $Rstr.words[0..^6]; # includes the PB word
+
+    my $lset5 = str2intlist(@lw[0..^5].join(' ')).Set;
+    my $lsetp = str2intlist(@lw[5].join(' ')).Set;
+
+    my $rset5 = str2intlist(@rw[0..^5].join(' ')).Set;
+    my $rsetp = str2intlist($Rstr.words[5].join(' ')).Set;
+
+    # get the two intersections
+    my $s5 = $lset5 (&) $rset5;
+    my $sp = $lsetp (&) $rsetp;
+
 } # end sub show-str-match
 
