@@ -356,7 +356,7 @@ sub power-play-factor(
      --> Numeric
 ) is export {
     my $mult = 1;
-    unless %power-play-code{{$pp-code}:exists {
+    unless %power-play-codes{$pp-code}:exists {
         die "FATAL: Unknown Power Play code '$pp-code'";
     }
 

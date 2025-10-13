@@ -29,7 +29,8 @@ for %power-ball-prizes.kv -> $i, $s {
     say "  its key/value: |$k| => |$v|";
     %pb{$k} = $v;
 }
-for %power-play-prizes.kv -> $i, $s {
+
+for %power-play-codes.kv -> $i, $s {
     if $s ~~ /^ n '/' a / {
         say "non-numeric value: |$s|"; 
     }
