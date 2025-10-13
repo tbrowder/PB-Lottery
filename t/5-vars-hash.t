@@ -15,7 +15,7 @@ my $debug = 0;
 is 1, 1, "sanity check";
 
 my (%pb, %pp, %dp);
-for @power-ball-prizes.kv -> $i, $s {
+for %power-ball-prizes.kv -> $i, $s {
     if $s ~~ /^ n '/' a / {
         say "non-numeric value: |$s|"; 
     }
@@ -29,7 +29,7 @@ for @power-ball-prizes.kv -> $i, $s {
     say "  its key/value: |$k| => |$v|";
     %pb{$k} = $v;
 }
-for @power-play-prizes.kv -> $i, $s {
+for %power-play-prizes.kv -> $i, $s {
     if $s ~~ /^ n '/' a / {
         say "non-numeric value: |$s|"; 
     }
@@ -43,7 +43,7 @@ for @power-play-prizes.kv -> $i, $s {
     say "  its key/value: |$k| => |$v|";
     %pp{$k} = $v;
 }
-for @double-play-prizes.kv -> $i, $s {
+for %double-play-prizes.kv -> $i, $s {
     if $s ~~ /^ n '/' a / {
         say "non-numeric value: |$s|"; 
     }

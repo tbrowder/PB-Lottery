@@ -29,15 +29,18 @@ for @tlines-raw -> $line is copy {
     next unless $line ~~ /\S/;
     @tlines.push: $line;
 }
+
 my @dlines;
 for @dlines-raw -> $line is copy {
     $line = strip-comment $line;
     next unless $line ~~ /\S/;
     @dlines.push: $line;
 }
+
 is @dlines.elems, 2, "have two lines per Draw object";
 isa-ok @dlines.head, Str, "\@d.head isa Str";
 isa-ok @dlines.tail, Str, "\@d.tail isa Str";
+
 is @dlines.head.chars, 37, "dline1 has 37 chars: '{@dlines.head}'";
 is @dlines.tail.chars, 31, "dline2 has 31 chars: '{@dlines.tail}'";
 
@@ -45,7 +48,7 @@ my $draw = PB-Lottery::Draw.new: :numbers-str(@dlines.head),
            :numbers-str2(@dlines.tail);
 isa-ok $draw, PB-Lottery::Draw, "new Draw";
 
-my @t of PB-Lottery::Ticket = [];
+my @t = [];
 for @tlines -> $tline {
     my $t = PB-Lottery::Ticket.new: :numbers-str($tline);
     isa-ok $t, PB-Lottery::Ticket, "isa new Ticket";
@@ -55,7 +58,7 @@ for @t -> $t {
     isa-ok $t, PB-Lottery::Ticket, "isa Ticket";
 }
 
-my $e = PB-Lottery::Event.new: :$draw, :tickets(@t);;
+my $e = PB-Lottery::Event.new: :$draw, :tickets(@t);
 isa-ok $e, PB-Lottery::Event, "new Event";
 isa-ok $e.draw, PB-Lottery::Draw, "new Event's Draw";
 
@@ -130,6 +133,8 @@ for @tlines.kv -> $i, $s {
    # make a full ticket for the Event test
    $ticket = PB-Lottery::Ticket.new: :numbers-str($s);
    @tickets.push: $ticket;
+
+   =begin comment
    # skip the rest for now
    next;
    
@@ -142,6 +147,7 @@ for @tlines.kv -> $i, $s {
 
        say "Total winnings: $cash":
    }
+   =end comment
 }
 
 #my $e = PB-Lottery::Event.new: :$draw, :@tickets;

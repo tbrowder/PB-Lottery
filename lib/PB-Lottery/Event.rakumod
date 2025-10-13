@@ -4,6 +4,7 @@ use Text::Utils :strip-comment, :str2intlist;
 
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
+use PB-Lottery::Subs;
 
 has $.draw of PB-Lottery::Draw      is required;
 has @.tickets of PB-Lottery::Ticket is required;
@@ -113,15 +114,15 @@ sub show-ticket-matches(
 } # end sub show-ticket-matches
 
 sub show-str-match(
-    :$Lstr!,
-    :$Rstr!,
+    :$Lstr!, # "nn nn nn nn nn nn ..."
+    :$Rstr!, # "nn nn nn nn nn nn ..."
     :$debug,
 ) {
     say "DEBUG: in sub show-str-match" if 1 or $debug;
 
     # $d.numbers-str, $t.numbers-str => output: the two lines above
     # we will need the raw strings and pieces
-    my @lw = $Lstr.words[0..^6]; # includes the PB word
+    my @lw = $Lstr.words[0..^6]; # includes the PB word and leading zeros as needed
     my @rw = $Rstr.words[0..^6]; # includes the PB word
 
     my $lset5 = str2intlist(@lw[0..^5].join(' ')).Set;
@@ -138,18 +139,24 @@ sub show-str-match(
 
     # get the two intersections
     my $s5 = $lset5 (&) $rset5;
-    my @s5nums = $s5.keys.sort({ $^a <=> $^b });
+    die "FATAL: \$s5 is not a Set" unless $s5 ~~ Set;
+
     my $sp = $lsetp (&) $rsetp;
+    die "FATAL: \$sp is not a Set" unless $sp ~~ Set;
+
+    my @s5nums = $s5.keys.sort({ $^a <=> $^b });
     my @spnums = $sp.keys.sort({ $^a <=> $^b });
+#   my @s5nums = intlist2str($s5.keys).words; 
+#   my @spnums = intlist2str($sp.keys).words;
 
     # back to strings to mod and remove all but
     # the matched numbers
 
-    # the four original number strings
+    # the four original number strings with leading zeros as needed
     my $lmatch5 = @lw[0..^5].join(' ');
-    my $lmatchp = @lw[5].join(' ');
+    my $lmatchp = @lw[5]; 
     my $rmatch5 = @rw[0..^5].join(' ');
-    my $rmatchp = @rw[5].join(' ');
+    my $rmatchp = @rw[5];
 
     # copies to modify
     my $lm5 = $lmatch5;
@@ -158,11 +165,14 @@ sub show-str-match(
     my $rm5 = $rmatch5;
     my $rmp = $rmatchp;
 
-    for @s5nums -> $w {
+    # @s5nums - ints sorted numerically, no leading zeros
+    for @s5nums -> $w is copy {
         # $w is a matched number
-        # it should have 2 chars
+        # it should have 2 chars to be substited, add leading zero if needed
         my $n = $w.chars;
-        die "\$w '$w' MUST have 2 chars, but it has $n" unless $n == 2;
+        unless $n == 2 { $w = "0$w"; }
+#       die "FATAL: \$w '$w' MUST have 2 chars, but it has $n" unless $n == 2;
+
         # eliminate the UNmatched numbers
         if $lm5 ~~ /$w/ {
             ; # ok, # a no-op
@@ -180,11 +190,13 @@ sub show-str-match(
         }
     }
 
-    for @spnums -> $w {
+    for @spnums -> $w is copy {
         # $w is a matched number
         # it should have 2 chars
         my $n = $w.chars;
-        die "\$w MUST have 2 chars, but it has $n" unless $n == 2;
+        unless $n == 2 { $w = "0$w"; }
+
+#       die "\$w MUST have 2 chars, but it has $n" unless $n == 2;
 
         # eliminate the UNmatched numbers
         if $lmp ~~ /$w/ {
@@ -213,29 +225,4 @@ sub show-str-match(
 
     print "$lm5 $lmp | $rm5 $rmp"; say();
 
-
-
 } # end sub show-str-match
-
-sub intlist2str(
-    List @intlist,
-    :$debug,
-    --> Str
-) {
-    my @list = [];
-    # ensure the incomming list is sorted numerically
-    @list = @intlist.sort({$^a <=> $^b});
-    my Str $s = "";
-    for @list.kv -> $i, $int is copy {
-        $s ~= " " if $i;
-        if $int.chars == 1 {
-            $int = "0$int";
-            $s ~= $int.Str;
-        }
-        else {
-            $s ~= $int.Str;
-        }
-    }
-    $s;
-}
-

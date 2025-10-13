@@ -20,7 +20,7 @@ my $debug = 0;
 
 # read the status of the "good" draws and tickets
 lives-ok {
-    do-status $pdir;
+    do-status $pdir, :test;
 }, "good read of existing data";
 
 done-testing;

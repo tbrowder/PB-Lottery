@@ -14,10 +14,11 @@ has Str $.numbers-str  is required;
 has Str $.numbers-str2 is required;
 
 has Date $.date;
+has      $.nx;          # is required as part of the main draw
+has      $.jackpot = 0; # optional, but desired
+
 has Str  $.type;
 has Str  $.type2;
-has      $.jackpot; # optional, but desired
-has      $.nx;      # is required as part of the main draw
 
 has PB-Lottery::Numbers $.N;  # fill in TWEAK
 has PB-Lottery::Numbers $.N2; # fill in TWEAK
@@ -48,6 +49,7 @@ submethod TWEAK {
     $s   = @w2[0..^6].join(' '); # only want first six numbers
     $!N2 = PB-Lottery::Numbers.new: :numbers-str($s);
 
+    # required date
     $!date = Date.new: @w[6];
 
     my $d2 = Date.new: @w2[6];
@@ -69,6 +71,12 @@ submethod TWEAK {
         Power Play factor not determined in type string '$!type'
           the full line: |$!numbers-str|
         HERE
+    }
+
+    # optional jackpot value for the power ball drae
+    if @w.elems > 8 {
+        my $jp = @w[8];
+        $!jackpot = get-dollars $jp;
     }
 
     $!type2 = @w2[7];

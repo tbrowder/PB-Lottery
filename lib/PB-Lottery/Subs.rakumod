@@ -4,7 +4,7 @@ my $F = $?FILE.IO.basename;
 
 use Test;
 
-use Text::Utils :strip-comment;
+use Text::Utils :strip-comment, :str2intlist;
 
 use PB-Lottery::Vars;
 
@@ -188,6 +188,7 @@ sub Lstr2info-hash(
 sub get-pb-hash(
     --> Hash
 ) is export {
+    =begin comment
     my %h;
     for @power-ball-prizes.kv -> $i, $line is copy {
         $line = strip-comment $line;
@@ -197,6 +198,8 @@ sub get-pb-hash(
         %h{$code} = $prize;
     }
     %h; 
+    =end comment
+    %power-ball-prizes; #.kv -> $i, $line is copy {
 } # end sub get-pb-hash
 
 # sub get-dp-hash:
@@ -204,6 +207,7 @@ sub get-pb-hash(
 sub get-dp-hash(
     --> Hash
 ) is export {
+    =begin comment
     my %h;
     for @double-play-prizes.kv -> $i, $line is copy {
         $line = strip-comment $line;
@@ -213,6 +217,8 @@ sub get-dp-hash(
         %h{$code} = $prize;
     }
     %h; 
+    =end comment
+    %double-play-prizes; # .kv -> $i, $line is copy {
 } # end sub get-dp-hash
 
 # sub get-pp-hash:
@@ -220,6 +226,7 @@ sub get-dp-hash(
 sub get-pp-hash(
     --> Hash
 ) is export {
+    =begin comment
     my %h;
     for @power-play-prizes.kv -> $i, $line is copy {
         $line = strip-comment $line;
@@ -229,6 +236,8 @@ sub get-pp-hash(
         %h{$code} = $prize;
     }
     %h; 
+    =end comment
+    %power-play-prizes; #.kv -> $i, $line is copy {
 } # end sub get-pp-hash
 
 # my $pb-code = get-pb-code :$n5set, :$pbset;
@@ -298,5 +307,43 @@ sub exp-prize(
     --> Numeric    
 ) is export {
     my $prize = 0;
+}
+
+# WHY THIS:
+sub intlist2str(
+    @intlist, #= a list of words representing ints
+    :$debug,
+    --> Str
+) is export {
+    my @list = [];
+    # ensure the incoming list is sorted numerically
+    my $tmpstr = @intlist.join(' ');
+    @list = str2intlist $tmpstr; # .sort({$^a <=> $^b});
+    my Str $s = "";
+    for @list.kv -> $i, $int is copy {
+        $s ~= " " if $i;
+        if $int.chars == 1 {
+            $int = "0$int";
+            $s ~= $int.Str;
+        }
+        else {
+            $s ~= $int.Str;
+        }
+    }
+    $s.Str;
+} # end of sub intlist2str
+
+sub scrape(
+) is export {
+    my $addr = "https://floridalottery.com/games/draw-games/powerball";
+    use LibCurl::Easy;
+    my $curl = LibCurl::Easy.new(:verbose, :followlocation);
+    $curl.setopt(
+        URL => $addr,
+    );
+    $curl.perform;
+    say $curl.success;
+
+    say $curl.content;
 }
 

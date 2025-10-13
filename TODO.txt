@@ -1,3 +1,8 @@
+Scrape https://floridalottery.com
+  + read results
+
+Warn if no valid ticket!
+
 Sort valid tickets by winnings.
 
 Remove redundant tests

@@ -37,7 +37,7 @@ sub calc-part-winnings(
     my ($dn5set, $dpbset);
     my ($n5set, $pbset);
     my ($nn, $np, $nx);
-    my ($pb-prize, $pp-prize, $dp-prize) = 0, 0, 0;
+    my ($pb-prize, $pp-prize, $dp-prize, $jackpot) = 0, 0, 0, 0;
 
     # calc-dp-winnings
     if $part == 1 {
@@ -56,14 +56,17 @@ sub calc-part-winnings(
         # get the Nx factor
         $nx = $draw.nx;
         
+        # get the jackpot
+        $jackpot = $draw.jackpot;
+
         if $nn or $np {
             if $debug {
-            print qq:to/HERE/;
-            The Powerball string: |{$draw.numbers-str}|
-                $nn number matches of the Power Ball draw
-                    $np match of its power ball
-                Nx multiplier: $nx
-            HERE
+                print qq:to/HERE/;
+                The Powerball string: |{$draw.numbers-str}|
+                    $nn number matches of the Power Ball draw
+                        $np match of its power ball
+                    Nx multiplier: $nx
+                HERE
             }
 
             # get the coded prizes 
@@ -76,16 +79,26 @@ sub calc-part-winnings(
             my $pp-code = get-prize-code :$n5set, :$pbset;
 
             # get the prize for each
+            # power ball
             if %pb-hash{$pb-code}:exists {
                 $pb-prize = %pb-hash{$pb-code};
+                if $pb-prize ~~ /jackpot/ {
+                    say "DEBUG: Power Ball prize is 'jackpot'!!";
+                    $pb-prize = $jackpot;
+                }
             }
             else {
                 say "DEBUG: unknown pb-code: $pb-code" if 1 or $debug;
             }
             say "pb-prize: $pb-prize" if 1 or $debug;
 
+            # power play
             if %pp-hash{$pp-code}:exists {
                 $pp-prize = %pp-hash{$pp-code};
+                if $pp-prize ~~ /'n/a'/ {
+                    say "DEBUG: Power Play prize is 'n/a'!!";
+                    $pp-prize += 0;
+                }
             }
             else {
                 say "DEBUG: unknown pp-code: $pp-code" if 1 or $debug;
@@ -108,11 +121,11 @@ sub calc-part-winnings(
 
         if $nn or $np {
             if $debug {
-            print qq:to/HERE/;
-            The Double Play string: |{$draw.numbers-str2}|
-                $nn number matches of the Double Play draw
-                    $np match of its power ball
-            HERE
+                print qq:to/HERE/;
+                The Double Play string: |{$draw.numbers-str2}|
+                    $nn number matches of the Double Play draw
+                        $np match of its power ball
+                HERE
             }
 
             # get the coded prizes 
@@ -124,6 +137,10 @@ sub calc-part-winnings(
 
             # get the prize for it
             if %dp-hash{$dp-code}:exists {
+                my $p = %dp-hash{$dp-code};
+                unless $p ~~ Numeric {
+                    die "FATAL: Double Play prize value '$p' is not Numeric";
+                }
                 $dp-prize = %dp-hash{$dp-code};
             }
             else {
@@ -236,6 +253,7 @@ sub do-enter-draw(
 sub do-status(
     $pdir, #= private directory
     :$all, #= show latest only unless true
+    :$test, #= dev use
     :$debug,
 ) is export {
     say "Entering sub do-status" if $debug;
@@ -254,12 +272,28 @@ sub do-status(
     # create a sub to produce each of the list of Draw
     # and Ticket objects
     my @tickets = get-ticket-objects $tfil;
+    say "  WARNING: No tickets found!" unless @tickets;
     my @draws   = get-draw-objects $dfil;
+    say "  WARNING: No draws found!" unless @draws.elems;
 
     my $cash = 0;
+    
     for @tickets -> $ticket {
         # ignore 'paid' tickets
-        next if $ticket.paid;
+        if $ticket.paid {
+            say "WARNING: This ticket is marked 'paid'";
+        }
+
+        # WARN of invalid date tickets
+        my $tdate = $ticket.date;
+        my $cdate = Date.new(now);
+        if $tdate >= $cdate {
+            # valid
+            say "NOTE: This ticket is valid through: $tdate";
+        }
+        else {
+            say "WARNING: This ticket is no longer valid after $tdate";
+        }
 
         for @draws -> $draw {
             # The calc subs are in this module...
@@ -290,7 +324,7 @@ sub get-ticket-objects(
         my $msg = "Ticket file '$tfil' not found.";
         throw-err $msg;
     }
-    my @tlines = $tfil.IO.slurp.lines;
+    my @tlines = $tfil.IO.lines;
 
     if 0 or $debug {
         say "ticket lines:";
@@ -327,6 +361,7 @@ sub get-ticket-objects(
         my $msg = "Ticket file '$tfil' is empty.";
         throw-err $msg;
     }
+    @tickets;
 } # end of sub get-ticket-objects
 
 sub get-draw-objects(
@@ -334,7 +369,7 @@ sub get-draw-objects(
     :$debug
     --> List
 ) is export {
-    my @dlines = $dfil.IO.slurp.lines;
+    my @dlines = $dfil.IO.lines;
     if 0 or $debug {
         say "draw lines:";
         say "  $_" for @dlines;
@@ -401,6 +436,7 @@ sub get-draw-objects(
         my $msg = "Draw file '$dfil' is empty.";
         throw-err $msg;
     }
+    @draws;
 } # end of sub get-draw-objects
 
 # old stuff to steal from
