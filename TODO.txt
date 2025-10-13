@@ -1,7 +1,13 @@
+Correctly calculate the power play
+  + apply the Nx factor on winnings
+
 Scrape https://floridalottery.com
   + read results
+ 
+  see ChatGPT project Power Ball for code
 
 Warn if no valid ticket!
+  + and report it is ignored
 
 Sort valid tickets by winnings.
 

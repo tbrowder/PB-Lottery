@@ -18,17 +18,18 @@ our %power-ball-prizes is export = %(
 'pb'   => 4,
 );
 
+# the power play is calculated based on Nx
 # sub get-pp-hash:
-our %power-play-prizes is export = %(
-'5+pb' => 2_000_000,
-'5'    => 2_000_000,
-'4+pb' => 100_000,
-'4'    => 200,
-'3+pb' => 200,
-'3'    => 14,
-'2+pb' => 14,
-'1+pb' => 8,
-'pb'   => 8,
+our %power-play-codes is export = %(
+'5+pb' => True, # 2_000_000,
+'5'    => True, # 2_000_000,
+'4+pb' => True, # 100_000,
+'4'    => True, # 200,
+'3+pb' => True, # 200,
+'3'    => True, # 14,
+'2+pb' => True, # 14,
+'1+pb' => True, # 8,
+'pb'   => True, # 8,
 );
 
 # sub get-dp-hash:

@@ -221,6 +221,7 @@ sub get-dp-hash(
     %double-play-prizes; # .kv -> $i, $line is copy {
 } # end sub get-dp-hash
 
+=begin comment
 # sub get-pp-hash:
 # our @power-play-prizes is export = [
 sub get-pp-hash(
@@ -239,6 +240,7 @@ sub get-pp-hash(
     =end comment
     %power-play-prizes; #.kv -> $i, $line is copy {
 } # end sub get-pp-hash
+=end comment
 
 # my $pb-code = get-pb-code :$n5set, :$pbset;
 # my $pp-code = get-pp-code :$n5set, :$pbset;
@@ -346,4 +348,21 @@ sub scrape(
 
     say $curl.content;
 }
+
+sub power-play-factor(
+     $pp-code,
+     :$Nx!,
+     :$debug,
+     --> Numeric
+) is export {
+    my $mult = 1;
+    unless %power-play-code{{$pp-code}:exists {
+        die "FATAL: Unknown Power Play code '$pp-code'";
+    }
+
+    with $pp-code {
+    }
+
+    $mult;
+} # end sub power-play-factor
 

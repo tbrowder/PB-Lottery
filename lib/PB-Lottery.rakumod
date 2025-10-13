@@ -7,7 +7,6 @@ use Test;
 
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
-#use PB-Lottery::Numbers;
 use PB-Lottery::Vars;
 use PB-Lottery::Subs;
 
@@ -41,7 +40,7 @@ sub calc-part-winnings(
 
     # calc-dp-winnings
     if $part == 1 {
-        # the power ball draw
+        # the power ball draw (includes the power play Nx factor)
         say "    Evaluating the power ball draw..." if 0 or $debug;
         $dn5set = $draw.N.numbers5;
         $dpbset = $draw.N.pb;
@@ -72,11 +71,13 @@ sub calc-part-winnings(
             # get the coded prizes 
             my %h;
             my %pb-hash = ($nn or $np) ?? get-pb-hash() !! %h;
-            my %pp-hash = ($nn or $np) ?? get-pp-hash() !! %h;
+
+            # power play is a multiplier of Nx on the pb play
+#           my %pp-hash = ($nn or $np) ?? get-pp-hash() !! %h;
 
             # create the common code for each
             my $pb-code = get-prize-code :$n5set, :$pbset;
-            my $pp-code = get-prize-code :$n5set, :$pbset;
+#           my $pp-code = get-prize-code :$n5set, :$pbset;
 
             # get the prize for each
             # power ball
@@ -92,6 +93,7 @@ sub calc-part-winnings(
             }
             say "pb-prize: $pb-prize" if 1 or $debug;
 
+            =begin comment
             # power play
             if %pp-hash{$pp-code}:exists {
                 $pp-prize = %pp-hash{$pp-code};
@@ -104,6 +106,7 @@ sub calc-part-winnings(
                 say "DEBUG: unknown pp-code: $pp-code" if 1 or $debug;
             }
             say "pp-prize: $pp-prize" if 1 or $debug;
+            =end comment
         }
     }
     else {
