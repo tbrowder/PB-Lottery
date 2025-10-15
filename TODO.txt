@@ -1,8 +1,10 @@
 Correctly calculate the power play
   + apply the Nx factor on winnings
 
-Scrape https://floridalottery.com
+scrape https://floridalottery.com
   + read results
+  + uses LibCurl::Easy
+  + sbin/* # calls lib/*/Subs.rakumod (sub scrape)
  
   see ChatGPT project Power Ball for code
 

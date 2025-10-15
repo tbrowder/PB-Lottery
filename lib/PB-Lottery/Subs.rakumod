@@ -4,6 +4,7 @@ my $F = $?FILE.IO.basename;
 
 use Test;
 
+use LibCurl::Easy;
 use Text::Utils :strip-comment, :str2intlist;
 
 use PB-Lottery::Vars;
@@ -337,15 +338,20 @@ sub intlist2str(
 
 sub scrape(
 ) is export {
+
+=begin comment
+    # first page
+    https://files.floridalottery.com/exptkt/pb.pdf?
+      _gl=1*15gprlx*_ga*Mzc3NzE5MDk0LjE3NTgwMzg2ODA.*_ga_3E9WN4YVMF*czE3NjA1MzAzNDckbzUkZzEkdDE3NjA1MzA2NTMkajI2JGwwJGgw
+=end comment
+
     my $addr = "https://floridalottery.com/games/draw-games/powerball";
-    use LibCurl::Easy;
     my $curl = LibCurl::Easy.new(:verbose, :followlocation);
     $curl.setopt(
         URL => $addr,
     );
     $curl.perform;
     say $curl.success;
-
     say $curl.content;
 }
 
