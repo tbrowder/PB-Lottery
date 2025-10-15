@@ -1,11 +1,11 @@
 # Florida Poweball draws
 # a  b  c  d  e  f # <= %nums hash key
 09 12 22 41 61 25 2025-08-27 4x # <== power play multiplier
-03 18 22 27 33 17 2025-08-30 pb
+03 18 22 27 33 17 2025-08-30 dp
 
 # with this draw we started playing double play
 # and power play
-#   1 Sep 2025 tickets at $4 a pop so we have to 
+#   1 Sep 2025 tickets at $4 a pop so we have to
 #   start checking our tickets for 2 draws
 08 23 25 40 53 05 2025-09-01 3x # <= the Power Ball draw
 10 15 26 48 67 19 2025-09-01 dp # <= the Double Play draw
@@ -18,7 +18,7 @@
 11 23 44 61 62 17 2025-09-06 2x
 21 29 34 41 65 17 2025-09-06 dp
 
-# next draw 
+# next draw
 26 28 41 53 64 09 2025-09-08 3x
 07 18 19 22 68 13 2025-09-08 db
 
@@ -30,7 +30,7 @@
 28 37 42 50 53 19 2025-09-13 2x
 03 06 20 34 49 12 2025-09-13 dp
 
-# next draw: 2025-09-15 # 
+# next draw: 2025-09-15 #
 14 15 32 42 49 01 2025-09-15 2x
 07 19 42 53 56 05 2025-09-15 dp
 
@@ -38,16 +38,16 @@
 07 30 50 54 62 20 2025-09-17 2x
 08 19 47 51 58 21 2025-09-17 dp
 
-# next draw: 2025-09-20 # 
+# next draw: 2025-09-20 #
 15 29 64 66 67 04 2025-09-20 2x
-02 22 34 57 66 25 2025-09-20 db
+02 22 34 57 66 25 2025-09-20 dp
 
-# next draw: 2025-09-22 # 
+# next draw: 2025-09-22 #
 03 29 42 46 59 15 2025-09-22 3x
-32 49 50 56 63 19 2025-09-22 db
+32 49 50 56 63 19 2025-09-22 dp
 
 # BUY NEW TICKET for 15 draws = $60
 
-# next draw: 2025-09-24 # 
+# next draw: 2025-09-24 #
 # 2025-09-24 ?x
-# 2025-09-24 db
+# 2025-09-24 dp

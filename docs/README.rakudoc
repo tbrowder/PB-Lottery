@@ -7,6 +7,8 @@ B<PB-Lottery> - Provides routines for handling play of US Power Ball lottery gam
 =head1 SYNOPSIS
 
 =begin code :lang<raku>
+# ensure prerequistes are installed
+# sudo aptitude install poppler-utils...
 # execute the installed bin file
 $ pb-lottery status
 # OUTPUT

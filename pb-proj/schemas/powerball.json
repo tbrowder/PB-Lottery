@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Powerball Draw (Normalized)",
+  "type": "object",
+  "properties": {
+    "draw_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "numbers": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "powerball": {
+      "type": "integer"
+    },
+    "multiplier": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source": {
+      "type": "string"
+    },
+    "jackpot_usd": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "draw_date",
+    "numbers",
+    "powerball",
+    "source"
+  ]
+}

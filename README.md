@@ -9,6 +9,8 @@ SYNOPSIS
 ========
 
 ```raku
+# ensure prerequistes are installed
+# sudo aptitude install poppler-utils...
 # execute the installed bin file
 $ pb-lottery status
 # OUTPUT

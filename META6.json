@@ -6,6 +6,8 @@
   "build-depends": [
   ],
   "depends": [
+    "IO::Socket::SSL",
+    "HTTP::UserAgent",
     "LibCurl::Easy",
     "Text::Utils"
   ],
