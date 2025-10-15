@@ -1,13 +1,17 @@
 R6 = raku
-emit:
-	$(R6) emit-blocks.raku --last=5 > tests/tmp/emit.blocks
-emit-json:
-	$(R6) emit-blocks.raku --last=5 --emit=json > tests/tmp/emit.json
-parse:
-	$(R6) parse-blocks.raku --in=tests/fixtures/sample.blocks --out=tests/tmp/parsed.json
-test: emit parse
-	@echo "ok - emit and parse ran"
+
+test:
+	zef test -v .
 
 
-#prove:
-#	prove6 -I . -v t || raku -e 'use Test; say "Fallback: run individual tests with raku t/*.t"'
+# Batch parse locally saved PDFs with extract-from-pdfs.raku
+# Usage:
+#   make batch PDFS="~/LotteryPDFs/*.pdf" EMIT=both
+# or
+#   make batch PDFS="~/LotteryPDFs" EMIT=blocks
+PDFS ?= ~/Downloads/pb.pdf
+EMIT ?= blocks
+
+batch:
+	$(R6) extract-from-pdfs.raku $(PDFS) --emit=$(EMIT) > tests/tmp/batch.out
+	@echo "Wrote tests/tmp/batch.out"
