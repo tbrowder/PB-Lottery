@@ -2,12 +2,6 @@
 use v6;
 use JSON::Fast;
 
-# extract-from-pdfs.raku
-# Walk one or more PDFs / directories / globs, parse with pdftotext,
-# merge results by date, and emit blocks and/or JSON.
-#
-# Requires: pdftotext (poppler-utils).
-
 sub iso-to-weekday(Str $iso --> Str) {
     my ($y, $m, $d) = $iso.split('-')».Int;
     my $dt = DateTime.new(:$y, :$m, :$d);
@@ -30,13 +24,7 @@ sub parse-mmddyy(Str $mdy --> Str) {
     return sprintf "%04d-%02d-%02d", $y, $m, $d;
 }
 
-class Rec {
-    has Str  $.date;
-    has @.nums;
-    has Int  $.pb;
-    has Str  $.mult is rw;
-    has Bool $.is-dp = False;
-}
+class Rec { has Str $.date; has @.nums; has Int $.pb; has Str $.mult is rw; has Bool $.is-dp = False; }
 
 sub parse-pdf(IO::Path $pdf --> Hash) {
     my $txt = $*TMPDIR.IO.add("pb-" ~ $pdf.basename ~ ".txt");
@@ -47,102 +35,62 @@ sub parse-pdf(IO::Path $pdf --> Hash) {
     for $txt.open(:r, :enc('utf8-c8')).lines -> $line {
         next unless $line ~~ /^ \s* (\d+ '\/' \d+ '\/' \d+) \s+ /;
         my $date = parse-mmddyy($0.Str);
-
         my @n = $line.comb(/\d+/);
-        next if @n.elems < 9;                   # need mm dd yy + 5 whites + PB
-
+        next if @n.elems < 9;
         my @white = @n[3..7]».Int;
         my $pb    = @n[8].Int;
         my $mult  = '';
-
-        if $line ~~ / <[Xx]> (\d+) / {
-            $mult = $0.Str ~ 'x';               # X2 -> 2x
-        }
-
-        my $L = $line.uc.subst(/\s+/, ' ', :g); # collapse spaces
+        if $line ~~ / <[Xx]> (\d+) / { $mult = $0.Str ~ 'x' }
+        my $L = $line.uc.subst(/\s+/, ' ', :g);
         my $is-dp = $L.contains('POWERBALL DP') or $L.contains('DOUBLE PLAY');
-
         my $rec = Rec.new(:date($date), :nums(@white), :pb($pb), :mult($mult), :is-dp($is-dp));
         %by-date{$date} //= {};
         %by-date{$date}{ $is-dp ?? 'dp' !! 'pb' } = $rec;
     }
-
     return %by-date;
 }
 
 sub expand-args(*@args --> Seq) {
     gather for @args -> $arg {
         my $p = $arg.IO;
-        if $p.d {
-            for $p.dir -> $f {
-                take $f if $f.f and $f.extension.lc eq 'pdf';
-            }
-        }
+        if $p.d { for $p.dir -> $f { take $f if $f.f and $f.extension.lc eq 'pdf' } }
         elsif $arg ~~ /[*?]/ {
             my $dir = $p.dirname.IO;
-            for $dir.dir -> $f {
-                take $f if $f.basename ~~ $p.basename and $f.extension.lc eq 'pdf';
-            }
+            for $dir.dir -> $f { take $f if $f.basename ~~ $p.basename and $f.extension.lc eq 'pdf' }
         }
-        elsif $p.f and $p.extension.lc eq 'pdf' {
-            take $p;
-        }
+        elsif $p.f and $p.extension.lc eq 'pdf' { take $p }
     }
 }
 
-sub MAIN(
-    *@pdfs,                                  #= PDFs, dirs, or globs
-    :$emit = 'blocks',                       #= blocks|json|both
-) {
-    # Ensure pdftotext is available
+sub MAIN(*@pdfs, :$emit='blocks') {
     my $which = run 'bash', '-lc', 'command -v pdftotext', :out, :err;
     die "pdftotext not found (install poppler-utils)" if $which.exitcode != 0;
 
     my @files = expand-args(|@pdfs);
-    die "No PDFs found from arguments" unless @files;
+    die "No PDFs found" unless @files;
 
     my %merged = Hash[Hash].new;
     for @files.sort(*.basename) -> $pdf {
         my %d = parse-pdf($pdf);
         for %d.kv -> $date, %kinds {
             %merged{$date} //= {};
-            for %kinds.kv -> $kind, $rec {
-                %merged{$date}{$kind} = $rec;  # last wins
-            }
+            for %kinds.kv -> $kind, $rec { %merged{$date}{$kind} = $rec }
         }
     }
 
     my @dates = %merged.keys.sort;
     my @json;
-
     for @dates -> $d {
         if %merged{$d}:exists('pb') {
             my $r = %merged{$d}{'pb'};
             say fmt-block($r.nums, $r.pb, $d, $r.mult) if $emit eq 'blocks' or $emit eq 'both';
-            @json.push: {
-                draw_date   => $d,
-                numbers     => $r.nums,
-                powerball   => $r.pb,
-                multiplier  => $r.mult.chars ?? $r.mult !! Nil,
-                source      => 'floridalottery',
-                jackpot_usd => Nil,
-            } if $emit eq 'json' or $emit eq 'both';
+            @json.push: { draw_date=>$d, numbers=>$r.nums, powerball=>$r.pb, multiplier=>$r.mult.chars??$r.mult!!Nil, source=>'floridalottery', jackpot_usd=>Nil } if $emit eq 'json' or $emit eq 'both';
         }
         if %merged{$d}:exists('dp') {
             my $r = %merged{$d}{'dp'};
             say fmt-block($r.nums, $r.pb, $d, 'dp') if $emit eq 'blocks' or $emit eq 'both';
-            @json.push: {
-                draw_date   => $d,
-                numbers     => $r.nums,
-                powerball   => $r.pb,
-                multiplier  => Nil,
-                source      => 'floridalottery dp',
-                jackpot_usd => Nil,
-            } if $emit eq 'json' or $emit eq 'both';
+            @json.push: { draw_date=>$d, numbers=>$r.nums, powerball=>$r.pb, multiplier=>Nil, source=>'floridalottery dp', jackpot_usd=>Nil } if $emit eq 'json' or $emit eq 'both';
         }
     }
-
-    if $emit eq 'json' or $emit eq 'both' {
-        say to-json @json, :pretty;
-    }
+    if $emit eq 'json' or $emit eq 'both' { say to-json @json, :pretty }
 }

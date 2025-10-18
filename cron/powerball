@@ -1,0 +1,4 @@
+# /etc/cron.d/powerball
+# Download latest Florida Powerball PDF every
+#   Tue, Thu, Sun at 05:00 with user command:
+0 5 * * 2,4,7 root /usr/local/bin/get-powerball.sh

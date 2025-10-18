@@ -69,7 +69,7 @@ sub calc-part-winnings(
             }
 
             # get the coded prizes 
-            my %h;
+            my %h := {};
             my %pb-hash = ($nn or $np) ?? get-pb-hash() !! %h;
 
             # power play is a multiplier of Nx on the pb play
@@ -89,7 +89,8 @@ sub calc-part-winnings(
                 }
             }
             else {
-                say "DEBUG: unknown pb-code: $pb-code" if 1 or $debug;
+                $pb-prize = 0;
+#               say "DEBUG: unknown pb-code: $pb-code" if 1 or $debug;
             }
             say "pb-prize: $pb-prize" if 1 or $debug;
 
@@ -103,7 +104,8 @@ sub calc-part-winnings(
                 }
             }
             else {
-                say "DEBUG: unknown pp-code: $pp-code" if 1 or $debug;
+                $pp-prize = 0;
+#               say "DEBUG: unknown pp-code: $pp-code" if 1 or $debug;
             }
             say "pp-prize: $pp-prize" if 1 or $debug;
             =end comment
@@ -147,7 +149,8 @@ sub calc-part-winnings(
                 $dp-prize = %dp-hash{$dp-code};
             }
             else {
-                say "DEBUG: unknown dp-code: $dp-code" if 1 or $debug;
+                $dp-prize = 0;
+#               say "DEBUG: unknown dp-code: $dp-code" if 1 or $debug;
             }
             say "dp-prize: $dp-prize" if 1 or $debug;
         }

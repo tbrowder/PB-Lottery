@@ -295,10 +295,15 @@ sub get-prize-code(
     }
     elsif $nn {
         $code = "{$nn}";
+        if $code == 1 {
+            # set to zero
+            $code = "0";
+        }
     }
     elsif $np {
         $code = "pb";
     }
+
     $code;
 } # end of sub get-prize-code
 
