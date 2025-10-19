@@ -1,9 +1,11 @@
 1. Local data files and formats
 
+   The user's executable file in "/bin" shall be named "manage-pb".
+
    The user's file "my-tickets.txt" will be in the directory
    pointed to by the environment variable "PB_LOTTERY_PRIVATE_DIR".
 
-   The downloaded and created Florida Powerball data will be located 
+   The downloaded and created Florida Powerball data will be located
    in directory "/var/local/powerball".
 
    Extract desired results into the two-line text format:
@@ -25,7 +27,7 @@
        nn nn nn nn nn nn yyyy-mm-dd Nx jackpot-amount number-of-winners
        nn nn nn nn nn nn yyyy-mm-dd dp number-of-winners-of-10million
        ...
-       
+
    Result histograms are kept in file "histograms.txt". Its
    format is:
 
@@ -33,7 +35,7 @@
        # Total number of draws considered
        nnnn
        #======================================
-       # POWERBALL 
+       # POWERBALL
        #======================================
        # numbers         # occurrences
        1                 number-of-occurrences
@@ -44,7 +46,7 @@
        ...
        26                number-of-occurrences
        #======================================
-       # DOUBLEPLAY 
+       # DOUBLEPLAY
        #======================================
        # numbers         # occurrences
        1                 number-of-occurrences
@@ -69,8 +71,8 @@
 
    Open the existing file "draws.txt" and add the latest draw results
    to the top of the file and save it as "draws.txt".
-    
-   Open the existing file "histograms.txt" update it with the 
+
+   Open the existing file "histograms.txt" update it with the
    latest draw results
 
    Note the cron job will be controlled as a non-systemd service.
@@ -78,7 +80,7 @@
 3. Raku code is required to:
 
    Download the current file "pb.pdf" for the cron job.
-   
+
    Extract the Powerball results from file "pd.pdf"
    and insert it at the top of the "draws.txt" file.
 
