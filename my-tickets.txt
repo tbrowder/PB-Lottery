@@ -9,9 +9,9 @@
 # Any hash mark ('#') on a line starts a comment, and 
 # it and the remainder of that line are ignored.
 
-#                  valid date
-#                  for pick   |<= add 'dp' if Double Play
-#                             |  | add pp if Power Play
+#                  |<= last valid date for the draw
+#                             |<= add 'dp' if Double Play
+#                                |<= add 'pp' if Power Play
  nn nn nn nn nn nn yyyy-mm-dd dp pp 
 
 # Note the first five numbers must be drawn without 

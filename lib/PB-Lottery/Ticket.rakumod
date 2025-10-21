@@ -14,6 +14,9 @@ has Str  $.type is built;
 has Bool $.is-qp;
 has Bool $.paid = False;
 
+has Bool $.pp = False;
+has Bool $.dp = False;
+ 
 has PB-Lottery::Numbers $.N; # fill in TWEAK
 
 method print1() {
@@ -43,5 +46,11 @@ submethod TWEAK {
 
     if $!numbers-str ~~ /:i paid / {
         $!paid = True;
+    }
+    if $!numbers-str ~~ /:i db / {
+        $!dp = True;
+    }
+    if $!numbers-str ~~ /:i pp / {
+        $!pp = True;
     }
 }

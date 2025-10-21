@@ -10,12 +10,25 @@ use PB-Lottery::Ticket;
 use PB-Lottery::Vars;
 use PB-Lottery::Subs;
 
+class Win is export {
+    has $.pb    is rw = 0; # power ball winnings (without the power play factor
+    has $.pp    is rw = 0; # any additional winnings due to the power play factor
+                           #   (note it will always be zero unless the ticket has
+                           #   that option selected)
+    has $.dp    is rw = 0; # any additional winnings due to the double play option
+                           #   (note it will always be zero unless the ticket has
+                           #   that option selected)
+    method show-results() {
+    }
+}
+
 sub calc-part-winnings(
+    Win $win!,                  #= part and total winnings
     PB-Lottery::Ticket :$ticket!, #= the ticket object
     PB-Lottery::Draw   :$draw!,   #= the draw object
     :$part! where * ~~ /1|2/,
     :$debug,
-    --> Numeric #= return part winnings for this ticket/draw combo
+#   --> Numeric #= return part winnings for this ticket/draw combo
 ) is export {
     
     my $cash = 0;
@@ -73,11 +86,9 @@ sub calc-part-winnings(
             my %pb-hash = ($nn or $np) ?? get-pb-hash() !! %h;
 
             # power play is a multiplier of Nx on the pb play
-#           my %pp-hash = ($nn or $np) ?? get-pp-hash() !! %h;
 
             # create the common code for each
             my $pb-code = get-prize-code :$n5set, :$pbset;
-#           my $pp-code = get-prize-code :$n5set, :$pbset;
 
             # get the prize for each
             # power ball
@@ -86,32 +97,17 @@ sub calc-part-winnings(
                 if $pb-prize ~~ /jackpot/ {
                     say "DEBUG: Power Ball prize is 'jackpot'!!";
                     $pb-prize = $jackpot;
+                    $pp-prize = 0;
                 }
             }
             else {
                 $pb-prize = 0;
-#               say "DEBUG: unknown pb-code: $pb-code" if 1 or $debug;
             }
             say "pb-prize: $pb-prize" if 1 or $debug;
-
-            =begin comment
-            # power play
-            if %pp-hash{$pp-code}:exists {
-                $pp-prize = %pp-hash{$pp-code};
-                if $pp-prize ~~ /'n/a'/ {
-                    say "DEBUG: Power Play prize is 'n/a'!!";
-                    $pp-prize += 0;
-                }
-            }
-            else {
-                $pp-prize = 0;
-#               say "DEBUG: unknown pp-code: $pp-code" if 1 or $debug;
-            }
-            say "pp-prize: $pp-prize" if 1 or $debug;
-            =end comment
         }
     }
     else {
+        # PART 2
         # the double play draw
         say "    Evaluating the double play draw..." if 0 or $debug;
         $dn5set = $draw.N2.numbers5;
@@ -150,12 +146,13 @@ sub calc-part-winnings(
             }
             else {
                 $dp-prize = 0;
-#               say "DEBUG: unknown dp-code: $dp-code" if 1 or $debug;
             }
             say "dp-prize: $dp-prize" if 1 or $debug;
         }
     }
-    $cash = $pb-prize + $dp-prize + $pp-prize;
+
+#   $cash = $pb-prize + $dp-prize + $pp-prize;
+
 } # end sub calc-part-winnings
 
 sub calc-winnings(
@@ -168,12 +165,18 @@ sub calc-winnings(
     # and a valid ticket for the drawing date,
     # calculate any winnings (may be estimates).
 
+    my $win = Win.new;
+    calc-part-winnings :$win, :$ticket, :$draw, :part(1);
+    calc-part-winnings :$win, :$ticket, :$draw, :part(2);
+
+    =begin comment
     # ensure we start with cash = 0
     my ($cash, $cash1, $cash2) = 0, 0, 0;
 
     $cash1 = calc-part-winnings :$ticket, :$draw, :part(1);
     $cash2 = calc-part-winnings :$ticket, :$draw, :part(2);
     $cash  = $cash1 + $cash2;
+    =end comment
 
     =begin comment
     # calc-dp-winnings
@@ -199,7 +202,8 @@ sub calc-winnings(
     }
     =end comment
 
-    $cash;
+#   $cash;
+    $win;
 } # end sub calc-winnings
 
 sub do-pick(
@@ -282,7 +286,8 @@ sub do-status(
     my @draws   = get-draw-objects $dfil;
     say "  WARNING: No draws found!" unless @draws.elems;
 
-    my $cash = 0;
+    my $cash = 0; # total winnings from base+pp+dp
+    my ($cash-base, $cash-pp, $cash-dp) = 0,0,0;
     
     for @tickets -> $ticket {
         # ignore 'paid' tickets
