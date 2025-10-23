@@ -31,7 +31,7 @@ sub calc-part-winnings(
     :$debug,
 #   --> Numeric #= return part winnings for this ticket/draw combo
 ) is export {
-    
+
     my $cash = 0;
     my @dnums;
     # If part == 1, check the user's ticket against the power ball ticket
@@ -71,9 +71,9 @@ sub calc-part-winnings(
         # does the ticket have the power play option?
         unless $ticket.pp {
             # if not, don't use it
-            $nx = 0;  
+            $nx = 0;
         }
-        
+
         # get the jackpot
         $jackpot = $draw.jackpot;
 
@@ -87,7 +87,7 @@ sub calc-part-winnings(
                 HERE
             }
 
-            # get the coded prizes 
+            # get the coded prizes
             my %h := {};
             my %pb-hash = ($nn or $np) ?? get-pb-hash() !! %h;
 
@@ -142,17 +142,17 @@ sub calc-part-winnings(
                 HERE
             }
 
-            # get the coded prizes 
+            # get the coded prizes
             my %h;
             my %dp-hash = ($nn or $np) ?? get-dp-hash() !! %h;
 
-            # create the code for it	
+            # create the code for it
             my $dp-code = get-prize-code :$n5set, :$pbset;
 
             # get the prize for it
             if %dp-hash{$dp-code}:exists {
                 my $p = %dp-hash{$dp-code};
-                unless $p ~~ Numeric { 
+                unless $p ~~ Numeric {
                     die qq:to/HERE/;
                     FATAL: Double Play prize value '$p' is not Numeric
                     HERE
@@ -221,6 +221,55 @@ sub calc-winnings(
 #   $cash;
     $win;
 } # end sub calc-winnings
+
+# The following sub may replace two subs:
+sub calculate-win($ticket, $draw --> Win) is export {
+    my $win = Win.new;
+
+    # count matching regular numbers
+    my $match-count = ($ticket.numbers ∩ $draw.numbers).elems;
+    my $pb-match    = $ticket.powerball == $draw.powerball;
+
+    # base Powerball payout table (USD, without Power Play)
+    my %payouts = (
+        5 => { True  => 1_000_000_000, False => 1_000_000 },  # Jackpot
+        4 => { True  => 50_000,         False => 100 },
+        3 => { True  => 100,            False => 7 },
+        2 => { True  => 7,              False => 0 },
+        1 => { True  => 4,              False => 0 },
+        0 => { True  => 4,              False => 0 },
+    );
+
+    # lookup base win (pb)
+    if %payouts{$match-count}:exists {
+        $win.pb = %payouts{$match-count}{$pb-match} // 0;
+    }
+
+    # apply Power Play multiplier (2–10x except on jackpot)
+    if $ticket.power-play and $win.pb > 0 and $win.pb < 1_000_000_000 {
+        my $multiplier = $draw.power-play // 2;  # or actual draw’s multiplier
+        $win.pp = $win.pb * ($multiplier - 1);
+    }
+
+    # handle Double Play if applicable
+    if $ticket.double-play and $draw.^can('double-numbers') {
+        my $dmatch = ($ticket.numbers ∩ $draw.double-numbers).elems;
+        my $dpb    = $ticket.powerball == $draw.double-powerball;
+        my %dp-payouts = (
+            5 => { True  => 10_000_000, False => 500_000 },
+            4 => { True  => 50_000,     False => 500 },
+            3 => { True  => 500,        False => 20 },
+            2 => { True  => 20,         False => 0 },
+            1 => { True  => 10,         False => 0 },
+            0 => { True  => 7,          False => 0 },
+        );
+        if %dp-payouts{$dmatch}:exists {
+            $win.dp = %dp-payouts{$dmatch}{$dpb} // 0;
+        }
+    }
+
+    return $win;
+} # end sub calculate-win($ticket, $draw --> Win # from ChatGPT
 
 sub do-pick(
     $pdir, #= private directory
@@ -304,7 +353,7 @@ sub do-status(
 
     my $cash = Win.new; # total winnings from base+pp+dp
     my ($cash-pb, $cash-pp, $cash-dp) = 0, 0, 0;
-    
+
     for @tickets -> $ticket {
         # ignore 'paid' tickets
         if $ticket.paid {
