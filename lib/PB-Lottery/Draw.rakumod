@@ -23,6 +23,12 @@ has Str  $.type2;
 has PB-Lottery::Numbers $.N;  # fill in TWEAK
 has PB-Lottery::Numbers $.N2; # fill in TWEAK
 
+# from ChatGPT:
+has @.numbers of Array;
+has $.powerball where * < 0 < 27;
+has @.double-numbers;
+has $.double-powerball where * < 0 < 27;
+
 method print1(:$debug) {
     # called by an Event object
     my $s = self.N.numbers-str;

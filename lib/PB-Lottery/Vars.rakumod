@@ -19,6 +19,7 @@ our %power-ball-prizes is export = %(
 );
 
 # the power play is calculated based on Nx
+=begin comment
 # sub get-pp-hash:
 our %power-play-codes is export = %(
 '5+pb' => True, # 2_000_000,
@@ -31,6 +32,7 @@ our %power-play-codes is export = %(
 '1+pb' => True, # 8,
 'pb'   => True, # 8,
 );
+=end comment
 
 # sub get-dp-hash:
 our %double-play-prizes is export = %(
