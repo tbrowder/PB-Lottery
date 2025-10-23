@@ -1,8 +1,11 @@
-Create a Money class to segregate winnings type (base,
+DONE: Create a Win class to segregate winnings type (base,
   power play, double play)
 
 Correctly calculate the power play
   + apply the Nx factor on winnings
+
+Ensure there are explicit tests for the Power Play
+and Double Play options.
 
 scrape https://floridalottery.com
   + read results
