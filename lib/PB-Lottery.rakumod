@@ -18,12 +18,13 @@ class Win is export {
     has $.dp    is rw = 0; # any additional winnings due to the double play option
                            #   (note it will always be zero unless the ticket has
                            #   that option selected)
-    method show-results() {
+    method total() {
+        $!pb + $!pp + $!dp
     }
 }
 
 sub calc-part-winnings(
-    Win $win!,                  #= part and total winnings
+    Win :$win!,                   #= part and total winnings
     PB-Lottery::Ticket :$ticket!, #= the ticket object
     PB-Lottery::Draw   :$draw!,   #= the draw object
     :$part! where * ~~ /1|2/,
@@ -104,6 +105,8 @@ sub calc-part-winnings(
                 $pb-prize = 0;
             }
             say "pb-prize: $pb-prize" if 1 or $debug;
+            $win.pb = $pb-prize;
+            $win.pp = $pp-prize;
         }
     }
     else {
@@ -112,8 +115,7 @@ sub calc-part-winnings(
         say "    Evaluating the double play draw..." if 0 or $debug;
         $dn5set = $draw.N2.numbers5;
         $dpbset = $draw.N2.pb;
-
-        # get the intersection of the draw and ticket sets
+# get the intersection of the draw and ticket sets
         $n5set = $tn5set (&) $dn5set;
         $pbset = $tpbset (&) $dpbset;
 
@@ -139,8 +141,10 @@ sub calc-part-winnings(
             # get the prize for it
             if %dp-hash{$dp-code}:exists {
                 my $p = %dp-hash{$dp-code};
-                unless $p ~~ Numeric {
-                    die "FATAL: Double Play prize value '$p' is not Numeric";
+                unless $p ~~ Numeric { 
+                    die qq:to/HERE/;
+                    FATAL: Double Play prize value '$p' is not Numeric
+                    HERE
                 }
                 $dp-prize = %dp-hash{$dp-code};
             }
@@ -148,6 +152,7 @@ sub calc-part-winnings(
                 $dp-prize = 0;
             }
             say "dp-prize: $dp-prize" if 1 or $debug;
+            $win.dp = $dp-prize;
         }
     }
 
@@ -159,7 +164,7 @@ sub calc-winnings(
     PB-Lottery::Ticket :$ticket!, #= the ticket object
     PB-Lottery::Draw   :$draw!,   #= the draw object
     :$debug,
-    --> Numeric #= return winnings for this ticket/draw combo
+    --> Win # Numeric #= return winnings for this ticket/draw combo
 ) is export {
     # Given a drawing set of numbers,
     # and a valid ticket for the drawing date,
@@ -286,8 +291,8 @@ sub do-status(
     my @draws   = get-draw-objects $dfil;
     say "  WARNING: No draws found!" unless @draws.elems;
 
-    my $cash = 0; # total winnings from base+pp+dp
-    my ($cash-base, $cash-pp, $cash-dp) = 0,0,0;
+    my $cash = Win.new; # total winnings from base+pp+dp
+    my ($cash-pb, $cash-pp, $cash-dp) = 0, 0, 0;
     
     for @tickets -> $ticket {
         # ignore 'paid' tickets
@@ -310,14 +315,16 @@ sub do-status(
             # The calc subs are in this module...
             my $money = calc-winnings :$ticket, :$draw, :$debug;
 
-            if $money {
-                say "    Wow, ticket X won $money on draw on {$draw.date}" if $debug;
+            if $money.total {
+                say "    Wow, ticket X won {$money.total} on draw on {$draw.date}" if $debug;
             }
             else {
                 say "    Aw, ticket X won nothing on draw on {$draw.date}" if $debug;
             }
 
-            $cash += $money;
+            $cash.pb += $money.pb;
+            $cash.pp += $money.pp;
+            $cash.dp += $money.dp;
         }
     }
     say "  Total winnings of \$$cash for the given lists." if 1 or $debug
