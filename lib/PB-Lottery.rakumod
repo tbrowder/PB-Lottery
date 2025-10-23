@@ -66,8 +66,13 @@ sub calc-part-winnings(
         $nn = $n5set.elems;
         $np = $pbset.elems;
 
-        # get the Nx factor
+        # get the Draw Nx factor (always 2, 3, 4, 5, or 10
         $nx = $draw.nx;
+        # does the ticket have the power play option?
+        unless $ticket.pp {
+            # if not, don't use it
+            $nx = 0;  
+        }
         
         # get the jackpot
         $jackpot = $draw.jackpot;
@@ -100,11 +105,17 @@ sub calc-part-winnings(
                     $pb-prize = $jackpot;
                     $pp-prize = 0;
                 }
+                elsif $draw.nx  {
+                    # use the Nx factor to calculate power play portion
+                    die "FATAL: Nx factor $nx is < 2" if $nx < 2;
+                    $dp-prize = ($nx - 1) * $pb-prize;
+                }
             }
             else {
                 $pb-prize = 0;
             }
             say "pb-prize: $pb-prize" if 1 or $debug;
+            say "  pp-prize: $pp-prize" if 1 or $debug;
             $win.pb = $pb-prize;
             $win.pp = $pp-prize;
         }
@@ -151,7 +162,7 @@ sub calc-part-winnings(
             else {
                 $dp-prize = 0;
             }
-            say "dp-prize: $dp-prize" if 1 or $debug;
+            say "  dp-prize: $dp-prize" if 1 or $debug;
             $win.dp = $dp-prize;
         }
     }
