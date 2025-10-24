@@ -53,7 +53,7 @@ is $draw.date, $d, "Date is $d as expected";
 # the index number of the Ticket lines can be
 # used to check the expected winnings
 for @tlines.kv -> $i, $s {
-   
+
    my $s0 = $s.words[0..^7].join(' ');
    # make four tickets out of the common string
    my $s1 = $s0 ~ " pb"; # plain powerball
@@ -69,11 +69,10 @@ for @tlines.kv -> $i, $s {
        isa-ok $ticket, PB-Lottery::Ticket;
 
        $cash = calc-winnings :$ticket, :$draw;
-       isa-ok $cash, Numeric;
+       isa-ok $cash, Win;
 
        say "Total winnings: $cash":
    }
 }
 
 done-testing;
-

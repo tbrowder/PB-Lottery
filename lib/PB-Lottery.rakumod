@@ -23,6 +23,7 @@ class Win is export {
     }
 }
 
+=begin comment
 sub calc-part-winnings(
     Win :$win!,                   #= part and total winnings
     PB-Lottery::Ticket :$ticket!, #= the ticket object
@@ -221,8 +222,10 @@ sub calc-winnings(
 #   $cash;
     $win;
 } # end sub calc-winnings
+=end comment
 
 # The following sub may replace two subs:
+# From ChatGPT:
 sub calculate-win($ticket, $draw --> Win) is export {
     my $win = Win.new;
 
@@ -373,7 +376,8 @@ sub do-status(
 
         for @draws -> $draw {
             # The calc subs are in this module...
-            my $money = calc-winnings :$ticket, :$draw, :$debug;
+ #           my $money = calc-winnings :$ticket, :$draw, :$debug;
+            my $money = calculate-win :$ticket, :$draw, :$debug;
 
             if $money.total {
                 say "    Wow, ticket X won {$money.total} on draw on {$draw.date}" if $debug;

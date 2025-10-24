@@ -1,0 +1,34 @@
+Use code in ./PB-Lottery2 to gradually change the system
+for thhe next release.
+
+See Notes.txt in that directory.
+
+Goal: Use the required private directory to store all
+data without using cron.
+
+Primmary data file: history/pb.pdf
+
+Primary data file currency is based on:
+    date of last draw: Mon, Wed, and Sat at 1100 EST
+    date of primary data file: refresh if earlier than last draw + 6 hours)
+
+Files needed in the private directory (created if not existing):
+
+=begin table
+  File           | Notes
+  history/pb.pdf         | downloaded if not current
+  history/pb.txt         | created anew if not current
+
+  my-tickets.txt | created manually by the user
+  draws.txt      | automatically updated if not current
+=end table
+
+Routines needed:
+
+  download primary data file when needed
+  date of files
+  backup current files
+  transform pb.txt to draws.txt
+
+
+

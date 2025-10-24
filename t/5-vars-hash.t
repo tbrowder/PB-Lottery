@@ -17,10 +17,10 @@ is 1, 1, "sanity check";
 my (%pb, %pp, %dp);
 for %power-ball-prizes.kv -> $i, $s {
     if $s ~~ /^ n '/' a / {
-        say "non-numeric value: |$s|"; 
+        say "non-numeric value: |$s|";
     }
     if $s ~~ /^ jackpot / {
-        say "non-numeric value: |$s|"; 
+        say "non-numeric value: |$s|";
     }
     say "pb string: |$s|";
     my @w = $s.words;
@@ -30,12 +30,13 @@ for %power-ball-prizes.kv -> $i, $s {
     %pb{$k} = $v;
 }
 
+=begin comment
 for %power-play-codes.kv -> $i, $s {
     if $s ~~ /^ n '/' a / {
-        say "non-numeric value: |$s|"; 
+        say "non-numeric value: |$s|";
     }
     if $s ~~ /^ jackpot / {
-        say "non-numeric value: |$s|"; 
+        say "non-numeric value: |$s|";
     }
     say "pp string: |$s|";
     my @w = $s.words;
@@ -44,12 +45,14 @@ for %power-play-codes.kv -> $i, $s {
     say "  its key/value: |$k| => |$v|";
     %pp{$k} = $v;
 }
+=end comment
+
 for %double-play-prizes.kv -> $i, $s {
     if $s ~~ /^ n '/' a / {
-        say "non-numeric value: |$s|"; 
+        say "non-numeric value: |$s|";
     }
     if $s ~~ /^ jackpot / {
-        say "non-numeric value: |$s|"; 
+        say "non-numeric value: |$s|";
     }
     say "dp string: |$s|";
     my @w = $s.words;
@@ -75,5 +78,3 @@ for %pp.kv -> $k, $v {
 }
 
 done-testing;
-
-

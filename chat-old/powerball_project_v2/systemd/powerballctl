@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+set -euo pipefail
+SERVICE="powerball-download.service"
+TIMER="powerball-download.timer"
+SCRIPT="/usr/local/bin/get-powerball.sh"
+LOG="/var/local/powerball/cron.log"
+CRON_FILE="/etc/cron.d/powerball"
+
+have_systemd() { command -v systemctl >/dev/null 2>&1; }
+unit_exists() { systemctl list-unit-files --type=service --type=timer | grep -q "^$1"; }
+
+usage(){ cat <<USAGE
+Usage: powerballctl <command>
+
+Commands:
+  status | start | run-now | stop | restart | enable | disable | next-run | logs [--since X] | last | where
+USAGE
+}
+
+status(){
+  if have_systemd && unit_exists "$SERVICE"; then
+    systemctl status "$TIMER" --no-pager || true
+    echo
+    systemctl status "$SERVICE" --no-pager || true
+  else
+    echo "== cron fallback =="
+    [ -f "$CRON_FILE" ] && { echo "# $CRON_FILE"; cat "$CRON_FILE"; }
+    [ -f "$LOG" ] && { echo; tail -n 50 "$LOG"; }
+  fi
+}
+
+start_now(){
+  if have_systemd && unit_exists "$SERVICE"; then sudo systemctl start "$SERVICE"; else sudo "$SCRIPT"; fi
+}
+
+stop_timer(){ have_systemd && unit_exists "$TIMER" && sudo systemctl stop "$TIMER" || echo "No systemd timer."; }
+
+restart_all(){
+  if have_systemd && unit_exists "$SERVICE"; then
+    sudo systemctl daemon-reload; sudo systemctl restart "$SERVICE" || true
+    unit_exists "$TIMER" && sudo systemctl restart "$TIMER"
+  else echo "Systemd units not installed."; fi
+}
+
+enable_timer(){ have_systemd && { sudo systemctl daemon-reload; sudo systemctl enable --now "$TIMER"; } || echo "No systemd."; }
+
+disable_timer(){ have_systemd && unit_exists "$TIMER" && sudo systemctl disable --now "$TIMER" || echo "No timer."; }
+
+next_run(){ have_systemd && systemctl list-timers --all | awk 'NR==1 || /powerball-download/' || echo "Check /etc/cron.d/powerball"; }
+
+logs(){
+  if have_systemd && unit_exists "$SERVICE"; then
+    if [[ "${1:-}" == "--since" && -n "${2:-}" ]]; then sudo journalctl -u "$SERVICE" --since "$2" --no-pager
+    else sudo journalctl -u "$SERVICE" -n 200 --no-pager; fi
+  elif [ -f "$LOG" ]; then tail -n 200 "$LOG"; else echo "No logs."; fi
+}
+
+last(){ logs -n 50; }
+
+where(){
+  cat <<EOF
+Script:    $SCRIPT
+Outputs:   /var/local/powerball/current.blocks, /var/local/powerball/current.json
+History:   /var/local/powerball/history/
+Cron:      $CRON_FILE
+Service:   $SERVICE
+Timer:     $TIMER
+Log:       $LOG
+EOF
+}
+
+case "${1:-}" in
+  status) status;;
+  start|run-now) start_now;;
+  stop) stop_timer;;
+  restart) restart_all;;
+  enable) enable_timer;;
+  disable) disable_timer;;
+  next-run) next_run;;
+  logs) shift || true; logs "$@";;
+  last) last;;
+  where) where;;
+  *) usage; exit 2;;
+esac

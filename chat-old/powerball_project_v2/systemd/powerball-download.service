@@ -1,0 +1,36 @@
+[Unit]
+Description=Download and parse Florida Powerball PDF (oneshot, sandboxed)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=powerball
+Group=powerball
+Environment=HOME=/var/local/powerball
+ExecStart=/usr/local/bin/get-powerball.sh
+ReadWritePaths=/var/local/powerball
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=true
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallFilter=@system-service @file-system @basic-io @process @network-io
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+
+[Install]
+WantedBy=multi-user.target

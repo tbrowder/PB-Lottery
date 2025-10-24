@@ -52,9 +52,9 @@ sub show-string-matches(
     # nn nn nn nn nn nn | nn nn nn nn nn nn # Lstr1 Rstr
     #                        --    --
     # nn nn nn nn nn nn | nn nn nn nn nn nn # Lstr2 Rstr
-    #                     --    --                      
-    my $l1 = SPair.new: :L($Lstr1), :R($Rstr); 
-    my $l2 = SPair.new: :L($Lstr2), :R($Rstr); 
+    #                     --    --
+    my $l1 = SPair.new: :L($Lstr1), :R($Rstr);
+    my $l2 = SPair.new: :L($Lstr2), :R($Rstr);
     my $nl1 = PB-Lottery::Numbers.new: :numbers-str($Lstr1);
     isa-ok $nl1, OP-Lottery::Numbers;
 }
@@ -198,7 +198,7 @@ sub get-pb-hash(
         my $prize = @w.tail; # the value
         %h{$code} = $prize;
     }
-    %h; 
+    %h;
     =end comment
     %power-ball-prizes; #.kv -> $i, $line is copy {
 } # end sub get-pb-hash
@@ -217,7 +217,7 @@ sub get-dp-hash(
         my $prize = @w.tail; # the value
         %h{$code} = $prize;
     }
-    %h; 
+    %h;
     =end comment
     %double-play-prizes; # .kv -> $i, $line is copy {
 } # end sub get-dp-hash
@@ -237,7 +237,7 @@ sub get-pp-hash(
         my $prize = @w.tail; # the value
         %h{$code} = $prize;
     }
-    %h; 
+    %h;
     =end comment
     %power-play-prizes; #.kv -> $i, $line is copy {
 } # end sub get-pp-hash
@@ -312,7 +312,7 @@ sub exp-prize(
     :$np! where * ~~ /^ 0|1 $/,         # power ball match?
     :$dp,
     :$pp,
-    --> Numeric    
+    --> Numeric
 ) is export {
     my $prize = 0;
 }
@@ -360,6 +360,7 @@ sub scrape(
     say $curl.content;
 }
 
+=begin comment
 sub power-play-factor(
      $pp-code,
      :$Nx!,
@@ -376,4 +377,4 @@ sub power-play-factor(
 
     $mult;
 } # end sub power-play-factor
-
+=end comment

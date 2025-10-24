@@ -42,6 +42,7 @@ sub MAIN(
     :$emit = 'blocks',                                     #= blocks|json|both
     :$pdf  = '',                                           #= local PDF path
     :$pdf-url = 'https://files.floridalottery.com/exptkt/pb.pdf',
+    :$debug,
 ) {
     my $which = run 'bash', '-lc', 'command -v pdftotext', :out, :err;
     die "pdftotext not found (install poppler-utils)" if $which.exitcode != 0;
@@ -54,8 +55,11 @@ sub MAIN(
         my $curl = LibCurl::Easy.new(URL => $pdf-url, download => $pdf-file.Str);
         $curl.perform;
     }
+    say "DEBUG: See pdf file '$pdf-file'" if $debug;
 
     my $txt-file = $*TMPDIR.IO.add('pb.txt');
+    say "DEBUG: See pdf2txt file '$txt-file'" if $debug;
+
     my $pt = run 'pdftotext', '-layout', '-q', $pdf-file, $txt-file, :out, :err;
     die "pdftotext failed" if $pt.exitcode != 0;
 
@@ -81,43 +85,91 @@ sub MAIN(
         %by-date{$date}{ $is-dp ?? 'dp' !! 'pb' } = $rec;
     }
 
+    #=============================================
+    # @dates has the desired number of text blocks
+    #=============================================
+    my $blocks-file = $*TMPDIR.IO.add('pb.blocks');
     my @dates = %by-date.keys.sort;
     if $last > 0 && @dates.elems > $last { @dates = @dates[* - $last .. *] }
     if $since ne '' { @dates = @dates.grep(* ge $since) }
     if $until ne '' { @dates = @dates.grep(* le $until) }
 
+    #=============================================
+    # @json has the corresponding JSON strings or objects
+    #=============================================
+    my $json-file = $*TMPDIR.IO.add('pb.json');
     my @json;
+    my @blocks;
     for @dates -> $d {
         if %by-date{$d}:exists('pb') {
             my $r = %by-date{$d}{'pb'};
-            say fmt-block($r.nums, $r.pb, $d, $r.mult) 
-                if ($emit eq 'blocks' or $emit eq 'both');
-            @json.push( 
-                draw_date => $d, 
-                numbers => $r.nums, 
-                powerball => $r.pb,
-                multiplier => $r.mult.chars ?? $r.mult 
-                                            !! Nil, 
-                source => 'floridalottery',
-                jackpot_usd => Nil 
-            ) if ($emit eq 'json' or $emit eq 'both');
+
+            if $emit eq 'blocks' or $emit eq 'both' {
+                #say fmt-block($r.nums, $r.pb, $d, $r.mult) ;
+                my $b = fmt-block($r.nums, $r.pb, $d, $r.mult) ;
+                @blocks.push: $b;
+            }
+            if $emit eq 'json' or $emit eq 'both' {
+                @json.push( 
+                    draw_date => $d, 
+                    numbers => $r.nums, 
+                    powerball => $r.pb,
+                    multiplier => $r.mult.chars ?? $r.mult 
+                                                !! Nil, 
+                    source => 'floridalottery',
+                    jackpot_usd => Nil,
+                ); 
+            }
         }
 
         if %by-date{$d}:exists('dp') {
             my $r = %by-date{$d}{'dp'};
-            say fmt-block($r.nums, $r.pb, $d, 'dp') 
-                if ($emit eq 'blocks' or $emit eq 'both');
-            @json.push( 
-                draw_date => $d, 
-                numbers => $r.nums, 
-                powerball => $r.pb,
-                multiplier => Nil, 
-                source => 'floridalottery dp', 
-                jackpot_usd => Nil 
-             ) if ($emit eq 'json' or $emit eq 'both');
+
+            if $emit eq 'blocks' or $emit eq 'both' {
+                #say fmt-block($r.nums, $r.pb, $d, 'dp') 
+                my $b = fmt-block($r.nums, $r.pb, $d, 'dp'); 
+                @blocks.push: $b;
+            }
+
+            if $emit eq 'json' or $emit eq 'both' {
+                @json.push(
+                    draw_date => $d, 
+                    numbers => $r.nums, 
+                    powerball => $r.pb,
+                    multiplier => Nil, 
+                    source => 'floridalottery dp', 
+                    jackpot_usd => Nil,
+                );
+            }
         }
     }
+
+    
+    # convert the arrays to a file
+    my $fh = open $blocks-file, :w;
+    # two at a time delimited by blank lines
+    #unless is-even @blocks.elems {
+    unless @blocks.elems div 2 == 0 {
+        die "FATAL: The blocks file has an odd number of elements";
+    }
+    unless @blocks.elems > 1 {
+        die "FATAL: The blocks file has too few elements";
+    }
+    while @blocks {
+        $fh.say() if @blocks.elems; # blank line berween element
+        my $pb = @blocks.shift;
+        my $dp = @blocks.shift;
+        $fh.say: "$pb # power ball draw";
+        $fh.say: "$dp # double play draw";
+    }
+    $fh.close;
+
+    say "DEBUG: See blocks file '$blocks-file'" if $debug;
+
+    my $jstr;
     if ($emit eq 'json' or $emit eq 'both') { 
-        say to-json @json, :pretty 
+        #say to-json @json, :pretty 
+        $jstr = to-json @json, :pretty;
+        say $jstr;
     }
 }

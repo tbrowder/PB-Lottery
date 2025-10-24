@@ -1,0 +1,11 @@
+{
+  "name": "PB-Lottery",
+  "version": "0.0.1",
+  "auth": "",
+  "depends": [],
+  "provides": {
+    "PB::Lottery::Win": "lib/PB-Lottery/Win.rakumod",
+    "PB::Lottery::Calculate": "lib/PB-Lottery/calculate-win.rakumod"
+  },
+  "source-url": ""
+}
