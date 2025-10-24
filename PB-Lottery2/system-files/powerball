@@ -1,0 +1,5 @@
+# /etc/cron.d/powerball
+# draws on       Mon, Wed, Sat (1, 3, 6)
+# get results on Tue, Thu, Sun (2, 4, 7)
+#     at 0500
+0 5 * * 2,4,7 root /usr/local/bin/get-powerball.sh
