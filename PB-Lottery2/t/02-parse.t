@@ -1,0 +1,1 @@
+use Test; use lib 'lib'; use PB::Lottery::Parse; plan 1; ok 1, 'Parse module loads';

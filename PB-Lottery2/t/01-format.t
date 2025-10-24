@@ -1,0 +1,1 @@
+use Test; use lib 'lib'; use PB::Lottery::Format; plan 1; ok 1, 'Format module loads';

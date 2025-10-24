@@ -1,0 +1,1 @@
+use Test; use lib 'lib'; use PB::Lottery::Hist; plan 1; ok 1, 'Hist module loads';

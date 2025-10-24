@@ -1,0 +1,19 @@
+{
+  "name": "PB-Lottery",
+  "version": "0.3.0",
+  "description": "Simplified Powerball data manager (v3 skeleton)",
+  "auth": "github:tbrowder",
+  "license": "Artistic-2.0",
+  "depends": [
+    "LibCurl::Easy",
+    "JSON::Fast"
+  ],
+  "provides": {
+    "PB::Lottery::Manage": "lib/PB-Lottery/Manage.rakumod",
+    "PB::Lottery::Parse": "lib/PB-Lottery/Parse.rakumod",
+    "PB::Lottery::Format": "lib/PB-Lottery/Format.rakumod",
+    "PB::Lottery::Files": "lib/PB-Lottery/Files.rakumod",
+    "PB::Lottery::Hist": "lib/PB-Lottery/Hist.rakumod"
+  },
+  "source-url": "https://github.com/tbrowder/PB-Lottery"
+}

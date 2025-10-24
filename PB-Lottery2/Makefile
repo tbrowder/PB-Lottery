@@ -1,0 +1,2 @@
+test:
+	zef test -v .

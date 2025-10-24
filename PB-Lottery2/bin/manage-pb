@@ -1,0 +1,11 @@
+#!/usr/bin/env raku
+use lib 'lib';
+use PB::Lottery::Manage;
+
+sub MAIN(*@args) {
+    if @args.elems == 0 {
+        say "Usage: manage-pb <fetch|parse|update|hist|check-tickets|print>";
+        exit 1;
+    }
+    PB::Lottery::Manage::run(@args[0], |@args[1..*]);
+}
