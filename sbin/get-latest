@@ -1,0 +1,26 @@
+#!/usr/env/bin raku
+
+=begin comment
+First using code from new-powerball.zip
+which is moved to /used after zipping.
+That new code is put under git control and tested.
+
+PARSER="/usr/local/powerball/emit-blocks.raku"
+
+See file ./system-files/emit-blocks.raku 
+=end comment
+
+if not @*ARGS {
+    print qq:to/HERE/;
+    Usage: {$*PROGRAM.basename} go 
+
+    Download the latest Power Ball lottery results
+      and put it into a temporary file in the
+      user's private directory. That file is
+      currently named:
+
+          draws-tmp.txt
+
+    HERE
+    exit;
+}

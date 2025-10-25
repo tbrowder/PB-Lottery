@@ -11,11 +11,18 @@ sub iso-to-weekday(Str $iso --> Str) {
     return <Mon Tue Wed Thu Fri Sat Sun>[$dt.day-of-week - 1];
 }
 
-sub fmt-block(@white, Int $pb, Str $date, Str $suffix --> Str) {
+sub fmt-block(
+    @white, 
+    Int $pb, 
+    Str $date, 
+    Str $suffix,
+     --> Str
+) is export {
     my @w = @white.map({ sprintf "%02d", $_ });
     my $pbp = sprintf "%02d", $pb;
     my $dow = iso-to-weekday($date);
     my $tail = $suffix.chars ?? " $suffix" !! '';
+
     return "{@w.join(' ')} {$pbp} {$date} {$dow}{$tail}";
 }
 
@@ -39,37 +46,47 @@ sub MAIN(
     :$last = 10,
     :$since = '',
     :$until = '',
-    :$emit = 'blocks',                                     #= blocks|json|both
-    :$pdf  = '',                                           #= local PDF path
+    :$emit = 'blocks', #= blocks|json|both
+    :$pdf  = '',       #= local PDF path
     :$pdf-url = 'https://files.floridalottery.com/exptkt/pb.pdf',
     :$debug,
-) {
-    my $which = run 'bash', '-lc', 'command -v pdftotext', :out, :err;
-    die "pdftotext not found (install poppler-utils)" if $which.exitcode != 0;
+) is export {
 
+    # ensure we have the required system file
+    my $which = run 'bash', '-lc', 'command -v pdftotext', :out, :err;
+    die "pdftotext not found (install poppler-utils)" 
+        if $which.exitcode != 0;
+
+    # download the latest pb.pdf ===========
     my $pdf-file = $*TMPDIR.IO.add('pb.pdf');
     if $pdf ne '' {
         $pdf-file = $pdf.IO;
     } 
     else {
-        my $curl = LibCurl::Easy.new(URL => $pdf-url, download => $pdf-file.Str);
+        my $curl = LibCurl::Easy.new(
+                     URL => $pdf-url, 
+                     download => $pdf-file.Str);
         $curl.perform;
     }
     say "DEBUG: See pdf file '$pdf-file'" if $debug;
 
+    # create a text file from the PDF file
     my $txt-file = $*TMPDIR.IO.add('pb.txt');
     say "DEBUG: See pdf2txt file '$txt-file'" if $debug;
 
-    my $pt = run 'pdftotext', '-layout', '-q', $pdf-file, $txt-file, :out, :err;
+    my $pt = run 'pdftotext', '-layout', '-q', $pdf-file, 
+                 $txt-file, :out, :err;
     die "pdftotext failed" if $pt.exitcode != 0;
 
+    # parse the text file to get the latest draw data
     my @lines = $txt-file.open(:r, :enc('utf8-c8')).lines;
     my %by-date = Hash[Hash].new;
 
     for @lines -> $line {
         next unless $line ~~ /^ \s* (\d+ '\/' \d+ '\/' \d+) \s+ /;
         my $date = parse-mmddyy($0.Str);
-        my @n = $line.comb(/\d+/);
+
+        my @n = $line.comb(/\d+/); # the first 5 numbers
         next if @n.elems < 9;
 
         my @white = @n[3..7]».Int;
@@ -77,12 +94,18 @@ sub MAIN(
         my $mult  = '';
         if $line ~~ / <[Xx]> (\d+) / { $mult = $0.Str ~ 'x' }
         my $L = $line.uc.subst(/\s+/, ' ', :g);
-        my $is-dp = $L.contains('POWERBALL DP') or $L.contains('DOUBLE PLAY');
+        my $is-dp = $L.contains('POWERBALL DP') 
+                   or $L.contains('DOUBLE PLAY');
 
-        my $rec = Rec.new(:date($date), :nums(@white), :pb($pb), :mult($mult), 
-                          :is-dp($is-dp));
+        my $rec = Rec.new(
+                      :date($date), 
+                      :nums(@white), 
+                      :pb($pb), 
+                      :mult($mult), 
+                      :is-dp($is-dp)
+                  );
         %by-date{$date} //= {};
-        %by-date{$date}{ $is-dp ?? 'dp' !! 'pb' } = $rec;
+        %by-date{$date} { $is-dp ?? 'dp' !! 'pb' } = $rec;
     }
 
     #=============================================
@@ -90,9 +113,15 @@ sub MAIN(
     #=============================================
     my $blocks-file = $*TMPDIR.IO.add('pb.blocks');
     my @dates = %by-date.keys.sort;
-    if $last > 0 && @dates.elems > $last { @dates = @dates[* - $last .. *] }
-    if $since ne '' { @dates = @dates.grep(* ge $since) }
-    if $until ne '' { @dates = @dates.grep(* le $until) }
+    if $last > 0 && @dates.elems > $last { 
+        @dates = @dates[* - $last .. *] 
+    }
+    if $since ne '' { 
+        @dates = @dates.grep(* ge $since); 
+    }
+    if $until ne '' { 
+        @dates = @dates.grep(* le $until); 
+    }
 
     #=============================================
     # @json has the corresponding JSON strings or objects
@@ -143,7 +172,6 @@ sub MAIN(
             }
         }
     }
-
     
     # convert the arrays to a file
     my $fh = open $blocks-file, :w;
