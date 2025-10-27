@@ -472,9 +472,11 @@ sub get-draw-objects(
 
         my @words = $line.words;
         my $nw = @words.elems;
-        unless (7 < $nw < 10)  {
+        #unless (7 < $nw < 10)  {
+        unless (7 < $nw < 11)  {
             my $msg = "Invalid draw line '$line'.\n";
-            $msg ~= " It has $nw words but should have 8 or 9";
+            #$msg ~= " It has $nw words but should have 8 or 9";
+            $msg ~= " It has $nw words but should have 8 or 9 or 10";
             throw-err $msg;
         }
 

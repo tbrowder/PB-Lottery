@@ -73,11 +73,10 @@ sub MAIN(
     # create a text file from the PDF file
     my $txt-file = $*TMPDIR.IO.add('pb.txt');
     say "DEBUG: See pdf2txt file '$txt-file'" if $debug;
-
     my $pt = run 'pdftotext', '-layout', '-q', $pdf-file, 
                  $txt-file, :out, :err;
     die "pdftotext failed" if $pt.exitcode != 0;
-
+    
     # parse the text file to get the latest draw data
     my @lines = $txt-file.open(:r, :enc('utf8-c8')).lines;
     my %by-date = Hash[Hash].new;
@@ -105,8 +104,38 @@ sub MAIN(
                       :is-dp($is-dp)
                   );
         %by-date{$date} //= {};
-        %by-date{$date} { $is-dp ?? 'dp' !! 'pb' } = $rec;
+        #%by-date{$date} { $is-dp ?? 'dp' !! 'pb' } = $rec;
     }
+
+    my @blanks;
+    my $clean = "pb.clean-txt";
+    my $fh2 = open $clean, :w;
+    my $nlines = 0;
+    for $txt-file.lines -> $line is copy {
+        if $line ~~ /\S/ {
+            # collapse multiple spaces into one
+            $line ~~ s:g/\h+/ /;  
+            # any blank lines?
+            if @blanks.elems {
+                $fh2.say(); ++$nlines;
+                @blanks = [];
+            }
+            $fh2.say: $line; ++$nlines;
+        }
+        else {
+            # collapse multiple blank lines into one
+            @blanks.push: "";
+        }
+    }
+    $fh2.close;
+
+    if 1 {
+        say "temp end, see PB txt file '$txt-file'";
+        say "    alse see cleaned PB txt file '$clean";
+        say "    which has $nlines lines";
+        exit(1);
+    }
+
 
     #=============================================
     # @dates has the desired number of text blocks

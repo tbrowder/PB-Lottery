@@ -52,18 +52,7 @@ sub MAIN(
         if $which.exitcode != 0;
 
     my $pdf-file = $*TMPDIR.IO.add('pb.pdf');
-=begin comment
-    if $pdf ne '' {
-        $pdf-file = $pdf.IO;
-    } 
-    else {
-        my $curl = LibCurl::Easy.new(
-                     URL => $pdf-url, 
-                     download => $pdf-file.Str);
-        $curl.perform;
-    }
-=end comment
-    say "DEBUG: See pdf file '$pdf-file'" if $debug;
+    say "DEBUG: See the input pdf file '$pdf-file'" if $debug;
 
     # create a text file from the PDF file
     my $txt-file = $*TMPDIR.IO.add('pb.txt');
@@ -76,9 +65,9 @@ sub MAIN(
     my @lines = $txt-file.open(:r, :enc('utf8-c8')).lines;
     my %by-date = Hash[Hash].new;
 
-    say "DEBUG: lines from file '$txt-file'" if 1 or $debug;
+    say "DEBUG: lines from file '$txt-file'" if 0 or $debug;
     for @lines -> $line {
-        say "  line: |$line|" if 1 or $debug;
+        say "  line: |$line|" if 0 or $debug;
         next unless $line ~~ /^ \s* (\d+ '/' \d+ '/' \d+) \s+ /;
         my $date = parse-mmddyy($0.Str);
 
@@ -92,11 +81,12 @@ sub MAIN(
             $mult = $0.Str ~ 'x' 
         }
         my $L = $line.uc.subst(/\s+/, ' ', :g);
-=begin comment
-10/25/25 2 12 22 39 67 PB 15 X2 POWERBALL
 
-10/25/25 3 24 46 58 61 PB 7 POWERBALL DP
-=end comment
+        =begin comment
+        10/25/25 2 12 22 39 67 PB 15 X2 POWERBALL
+
+        10/25/25 3 24 46 58 61 PB 7 POWERBALL DP
+        =end comment
         my $is-dp = $L.contains('POWERBALL DP') 
                     or $L.contains('DOUBLE PLAY');
 
@@ -118,7 +108,7 @@ sub MAIN(
             %by-date{$date}<pb> = $rec;
         }
     }
-    say "DEBUG: found {%by-date.elems} dates." if 1 or $debug;
+    say "DEBUG: found {%by-date.elems} dates." if 0 or $debug;
 
     my @blanks;
     my $clean = "pb.clean-txt";
@@ -148,7 +138,7 @@ sub MAIN(
         say "    which has $nlines lines";
         exit(1);
     }
-    if 0 {
+    if 1 {
         say "see PB txt file '$txt-file'";
         say "alse see cleaned PB txt file '$clean";
         say "    which has $nlines lines";
@@ -236,27 +226,42 @@ sub MAIN(
     unless @blocks.elems > 2 {
         die "FATAL: The blocks array has too few elements";
     }
-=begin comment
-    unless @blocks.elems div 2 == 0 {
-        die "FATAL: The blocks array has an odd number of elements";
+
+    =begin comment
+    # also put the last 10 in the private dir as 
+    # file "draws-latest.txt"
+    PB_LOTTERY_PRIVATE_DIR=
+        /home/tbrowde/mydata/tbrowde-home/pb-lottery
+    =end comment
+
+    my $private-file = 0;
+    my $private-dir = <PB_LOTTERY_PRIVATE_DIR>;
+    if %*ENV{$private-dir}:exists {
+        say "DEBUG: private-dir: '%*ENV{$private-dir}'" if 1 or $debug;
+        $private-file = "{%*ENV{$private-dir}}/draws-latest.txt".IO;
+        say "DEBUG: private-file: '$private-file'" if 1 or $debug;
     }
-=end comment
+    else {
+        say "WARNING: No private PB-Lottery found";
+    }
+
+    my $fh3 = $private-file ?? (open $private-file, :w) !! 0;
     while @blocks {
         $fh.say() if @blocks.elems; # blank line berween element
-        #=begin comment
+        $fh3.say() if $fh3 and @blocks.elems; # blank line berween element
         my $pb = @blocks.shift;
         my $dp = @blocks.shift;
-        #=end comment
-        #my $b = @blocks.shift;
-
-        #my $pb = $b<pb>;
-        #my $dp = $b<dp>;
-        $fh.say: "$pb # power ball draw";
-        $fh.say: "$dp # double play draw";
+        $fh.say("$pb # power ball draw");
+        $fh.say("$dp # double play draw");
+        $fh3.say("$pb # power ball draw") if $fh3;
+        $fh3.say("$dp # double play draw") if $fh3;
+        
     }
     $fh.close;
+    $fh3.close if $fh3;
 
-    say "DEBUG: See blocks file '$blocks-file'" if $debug;
+    say "DEBUG: See blocks file '$blocks-file'" if 1 or $debug;
+    say "DEBUG: See private blocks file '$private-file'" if 1 or $debug;
 
     my $jstr;
     if ($emit eq 'json' or $emit eq 'both') { 

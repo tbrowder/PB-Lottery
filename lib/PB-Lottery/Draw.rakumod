@@ -19,6 +19,7 @@ has      $.jackpot = 0; # optional, but desired
 
 has Str  $.type;
 has Str  $.type2;
+has Str  $.dow; # day of the week 
 
 has PB-Lottery::Numbers $.N;  # fill in TWEAK
 has PB-Lottery::Numbers $.N2; # fill in TWEAK
@@ -64,12 +65,46 @@ submethod TWEAK {
         throw-err $msg;
     }
 
+    $!type2 = @w2[7];
+
+    # collect the remaining pieces of @w and then figure out 
+    # what we have:
+
+    # dow, Nx (also $!type), dollars
+    for @w[7..*] -> $s  {
+        when $s ~~ /^:i \h* (\d+) x \h* $/ {
+            # Nx
+            $!nx = +$0.UInt;
+            unless $!nx ~~ /2|3|4|5|10/ {
+                my $msg = "Power Play factor '$!nx' should be ";
+                $msg ~= "2, 3, 4, 5, or 10";
+                die $msg;
+            }
+        }
+        when $s ~~ /^:i \h* (mon|wed|sat) \h* $/ {
+            # dow
+            $!dow = ~$0.tc;
+        }
+        when $s ~~ /^:i \h* (\$? \d+ [m|b|t]? )/ {
+            $!jackpot = get-dollars $s;
+        }
+        default {
+            die qq:to/HERE/;
+            FATAL: Unrecognized word '$s' in the Power Ball draw line:
+              the full line: |$!numbers-str|
+            HERE
+        }
+    }
+
+    =begin comment
     $!type  = @w[7]; # the Nx factor
     $!nx    = @w[7];
     if  $!type ~~ /^:i \h* (\d+) x \h* $/ {
         $!nx = +$0.UInt;
         unless $!nx ~~ /2|3|4|5|10/ {
-            die "Power Play factor '$!nx' should be 2, 3, 4, 5, or 10";
+            my $msg = "Power Play factor '$!nx' should be ";
+            $msg ~= "2, 3, 4, 5, or 10";
+            die $msg;
         }
     }
     else {
@@ -79,7 +114,7 @@ submethod TWEAK {
         HERE
     }
 
-    # optional jackpot value for the power ball drae
+    # optional jackpot value for the power ball draw
     if @w.elems > 8 {
         my $jp = @w[8];
         $!jackpot = get-dollars $jp;
@@ -87,7 +122,9 @@ submethod TWEAK {
 
     $!type2 = @w2[7];
     unless $!type !=== $!type2 {
-        my $msg = "The two types should NOT be the same: '$!type', '$!type2'";
+        my $msg = "The two types should NOT be the same:\n";
+        $msg ~= " '$!type', '$!type2'";
         throw-err $msg;
     }
+    =end comment
 }
