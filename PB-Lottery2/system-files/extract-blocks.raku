@@ -7,6 +7,7 @@ sub iso-to-weekday(Str $iso --> Str) {
     my $dt = DateTime.new(:$year, :$month, :$day);
     return <Mon Tue Wed Thu Fri Sat Sun>[$dt.day-of-week - 1];
 }
+
 sub fmt-block(
     @white, 
     Int $pb, 
@@ -20,6 +21,7 @@ sub fmt-block(
     my $tail = $suffix.chars ?? " $suffix" !! '';
     return "{@w.join(' ')} {$pbp} {$date} {$dow}{$tail}";
 }
+
 sub parse-mmddyy(Str $mdy --> Str) {
     my @p = $mdy.split('/');
     die "bad date $mdy" unless @p.elems == 3;
@@ -30,7 +32,8 @@ sub parse-mmddyy(Str $mdy --> Str) {
 
 class Rec {
     has Str  $.date;
-    has @.nums;
+#   has @.nums;
+    has @.numbers;
     has Int  $.pb;
     has Str  $.mult is rw;
     has Bool $.is-dp = False;
@@ -51,7 +54,16 @@ sub MAIN(
     die "pdftotext not found (install poppler-utils)" 
         if $which.exitcode != 0;
 
-    my $pdf-file = $*TMPDIR.IO.add('pb.pdf');
+    # download location varies right now
+    my $pdf-file;
+    if $debug {
+        $pdf-file = $*TMPDIR.IO.add('pb.pdf');
+    }
+    else {
+        # dowloaded by a cron job to:
+        $pdf-file = "/var/local/powerball/pb.pdf";
+    }
+
     say "DEBUG: See the input pdf file '$pdf-file'" if $debug;
 
     # create a text file from the PDF file
@@ -92,7 +104,7 @@ sub MAIN(
 
         my $rec = Rec.new(
                       :date($date), 
-                      :nums(@white), 
+                      :numbers(@white), 
                       :pb($pb), 
                       :mult($mult), 
                       :is-dp($is-dp)
@@ -181,13 +193,13 @@ sub MAIN(
 
             if $emit eq 'blocks' or $emit eq 'both' {
                 #say fmt-block($r.nums, $r.pb, $d, $r.mult) ;
-                my $b = fmt-block($r.nums, $r.pb, $d, $r.mult) ;
+                my $b = fmt-block($r.numbers, $r.pb, $d, $r.mult) ;
                 @blocks.push: $b;
             }
             if $emit eq 'json' or $emit eq 'both' {
                 @json.push( 
                     draw_date => $d, 
-                    numbers => $r.nums, 
+                    numbers => $r.numbers, 
                     powerball => $r.pb,
                     multiplier => $r.mult.chars ?? $r.mult 
                                                 !! Nil, 
@@ -202,14 +214,14 @@ sub MAIN(
 
             if $emit eq 'blocks' or $emit eq 'both' {
                 #say fmt-block($r.nums, $r.pb, $d, 'dp'); 
-                my $b = fmt-block($r.nums, $r.pb, $d, 'dp'); 
+                my $b = fmt-block($r.numbers, $r.pb, $d, 'dp'); 
                 @blocks.push: $b;
             }
 
             if $emit eq 'json' or $emit eq 'both' {
                 @json.push(
                     draw_date => $d, 
-                    numbers => $r.nums, 
+                    numbers => $r.numbers, 
                     powerball => $r.pb,
                     multiplier => Nil, 
                     source => 'floridalottery dp', 

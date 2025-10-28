@@ -5,19 +5,17 @@ my $F = $?FILE.IO.basename;
 use Text::Utils :strip-comment, :str2intlist;
 
 use PB-Lottery::Subs;
-#use PB-Lottery::Vars;
+use PB-Lottery::Vars;
 
 has Str $.numbers-str is required;  # "00 00 00 00 00 00";
-
 has Set $.numbers5 is built; # the five lottery numbers
-has Set $.pb       is built; # the powerball
+has Int $.pb       is built; # the powerball
 
 submethod TWEAK {
     my (@w, $s);
-    $s         = $!numbers-str;
-    $s         = $s.words[0..^6].join(' ');
+    $s         = $!numbers-str.words[0..^6].join(" ");;
     @w         = str2intlist $s;
-    $!pb       = @w.pop.Set;
+    $!pb       = @w.pop.Int;
     $!numbers5 = @w.Set;
 }
 
@@ -28,5 +26,3 @@ method print1() {
     # --    --           # <== matches
 }
 =end comment
-
-

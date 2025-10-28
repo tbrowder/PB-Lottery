@@ -7,21 +7,40 @@ use Test;
 
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
+use PB-Lottery::Numbers;
 use PB-Lottery::Vars;
 use PB-Lottery::Subs;
 
-class Win is export {
+=begin comment
+class Numbers is export {
+
+    has Str $.numbers-str is required;  # "00 00 00 00 00 00";
+    has Set $.numbers5 is built; # the five lottery numbers
+    has Int $.pb       is built; # the powerball
+    submethod TWEAK {
+        my (@w, $s);
+        $s         = $!numbers-str.words[0..^6].join(" ");;
+        @w         = str2intlist $s;
+        $!pb       = @w.pop.Int;
+        $!numbers5 = @w.Set;
+    }
+}
+=end comment
+
+class Win is {
     has $.pb    is rw = 0; # power ball winnings (without the power play factor
-    has $.pp    is rw = 0; # any additional winnings due to the power play factor
-                           #   (note it will always be zero unless the ticket has
+    has $.pp    is rw = 0; # any additional winnings due to the
+                           #   power play factor (note it will always
+                           #   be zero unless the ticket has
                            #   that option selected)
-    has $.dp    is rw = 0; # any additional winnings due to the double play option
-                           #   (note it will always be zero unless the ticket has
-                           #   that option selected)
+    has $.dp    is rw = 0; # any additional winnings due to the
+                           #   double play option (note it will always                           #   be zero unless the ticket has that
+                           #   option selected)
     method total() {
         $!pb + $!pp + $!dp
     }
 }
+
 
 =begin comment
 sub calc-part-winnings(
@@ -225,16 +244,23 @@ sub calc-winnings(
 =end comment
 
 # The following sub may replace two subs:
-# From ChatGPT:
-sub calculate-win($ticket, $draw --> Win) is export {
+# From ChatGPT (modified) :
+sub calculate-win(
+    :$ticket!,
+    :$draw!,
+    :$debug,
+     --> Win
+) is export {
     my $win = Win.new;
 
     # count matching regular numbers
-    my $match-count = ($ticket.numbers ∩ $draw.numbers).elems;
+    #   intersection
+    #my $match-count = ($ticket.numbers ∩ $draw.numbers).elems;
+    my $match-count = ($ticket.numbers (^) $draw.numbers).elems;
     my $pb-match    = $ticket.powerball == $draw.powerball;
 
     # base Powerball payout table (USD, without Power Play)
-    my %payouts = (
+    my %payouts = %(
         5 => { True  => 1_000_000_000, False => 1_000_000 },  # Jackpot
         4 => { True  => 50_000,         False => 100 },
         3 => { True  => 100,            False => 7 },
@@ -256,8 +282,14 @@ sub calculate-win($ticket, $draw --> Win) is export {
 
     # handle Double Play if applicable
     if $ticket.double-play and $draw.^can('double-numbers') {
-        my $dmatch = ($ticket.numbers ∩ $draw.double-numbers).elems;
-        my $dpb    = $ticket.powerball == $draw.double-powerball;
+        #my $dmatch = ($ticket.numbers ∩ $draw.double-numbers).elems;
+
+        #my $dmatch = ($ticket.numbers (^) $draw.double-numbers).elems;
+        #my $dpb    = $ticket.powerball == $draw.double-powerball;
+
+        my $dmatch = ($ticket.numbers (^) $draw.numbers-dp).elems;
+        my $dpb    = $ticket.powerball == $draw.powerball-dp;
+
         my %dp-payouts = (
             5 => { True  => 10_000_000, False => 500_000 },
             4 => { True  => 50_000,     False => 500 },
@@ -469,6 +501,7 @@ sub get-draw-objects(
     for @dlines.kv -> $i, $line is copy {
         $line = strip-comment $line;
         next unless $line ~~ /\S/;
+        $line .= trim;
 
         my @words = $line.words;
         my $nw = @words.elems;
@@ -492,12 +525,19 @@ sub get-draw-objects(
             # for the next draw object is complete
             $line2 = $line;
             unless ($line1 ~~ /\S/) and ($line2 ~~ /\S/) {
-                my $msg = "Unable to create a PB-Draw object with an empty line";
+                my $msg = "Unable to create a PB-Draw object with";
+                $msg ~= " an empty line";
                 throw-err $msg;
             }
 
-            my $draw = PB-Lottery::Draw.new: :numbers-str($line1),
-                                             :numbers-str2($line2);
+# debug
+say qq:to/HERE/;
+DEBUG: new Draw problem with 'anon' object:
+\$line1: |$line1|
+\$line2: |$line2|
+HERE
+            #my $draw = PB-Lottery::Draw.new: :numbers-str($line1),
+            my $draw = PB-Lottery::Draw.new: :numbers-str($line1), :numbers-str2($line2);
 
             unless $draw ~~ PB-Lottery::Draw {
                 my $msg = "Unable to instantiate a Draw object";

@@ -4,7 +4,6 @@ my @modules = <
     PB-Lottery
     PB-Lottery::Subs
     PB-Lottery::Draw
-    PB-Lottery::Numbers
     PB-Lottery::Ticket
     PB-Lottery::Vars
     PB-Lottery::Event

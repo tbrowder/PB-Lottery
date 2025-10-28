@@ -1,0 +1,30 @@
+
+03 07 47 67 68 02 2025-10-04 Sat 2x # power ball draw
+05 16 40 44 47 07 2025-10-04 Sat dp # double play draw
+
+28 29 32 66 67 03 2025-10-06 Mon 2x # power ball draw
+09 21 37 40 52 05 2025-10-06 Mon dp # double play draw
+
+08 10 44 48 54 14 2025-10-08 Wed 2x # power ball draw
+08 13 19 34 53 24 2025-10-08 Wed dp # double play draw
+
+13 16 18 20 27 10 2025-10-11 Sat 2x # power ball draw
+12 22 41 46 56 15 2025-10-11 Sat dp # double play draw
+
+13 14 32 52 64 12 2025-10-13 Mon 2x # power ball draw
+12 13 46 49 68 07 2025-10-13 Mon dp # double play draw
+
+10 13 28 34 47 15 2025-10-15 Wed 3x # power ball draw
+05 20 27 44 51 21 2025-10-15 Wed dp # double play draw
+
+03 11 27 40 58 10 2025-10-18 Sat 3x # power ball draw
+02 09 10 14 36 23 2025-10-18 Sat dp # double play draw
+
+32 38 66 67 69 19 2025-10-20 Mon 2x # power ball draw
+33 48 52 55 68 09 2025-10-20 Mon dp # double play draw
+
+18 37 52 54 60 12 2025-10-22 Wed 2x # power ball draw
+23 37 43 60 64 05 2025-10-22 Wed dp # double play draw
+
+02 12 22 39 67 15 2025-10-25 Sat 2x # power ball draw
+03 24 46 58 61 07 2025-10-25 Sat dp # double play draw

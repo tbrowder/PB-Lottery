@@ -36,7 +36,7 @@ sub parse-mmddyy(Str $mdy --> Str) {
 
 class Rec {
     has Str  $.date;
-    has @.nums;
+    has @.numbers;
     has Int  $.pb;
     has Str  $.mult is rw;
     has Bool $.is-dp = False;

@@ -1,3 +1,13 @@
+*** NOTE!!!
+To get the latest, we cannot rely on the pdf. it's fine
+for history but not always updated the following
+morning after a draw.
+
+   solution: first check latest date in latest pdf
+     if check date is after the last draw and it's
+        not yet in the pdf, offer to enter it
+        via an interactive session...
+
 DONE: Create a Win class to segregate winnings type (base,
   power play, double play)
 

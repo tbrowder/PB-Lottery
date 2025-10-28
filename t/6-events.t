@@ -72,15 +72,18 @@ for @tlines.kv -> $i, $s {
    # skip the rest for now
    next;
    
+=begin comment
    for ($s1, $s2, $s3, $s4, $s5).kv -> $j, $S {
        $ticket = PB-Lottery::Ticket.new: :numbers-str($S);
        isa-ok $ticket, PB-Lottery::Ticket;
 
-       $cash = calc-winnings :$ticket, :$draw;
+       #$cash = calc-winnings :$ticket, :$draw;
+       $cash = calculate-win :$ticket, :$draw;
        isa-ok $cash, Numeric;
 
        say "Total winnings: $cash":
    }
+=end comment
 }
 
 done-testing;

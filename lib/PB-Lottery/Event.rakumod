@@ -2,8 +2,10 @@ unit class PB-Lottery::Event;
 
 use Text::Utils :strip-comment, :str2intlist;
 
+use PB-Lottery;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
+use PB-Lottery::Numbers;
 use PB-Lottery::Subs;
 
 has $.draw of PB-Lottery::Draw      is required;
@@ -27,7 +29,7 @@ submethod TWEAK {
 }
 
 method show-matches(
-    :$all, 
+    :$all,
     :$debug,
 
 ) {
@@ -146,7 +148,7 @@ sub show-str-match(
 
     my @s5nums = $s5.keys.sort({ $^a <=> $^b });
     my @spnums = $sp.keys.sort({ $^a <=> $^b });
-#   my @s5nums = intlist2str($s5.keys).words; 
+#   my @s5nums = intlist2str($s5.keys).words;
 #   my @spnums = intlist2str($sp.keys).words;
 
     # back to strings to mod and remove all but
@@ -154,7 +156,7 @@ sub show-str-match(
 
     # the four original number strings with leading zeros as needed
     my $lmatch5 = @lw[0..^5].join(' ');
-    my $lmatchp = @lw[5]; 
+    my $lmatchp = @lw[5];
     my $rmatch5 = @rw[0..^5].join(' ');
     my $rmatchp = @rw[5];
 

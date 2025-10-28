@@ -4,7 +4,8 @@ my $F = $?FILE.IO.basename;
 
 use Text::Utils :strip-comment, :str2intlist;
 
-use PB-Lottery::Numbers;
+use PB-Lottery;
+#use PB-Lottery::Numbers;
 use PB-Lottery::Subs;
 use PB-Lottery::Vars;
 
@@ -25,36 +26,29 @@ has PB-Lottery::Numbers $.N;  # fill in TWEAK
 has PB-Lottery::Numbers $.N2; # fill in TWEAK
 
 # from ChatGPT:
-has @.numbers of Array;
-has $.powerball where * < 0 < 27;
-has @.double-numbers;
-has $.double-powerball where * < 0 < 27;
-
-method print1(:$debug) {
-    # called by an Event object
-    my $s = self.N.numbers-str;
-    if $debug {
-        say "debug: {self.N.numbers-str}";
-        exit(1);
-    }
-    print $s;
-}
-method print2() {
-    # called by an Event object
-    my $s = self.N2.numbers-str;
-    print $s;
-}
+has @.numbers of Int;
+has Int $.powerball where * < 0 < 27;
+has @.numbers-dp of Int;
+has Int $.powerball-dp where * < 0 < 27;
 
 submethod TWEAK {
+    $!numbers-str  = strip-comment $!numbers-str;
+    $!numbers-str2 = strip-comment $!numbers-str2;
+
+    my $s  = $!numbers-str;
+    my $s2 = $!numbers-str2;
+    $!N   = PB-Lottery::Numbers.new: :numbers-str($s);
+    $!N2  = PB-Lottery::Numbers.new: :numbers-str($s2);
+
     my @w  = $!numbers-str.words;
     my @w2 = $!numbers-str2.words;
 
-    my $s;
-    $s   = @w[0..^6].join(' '); # only want first six numbers
-    $!N  = PB-Lottery::Numbers.new: :numbers-str($s);
+    # these are sets, convert to ordered Int lists:
+    @!numbers      = $!N.numbers5.keys.sort({ $^a <=> $^b }); 
+    @!numbers-dp   = $!N2.numbers5.keys.sort({ $^a <=> $^b }); 
 
-    $s   = @w2[0..^6].join(' '); # only want first six numbers
-    $!N2 = PB-Lottery::Numbers.new: :numbers-str($s);
+    $!powerball    = $!N.pb; #head; #Int; #keys.head;
+    $!powerball-dp = $!N2.pb;
 
     # required date
     $!date = Date.new: @w[6];
@@ -127,4 +121,21 @@ submethod TWEAK {
         throw-err $msg;
     }
     =end comment
+
+} # end of submethod TWEAK
+
+method print1(:$debug) {
+    # called by an Event object
+    my $s = self.N.numbers-str;
+    if $debug {
+        say "debug: {self.N.numbers-str}";
+        exit(1);
+    }
+    print $s;
+}
+
+method print2() {
+    # called by an Event object
+    my $s = self.N2.numbers-str;
+    print $s;
 }
