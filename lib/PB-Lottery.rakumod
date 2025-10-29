@@ -70,7 +70,7 @@ sub calc-part-winnings(
 
     # the PB-Lottery::Numbers objects
     my $tn5set = $ticket.N.numbers5;
-    my $tpbset = $ticket.N.pb;
+    my $tpbset = $ticket.N.pb.Set;
 
     my ($dn5set, $dpbset);
     my ($n5set, $pbset);
@@ -206,7 +206,7 @@ sub calc-winnings(
     # and a valid ticket for the drawing date,
     # calculate any winnings (may be estimates).
 
-    my $win = Win.new;
+    my $win = PB-Lottery::Win.new;
     calc-part-winnings :$win, :$ticket, :$draw, :part(1);
     calc-part-winnings :$win, :$ticket, :$draw, :part(2);
 
@@ -280,16 +280,14 @@ sub calculate-win(
     }
 
     # apply Power Play multiplier (2–10x except on jackpot)
-    if $ticket.power-play and $win.pb > 0 and $win.pb < 1_000_000_000 {
-        my $multiplier = $draw.power-play // 2;  # or actual draw’s multiplier
+    if $ticket.pp and $win.pb > 0 and $win.pb < 1_000_000_000 {
+        my $multiplier = $draw.pp // 2;  # or actual draw’s multiplier
         $win.pp = $win.pb * ($multiplier - 1);
     }
 
     # handle Double Play if applicable
-    if $ticket.double-play and $draw.^can('double-numbers') {
+    if $ticket.dp and $draw.^can('numbers-dp') {
         #my $dmatch = ($ticket.numbers ∩ $draw.double-numbers).elems;
-
-        #my $dmatch = ($ticket.numbers (^) $draw.double-numbers).elems;
         #my $dpb    = $ticket.powerball == $draw.double-powerball;
 
         my $dmatch = ($ticket.numbers (^) $draw.numbers-dp).elems;

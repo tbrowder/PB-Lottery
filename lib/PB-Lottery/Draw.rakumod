@@ -26,11 +26,18 @@ has Str  $.dow; # day of the week
 has PB-Lottery::Numbers $.N;  # fill in TWEAK
 has PB-Lottery::Numbers $.N2; # fill in TWEAK
 
+=begin comment
 # from ChatGPT:
 has @.numbers of Int;
 has Int $.powerball where * < 0 < 27;
 has @.numbers-dp of Int;
 has Int $.powerball-dp where * < 0 < 27;
+=end comment
+
+has @.numbers; # of Int;
+has @.numbers-dp; # of Int;
+has $.powerball; #-dp where * < 0 < 27;
+has $.powerball-dp; # where * < 0 < 27;
 
 submethod TWEAK {
     $!numbers-str  = strip-comment $!numbers-str;
