@@ -8,7 +8,7 @@ use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 use PB-Lottery::Subs;
 use PB-Lottery::Vars;
-use PB-Lottery::Event;
+#use PB-Lottery::Event;
 
 # valid ticket strings
 my @t = [

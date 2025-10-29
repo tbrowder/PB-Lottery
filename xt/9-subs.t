@@ -8,7 +8,7 @@ use PB-Lottery::Draw;
 use PB-Lottery::Numbers;
 use PB-Lottery::Subs;
 use PB-Lottery::Vars;
-use PB-Lottery::Event;
+#use PB-Lottery::Event;
 
 is 1, 1, "sanity check";
 

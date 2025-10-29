@@ -5,9 +5,12 @@ my $F = $?FILE.IO.basename;
 use Text::Utils :strip-comment, :str2intlist;
 use Test;
 
+=begin comment
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
+=end comment
+
 use PB-Lottery::Vars;
 use PB-Lottery::Subs;
 
@@ -27,7 +30,7 @@ class Numbers is export {
 }
 =end comment
 
-class Win is {
+class Win is export {
     has $.pb    is rw = 0; # power ball winnings (without the power play factor
     has $.pp    is rw = 0; # any additional winnings due to the
                            #   power play factor (note it will always

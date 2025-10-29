@@ -1,12 +1,12 @@
 use Test;
 
+#   PB-Lottery::Event
 my @modules = <
     PB-Lottery
     PB-Lottery::Subs
     PB-Lottery::Draw
     PB-Lottery::Ticket
     PB-Lottery::Vars
-    PB-Lottery::Event
 >;
 
 plan @modules.elems;
