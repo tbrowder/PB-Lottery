@@ -6,7 +6,7 @@ use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 use PB-Lottery::Vars;
-#use PB-Lottery::Event;
+use PB-Lottery::Event;
 
 my ($env-var, $pdir);
 
