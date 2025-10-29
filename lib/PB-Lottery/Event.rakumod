@@ -2,7 +2,7 @@ unit class PB-Lottery::Event;
 
 use Text::Utils :strip-comment, :str2intlist;
 
-use PB-Lottery;
+#use PB-Lottery;
 use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;

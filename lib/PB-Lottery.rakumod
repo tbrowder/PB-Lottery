@@ -5,11 +5,11 @@ my $F = $?FILE.IO.basename;
 use Text::Utils :strip-comment, :str2intlist;
 use Test;
 
-=begin comment
-use PB-Lottery::Draw;
-use PB-Lottery::Ticket;
-use PB-Lottery::Numbers;
-=end comment
+#=begin comment
+need PB-Lottery::Numbers;
+need PB-Lottery::Ticket;
+need PB-Lottery::Draw;
+#=end comment
 
 use PB-Lottery::Vars;
 use PB-Lottery::Subs;
