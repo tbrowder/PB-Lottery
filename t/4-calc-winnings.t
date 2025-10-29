@@ -9,6 +9,7 @@ use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 use PB-Lottery::Vars;
 use PB-Lottery::Event;
+use PB-Lottery::Win;
 
 my $debug = 0;
 
@@ -44,7 +45,8 @@ my @d = [
     '01 02 03 04 05 01 2000-01-01 dp',
 ];
 
-my $draw = PB-Lottery::Draw.new: :numbers-str(@d.head), :numbers-str2(@d.tail);
+my $draw = PB-Lottery::Draw.new: :numbers-str(@d.head.Str), 
+                                 :numbers-str2(@d.tail.Str);
 isa-ok $draw, PB-Lottery::Draw;
 
 my $d = Date.new: "2000-01-01";
@@ -68,8 +70,9 @@ for @tlines.kv -> $i, $s {
        $ticket = PB-Lottery::Ticket.new: :numbers-str($S);
        isa-ok $ticket, PB-Lottery::Ticket;
 
-       $cash = calc-winnings :$ticket, :$draw;
-       isa-ok $cash, Win;
+       #$cash = calc-winnings :$ticket, :$draw;
+       $cash = calculate-win :$ticket, :$draw;
+       isa-ok $cash, PB-Ticket::Win;
 
        say "Total winnings: $cash":
    }

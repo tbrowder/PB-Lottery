@@ -9,6 +9,7 @@ use Test;
 need PB-Lottery::Numbers;
 need PB-Lottery::Ticket;
 need PB-Lottery::Draw;
+need PB-Lottery::Win;
 #=end comment
 
 use PB-Lottery::Vars;
@@ -30,6 +31,7 @@ class Numbers is export {
 }
 =end comment
 
+=begin comment
 class Win is export {
     has $.pb    is rw = 0; # power ball winnings (without the power play factor
     has $.pp    is rw = 0; # any additional winnings due to the
@@ -43,7 +45,7 @@ class Win is export {
         $!pb + $!pp + $!dp
     }
 }
-
+=end comment
 
 =begin comment
 sub calc-part-winnings(

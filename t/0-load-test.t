@@ -6,6 +6,7 @@ my @modules = <
     PB-Lottery::Draw
     PB-Lottery::Ticket
     PB-Lottery::Vars
+    PB-Lottery::Win
     PB-Lottery::Event
 >;
 

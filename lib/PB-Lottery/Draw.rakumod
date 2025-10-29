@@ -6,6 +6,7 @@ use Text::Utils :strip-comment, :str2intlist;
 
 #use PB-Lottery;
 need PB-Lottery::Numbers;
+need PB-Lottery::Win;
 use PB-Lottery::Subs;
 use PB-Lottery::Vars;
 
