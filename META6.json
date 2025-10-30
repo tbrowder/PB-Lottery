@@ -22,7 +22,8 @@
     "PB-Lottery::Numbers": "lib/PB-Lottery/Numbers.rakumod",
     "PB-Lottery::Subs": "lib/PB-Lottery/Subs.rakumod",
     "PB-Lottery::Ticket": "lib/PB-Lottery/Ticket.rakumod",
-    "PB-Lottery::Vars": "lib/PB-Lottery/Vars.rakumod"
+    "PB-Lottery::Vars": "lib/PB-Lottery/Vars.rakumod",
+    "PB-Lottery::Win": "lib/PB-Lottery/Win.rakumod"
   },
   "resources": [
   ],

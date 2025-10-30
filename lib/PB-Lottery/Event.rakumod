@@ -33,7 +33,7 @@ method show-matches(
     :$debug,
 
 ) {
-    say "DEBUG: in method show-matches" if 1 or $debug;
+    say "DEBUG: in method show-matches" if 0 or $debug;
     my $d = $!draw;
     die "FATAL: not a Draw" unless $d ~~ PB-Lottery::Draw;
 
@@ -59,7 +59,7 @@ sub show-ticket-matches(
     :$ticket!,
     :$debug,
 ) {
-    say "DEBUG: in sub show-ticket-matches" if 1 or $debug;
+    say "DEBUG: in sub show-ticket-matches" if 0 or $debug;
 
     # show the draw/ticket in two columns
 # 1 #   main draw
@@ -120,7 +120,7 @@ sub show-str-match(
     :$Rstr!, # "nn nn nn nn nn nn ..."
     :$debug,
 ) {
-    say "DEBUG: in sub show-str-match" if 1 or $debug;
+    say "DEBUG: in sub show-str-match" if 0 or $debug;
 
     # $d.numbers-str, $t.numbers-str => output: the two lines above
     # we will need the raw strings and pieces

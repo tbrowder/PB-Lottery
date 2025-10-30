@@ -4,25 +4,37 @@ my $F = $?FILE.IO.basename;
 
 use Text::Utils :strip-comment, :str2intlist;
 
-subset Powerball of Int where 1..26;
-subset Number    of Int where 1..69;
+constant MAX-NUM = 69;
+constant MAX-PB  = 26;
 
-has Str $.numbers-str is required;  # "00 00 00 00 00 00";
-has Set $.numbers5 is built; # the five lottery numbers
-has Powerball $.pb is built; # the powerball
+                                     #  0  1  2  3  4  5 <= index
+has Str  $.numbers-str is required;  # "00 00 00 00 00 00";
+has List $.numbers5 is built; # the five lottery numbers
+has Int  $.pb is built; # the powerball
 
 submethod TWEAK {
-    my $s = $!numbers-str.words[0..^6].join(" ");
-    my @i = str2intlist $s;
-    my @n = @i[0..^5];
-    $!numbers5 = @n.Set;
-    $!pb = @i.tail;
+    my $s1 = $!numbers-str.words[0..^5].join(" ");
+    my $s2 = $!numbers-str.words[5];
+    my @n = str2intlist $s1;
+    my @p = str2intlist $s2;
+    $!numbers5 = @n;
+    $!pb = @p.head;
 
     self!validate;
 }
 
 method !validate() {
-    ; # okunless 
+    # subset Number    of Int where 1..69;
+    # subset Powerball of Int where 1..26;
+
+    my $err1 = 0;
+    my $err2 = 0;
+
+    for self.numbers5 -> $n {
+        unless 0 < $n <= MAX-NUM { ++$err1; }
+    }
+    unless 0 < self.pb <= MAX-PB { ++$err2; }
+
 }
 
 =begin comment

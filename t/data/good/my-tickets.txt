@@ -1,4 +1,6 @@
 # good ticket formats
+# but invalid dates are ignored for 
+# these during testing
 
 09 12 22 41 61 25 2025-08-27 pp
 

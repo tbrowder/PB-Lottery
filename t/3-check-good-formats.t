@@ -1,5 +1,7 @@
 use Test;
 
+%*ENV<MY_TEST> = 1;
+
 use PB-Lottery;
 use PB-Lottery::Subs;
 use PB-Lottery::Draw;
@@ -17,11 +19,11 @@ $pdir    = %*ENV{$env-var}; # hack
 
 my $all   = 0;
 my $debug = 0;
-
+my $test  = 0;
 # read the status of the "good" draws and tickets
 lives-ok {
-    do-status $pdir, :test;
+    my $res = do-status $pdir, :$test;
+    done-testing;
 }, "good read of existing data";
 
-done-testing;
-
+#done-testing;

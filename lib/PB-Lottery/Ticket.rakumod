@@ -4,25 +4,25 @@ my $F = $?FILE.IO.basename;
 
 use Text::Utils :strip-comment, :str2intlist;
 
-#use PB-Lottery;
 need PB-Lottery::Numbers;
+need PB-Lottery::Win;
 use PB-Lottery::Subs;
 use PB-Lottery::Vars;
 
 has Str  $.numbers-str is required;
+
 has Date $.date is built;
+
 has Str  $.type is built;
 has Bool $.is-qp;
 has Bool $.paid = False;
-
 has Bool $.pp = False;
 has Bool $.dp = False;
  
 has PB-Lottery::Numbers $.N; # fill in TWEAK
-has @.numbers of Int; # first 5 numbers (dup during a transition 
-                      # period)
 
-has Int $.powerball; # the power ball (dup during a transition period
+has @.numbers; 
+has $.powerball;
 
 submethod TWEAK {
     unless $!numbers-str ~~ /\S/ {

@@ -1,3 +1,6 @@
+Don't use a set in the classes, just use 
+the (&) intersection operator on the lists.
+
 *** NOTE!!!
 To get the latest, we cannot rely on the pdf. it's fine
 for history but not always updated the following

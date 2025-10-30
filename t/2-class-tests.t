@@ -2,10 +2,6 @@ use Test;
 
 use Text::Utils :strip-comment;
 
-use PB-Lottery;
-use PB-Lottery::Subs;
-use PB-Lottery::Draw;
-use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 use PB-Lottery::Vars;
 use PB-Lottery::Event;
@@ -24,6 +20,7 @@ my @dlines = "$pdir/draws.txt".IO.lines;
 for @dlines -> $line is copy {
     $line = strip-comment $line;
     next unless $line ~~ /\S/;
+#   say "line: |$line|";
     my $o = PB-Lottery::Numbers.new: :numbers-str($line);
     isa-ok $o, PB-Lottery::Numbers;
 }

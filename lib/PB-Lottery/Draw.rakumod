@@ -4,7 +4,6 @@ my $F = $?FILE.IO.basename;
 
 use Text::Utils :strip-comment, :str2intlist;
 
-#use PB-Lottery;
 need PB-Lottery::Numbers;
 need PB-Lottery::Win;
 use PB-Lottery::Subs;
@@ -26,52 +25,42 @@ has Str  $.dow; # day of the week
 has PB-Lottery::Numbers $.N;  # fill in TWEAK
 has PB-Lottery::Numbers $.N2; # fill in TWEAK
 
-=begin comment
-# from ChatGPT:
-has @.numbers of Int;
-has Int $.powerball where * < 0 < 27;
-has @.numbers-dp of Int;
-has Int $.powerball-dp where * < 0 < 27;
-=end comment
-
-has @.numbers; # of Int;
-has @.numbers-dp; # of Int;
-has $.powerball; #-dp where * < 0 < 27;
-has $.powerball-dp; # where * < 0 < 27;
+has @.numbers; 
+has $.powerball;
+has @.numbers-dp;
+has $.powerball-dp; 
 
 submethod TWEAK {
     $!numbers-str  = strip-comment $!numbers-str;
     $!numbers-str2 = strip-comment $!numbers-str2;
-
+    #---------------------------------------------
     my $s  = $!numbers-str;
     my $s2 = $!numbers-str2;
+    #-------------------------------------------------
     $!N   = PB-Lottery::Numbers.new: :numbers-str($s);
     $!N2  = PB-Lottery::Numbers.new: :numbers-str($s2);
-
+    #--------------------------------------------------
     my @w  = $!numbers-str.words;
     my @w2 = $!numbers-str2.words;
-
-    # these are sets, convert to ordered Int lists:
+    #--------------------------------------------------
+    # these are already Int lists, ensured they are ordered:
     @!numbers      = $!N.numbers5.keys.sort({ $^a <=> $^b }); 
     @!numbers-dp   = $!N2.numbers5.keys.sort({ $^a <=> $^b }); 
-
-    $!powerball    = $!N.pb; #head; #Int; #keys.head;
+    #--------------------------------------------------
+    $!powerball    = $!N.pb;
     $!powerball-dp = $!N2.pb;
 
     # required date
     $!date = Date.new: @w[6];
-
     my $d2 = Date.new: @w2[6];
     unless $!date === $d2 {
         my $msg = "The two dates are not the same: '$!date', '$d2'";
         throw-err $msg;
     }
-
     $!type2 = @w2[7];
 
     # collect the remaining pieces of @w and then figure out 
     # what we have:
-
     # dow, Nx (also $!type), dollars
     for @w[7..*] -> $s  {
         when $s ~~ /^:i \h* (\d+) x \h* $/ {
@@ -98,39 +87,13 @@ submethod TWEAK {
         }
     }
 
-    =begin comment
-    $!type  = @w[7]; # the Nx factor
-    $!nx    = @w[7];
-    if  $!type ~~ /^:i \h* (\d+) x \h* $/ {
-        $!nx = +$0.UInt;
-        unless $!nx ~~ /2|3|4|5|10/ {
-            my $msg = "Power Play factor '$!nx' should be ";
-            $msg ~= "2, 3, 4, 5, or 10";
-            die $msg;
-        }
-    }
-    else {
-        die qq:to/HERE/;
-        Power Play factor not determined in type string '$!type'
-          the full line: |$!numbers-str|
-        HERE
-    }
-
-    # optional jackpot value for the power ball draw
-    if @w.elems > 8 {
-        my $jp = @w[8];
-        $!jackpot = get-dollars $jp;
-    }
-
-    $!type2 = @w2[7];
-    unless $!type !=== $!type2 {
-        my $msg = "The two types should NOT be the same:\n";
-        $msg ~= " '$!type', '$!type2'";
-        throw-err $msg;
-    }
-    =end comment
+    self!validate;
 
 } # end of submethod TWEAK
+
+method !validate() {
+    ; # ok for now
+}
 
 method print1(:$debug) {
     # called by an Event object
