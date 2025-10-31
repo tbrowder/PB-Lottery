@@ -1,0 +1,20 @@
+# results for testing from the 29 oct 2025 results using
+# the ios app: Lotto Results
+
+# powerball:   4 24 49 60 65  1 2x 2025-10-29 Wed
+# double play: 7 12 24 38 67 26 dp 2025-10-29 Wed
+
+# powerball
+match  prize 2x prize
+5+1
+5+0
+4+1
+4+0
+3+1
+3+0
+2+1
+1+1
+0+1
+
+
+# double play
