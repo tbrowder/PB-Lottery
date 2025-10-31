@@ -145,7 +145,6 @@ sub do-enter-draw(
 sub do-status(
     $pdir, #= private directory
     :$all, #= show latest only unless true
-    :$test, #= dev use
     :$debug,
 ) is export {
     say "Entering sub do-status" if $debug;
@@ -163,9 +162,9 @@ sub do-status(
 
     # create a sub to produce each of the list of Draw
     # and Ticket objects
-    my @tickets = get-ticket-objects :$tfile, :$test;
+    my @tickets = get-ticket-objects :$tfile;
     say "  WARNING: No tickets found!" unless @tickets;
-    my @draws   = get-draw-objects :$dfile, :$test;
+    my @draws   = get-draw-objects :$dfile;
     say "  WARNING: No draws found!" unless @draws.elems;
 
     my $cash = Win.new; # total winnings from base+pp+dp
@@ -177,17 +176,15 @@ sub do-status(
             say "WARNING: This ticket is marked 'paid'";
         }
 
-        # WARN of invalid date ticketks
+        # WARN of invalid date tickets
         my $tdate = $ticket.date;
         my $cdate = Date.new(now);
         if $tdate >= $cdate {
             # valid
-            say "NOTE: This ticket is valid through: $tdate"
-                 unless %*ENV<MY_TEST>:exists;
+            say "NOTE: This ticket is valid through: $tdate";
         }
         else {
-            say "WARNING: This ticket is no longer valid after $tdate"
-                 unless %*ENV<MY_TEST>:exists;
+            say "WARNING: This ticket is no longer valid after $tdate";
         }
 
         for @draws -> $draw {
@@ -207,14 +204,11 @@ sub do-status(
         }
     }
     my $total = $cash.total;
-    unless %*ENV<MY_TEST>:exixts {
-    say "  Total winnings of \$$total for the given lists." 
-           if 1 or $debug;
+    say "  Total winnings of \$$total for the given lists."; 
     say "  By parts:";
     say "    Base:        \${$cash.pb}";
     say "    Power Play:  \${$cash.pp}";
     say "    Double Play: \${$cash.dp}";
-    }
 
 } # end sub do-status
 

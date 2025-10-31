@@ -71,8 +71,8 @@ for @tlines.kv -> $i, $s {
        isa-ok $ticket, PB-Lottery::Ticket;
 
        #$cash = calc-winnings :$ticket, :$draw;
-       $cash = calculate-win :$ticket, :$draw;
-       isa-ok $cash, PB-Ticket::Win;
+       $cash  = calculate-win :$ticket, :$draw;
+       isa-ok $cash, PB-Lottery::Win;
 
        say "Total winnings: $cash":
    }

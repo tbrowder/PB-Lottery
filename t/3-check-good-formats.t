@@ -1,4 +1,5 @@
 use Test;
+use Test::Output;
 
 use PB-Lottery;
 use PB-Lottery::Subs;
@@ -7,6 +8,7 @@ use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 use PB-Lottery::Vars;
 use PB-Lottery::Event;
+use PB-Lottery::Win;
 
 my ($env-var, $pdir);
 
@@ -17,10 +19,20 @@ $pdir    = %*ENV{$env-var}; # hack
 
 my $all   = 0;
 my $debug = 0;
-my $test  = 0;
 # read the status of the "good" draws and tickets
+
 lives-ok {
-    my $res = do-status $pdir, :$test;
+    #stdout-from { do-status $pdir };
+    my $x = stdout-from { do-status $pdir };
 }, "good read of existing data";
 
-#done-testing;
+=begin comment
+lives-ok {
+    # another way, from Lizmat: 2025-10-31
+    # DOES NOT WORK WIT MI6
+    $*OUT = open "/dev/null", :w;
+    do-status $pdir;
+}, "good read of existing data";
+=end comment
+
+done-testing;

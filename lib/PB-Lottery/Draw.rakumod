@@ -69,7 +69,7 @@ submethod TWEAK {
             unless $!nx ~~ /2|3|4|5|10/ {
                 my $msg = "Power Play factor '$!nx' should be ";
                 $msg ~= "2, 3, 4, 5, or 10";
-                die $msg;
+                throw-err $msg;
             }
         }
         when $s ~~ /^:i \h* (mon|wed|sat) \h* $/ {
