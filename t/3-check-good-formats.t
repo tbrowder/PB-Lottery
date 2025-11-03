@@ -22,14 +22,19 @@ my $debug = 0;
 # read the status of the "good" draws and tickets
 
 lives-ok {
-    #stdout-from { do-status $pdir };
-    my $x = stdout-from { do-status $pdir };
+    if 1 {
+        #stdout-from { do-status $pdir };
+       my $x = stdout-from { do-status $pdir };
+    }
+    else {
+        do-status $pdir;
+    }
 }, "good read of existing data";
 
 =begin comment
 lives-ok {
     # another way, from Lizmat: 2025-10-31
-    # DOES NOT WORK WIT MI6
+    # DOES NOT WORK WITH MI6
     $*OUT = open "/dev/null", :w;
     do-status $pdir;
 }, "good read of existing data";
