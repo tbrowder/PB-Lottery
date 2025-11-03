@@ -1,0 +1,228 @@
+=begin pod
+
+=begin code
+# /etc/cron.d/powerball
+# Automated Powerball PDF downloader (Tue, Thu, Sun @ 05:00 CDT)
+# Uses msmtp + Gmail to send output mail to tom.browder@gmail.com
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=tom.browder@gmail.com
+
+# 05:00 CDT = 10:00 UTC; using named weekdays for readability
+0 10 * * tue,thu,sun    root    /usr/local/bin/get-powerball-pdf.sh 2>&1
+=end code
+
+Checklist:
+
+1. Save file:
+
+    sudoedit /etc/cron.d/powerball
+
+2, Fix ownership and permissions:
+
+    sudo chown root:root /etc/cron.d/powerball
+    sudo chmod 644 /etc/cron.d/powerball
+
+3. Verify cron service:
+
+    sudo systemctl status cron
+
+4. Test mail output manually:
+
+    sudo run-parts --test /etc/cron.d
+    echo "Cron test $(date)" | mail -s "Powerball cron mail test" tom.browder@gmail.com
+
+5. Check msmtp log:
+
+
+    tail -n 20 /var/log/msmtp.log
+
+If you see OK in that log, Gmail has accepted the message and cron’s
+mail output will now go straight to your inbox.
+
+Would you like me to prepare a second entry in that same file for a
+“parse/update” run later in the morning (e.g., 06:00 CDT) once the PDF
+has posted?
+
+Excellent — here’s your enhanced /etc/cron.d/powerball file, still
+using four-space indentation, now with two coordinated jobs:
+
+1) Download job — fetches the new Powerball PDF at 05:00 CDT (10:00
+UTC).
+
+2️) Parse/update job — processes it an hour later at 06:00 CDT (11:00
+UTC) once the draw data is available.
+
+=begin code
+# /etc/cron.d/powerball
+# Automated Powerball maintenance (Tue, Thu, Sun)
+# Uses msmtp + Gmail to send output mail to tom.browder@gmail.com
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=tom.browder@gmail.com
+
+# 05:00 CDT (10:00 UTC) - download the latest Powerball PDF
+0 10 * * tue,thu,sun    root    /usr/local/bin/get-powerball-pdf.sh 2>&1
+
+# 06:00 CDT (11:00 UTC) - parse the PDF and update records
+0 11 * * tue,thu,sun    root    /usr/local/bin/manage-pb update 2>&1
+=end code
+
+Checklist
+
+1. Save:
+
+    sudoedit /etc/cron.d/powerball
+
+2. Permissions:
+
+    sudo chown root:root /etc/cron.d/powerball
+    sudo chmod 644 /etc/cron.d/powerball
+
+
+3. Verify:
+
+    sudo systemctl reload cron
+    sudo systemctl status cron
+
+
+4. Confirm it's recognized:
+
+    sudo run-parts --test /etc/cron.d
+
+
+
+5. Watch logs:
+
+    tail -n 20 /var/log/msmtp.log
+    tail -n 20 /var/log/syslog | grep CRON
+
+This setup ensures:
+
++ You’ll get two emails per run day:
+
+  - one confirming the download
+
+  - one confirming parse/update success (or reporting errors)
+
++ The pipeline stays in UTC internally but maps perfectly to your CDT
+schedule.
+
+#=====================================================================
+
+Would you like me to also create a log-only variant (same schedule,
+but suppressing emails and writing to /var/local/powerball/manage.log)
+for fallback use?
+
+Perfect — here’s a log-only variant of your Powerball cron file,
+designed for silent operation (no email).  It writes all output from
+both jobs directly to /var/local/powerball/manage.log.
+
+You can either keep this as a separate file (for example
+/etc/cron.d/powerball-logonly) or temporarily switch to it if you want
+to suppress email while retaining logs.
+
+#====================================================================
+
+=begin code
+# /etc/cron.d/powerball-logonly
+# Automated Powerball maintenance (Tue, Thu, Sun)
+# Writes output to /var/local/powerball/manage.log instead of emailing
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+LOGFILE=/var/local/powerball/manage.log
+
+# 05:00 CDT (10:00 UTC) - download the latest Powerball PDF
+0 10 * * tue,thu,sun    root    /usr/local/bin/get-powerball-pdf.sh >> ${LOGFILE} 2>&1
+
+# 06:00 CDT (11:00 UTC) - parse the PDF and update records
+0 11 * * tue,thu,sun    root    /usr/local/bin/manage-pb update >> ${LOGFILE} 2>&1
+=end code
+
+Usage notes
+
++ This version removes MAILTO completely.
+
++ All output is timestamped by your scripts themselves (if they log date lines).
+
++ You can switch between versions safely — just comment out one or the other.
+
+To install:
+
+    sudoedit /etc/cron.d/powerball-logonly
+    sudo chown root:root /etc/cron.d/powerball-logonly
+    sudo chmod 644 /etc/cron.d/powerball-logonly
+    sudo systemctl reload cron
+
+Then verify cron sees it:
+
+    sudo run-parts --test /etc/cron.d
+
+#======================================================
+
+Would you like me to show you a simple rotation setup for
+/var/local/powerball/manage.log next — so the log never grows
+indefinitely?
+
+Great—here’s a tidy logrotate setup so your logs don’t grow
+forever. This rotates both your Powerball job log and msmtp log.
+
+1. Create /etc/logrotate.d/powerball
+
+=begin code
+# Rotate Powerball manager log
+/var/local/powerball/manage.log {
+    daily
+    rotate 14
+    missingok
+    notifempty
+    compress
+    delaycompress
+    dateext
+    copytruncate
+    create 0644 root root
+}
+
+# Rotate msmtp log (cron email delivery)
+/var/log/msmtp.log {
+    weekly
+    rotate 8
+    missingok
+    notifempty
+    compress
+    delaycompress
+    dateext
+    copytruncate
+    create 0644 root root
+}
+=end code
+
+1) Notes
+
++ C<copytruncate> avoids needing to stop jobs; it truncates the active file after copying.
+
++ C<dateext> adds a date suffix to rotated files.
+
++ Adjust daily/weekly and rotate N to your preference.
+
+2) Permissions & directory (if needed)
+
+    sudo mkdir -p /var/local/powerball
+    sudo chown root:root /var/local/powerball
+    sudo touch /var/local/powerball/manage.log
+    sudo chmod 0644 /var/local/powerball/manage.log
+
+3) Test the config
+
+    sudo logrotate -d /etc/logrotate.conf         # dry run (shows what would happen)
+    sudo logrotate -f /etc/logrotate.conf         # force a rotation now
+
+That’s it—your logs will now rotate automatically via the system’s
+C<logrotate cron/systemd> schedule.
+
+=end pod
+
