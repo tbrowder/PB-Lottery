@@ -4,5 +4,5 @@ That new code is put under git control and tested.
 
 PARSER="/usr/local/powerball/emit-blocks.raku"
 
-See file ./system-files/emit-blocks.raku 
+See file ./system-files/extract-blocks.raku 
 

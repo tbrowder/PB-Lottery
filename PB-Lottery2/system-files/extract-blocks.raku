@@ -60,7 +60,7 @@ sub MAIN(
         $pdf-file = $*TMPDIR.IO.add('pb.pdf');
     }
     else {
-        # dowloaded by a cron job to:
+        # downloaded by a cron job to:
         $pdf-file = "/var/local/powerball/pb.pdf";
     }
 
