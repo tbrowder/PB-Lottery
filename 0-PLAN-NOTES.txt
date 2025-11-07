@@ -1,5 +1,5 @@
 Use code in ./PB-Lottery2 to gradually change the system
-for thhe next release.
+for the next release.
 
 See Notes.txt in that directory.
 
