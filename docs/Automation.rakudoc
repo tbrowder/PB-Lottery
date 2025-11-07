@@ -5,19 +5,13 @@
 If desired, the user can automate most of the Powerball management process on his or server with the 
 following steps:
 
-=begin ordered
-
 =item Configure the system cron 
 =item2 Add a bash script
 =item2 Add special directories
 =item2 Configure syslog
-
 =item Add Gmail notifications
 =item2 Obtain a Google user key
 =item2 Congigure exim4 to provide email noticed
-
-
-=end ordered
 
 =end pod
 

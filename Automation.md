@@ -3,9 +3,6 @@ Automating management
 
 If desired, the user can automate most of the Powerball management process on his or server with the following steps:
 
-ordered
-=======
-
   * Configure the system cron 
 
     * Add a bash script
