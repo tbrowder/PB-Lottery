@@ -52,7 +52,7 @@ routine checks both locations and uses the pdf file with
 the latest results.
 
 The drawing record results are extracted from the official
-pdf results file and  are are kept in a file named C<draws.txt>.
+pdf results file and are kept in a file named C<draws.txt>.
 New results are added to end of that file in draw date order.
 
 You ticket records must be in a file named C<my-tickets.txt>.
