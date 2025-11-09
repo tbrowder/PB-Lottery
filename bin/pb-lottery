@@ -7,6 +7,8 @@ use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 
 # check for required env var
+my $pdir = get-pdir-envar;
+=begin comment
 my $env-var = "PB_LOTTERY_PRIVATE_DIR";
 my $pdir;
 if %*ENV{$env-var}:exists {
@@ -23,6 +25,7 @@ else {
     HERE
     exit(1);
 }
+=end comment
 
 my $debug  = 0;
 my $pick   = 0;

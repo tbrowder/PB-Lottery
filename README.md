@@ -22,53 +22,75 @@ the recorded draw results...
 DESCRIPTION
 ===========
 
-**PB-Lottery** is intended to help the user manage his or her play in the US Power Ball Lottery with draws every Monday, Wednesday, and Saturday. 
+**PB-Lottery** is intended to help the user manage his or her play in the US Power Ball Lottery with draws every Monday, Wednesday, and Saturday evening at 11:00 PM EST.. 
 
 The package includes an installed binary file, `pb-lottery`, to enbable checking various aspects of the user's lottery data including a listing of winnings for each ticket for its valid time period. Execute the program without arguments to see its help text.
 
-The package uses two separate data records, in defined formats (see below), for your tickets and the Power Ball drawings.
+There are two modes of operation: *semi-automatic* and *manual*, but the practical differnces are slight. Both methods require the user have his or her ticket files in a private directory. Both methods now use the Florida Lottery's results pdf file and extracts the desired data as needed. The location of that file varies with the method used.
 
-The drawing records must be in a file named `draws.txt` and your ticket records must be in a file named `my-tickets.txt`.
+The manual method downloads the results pdf file into the user's private directory.
 
-This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run, and the `draws.txt` and `my-tickets.txt` files must exist in order to check your results. (It is recommended to keep your data files under *Git* management.)
+The semi-automatic mode requires a little more work in order to set up a system cron job that will automatically download the latest results pdf file, check the user's tickets, and report the results to the user via email. The semi-automatic method puts the results pdf file in a special system directory: `/var/local/powerball/`.
+
+To avoid confusion, if both locations exist, the using routine checks both locations and uses the pdf file with the latest results.
+
+The drawing record results are extracted from the official pdf results file and are are kept in a file named `draws.txt`. New results are added to end of that file in draw date order.
+
+You ticket records must be in a file named `my-tickets.txt`.
+
+This program expects your two data files to be in a directory pointed to by the environment variable **PB_LOTTERY_PRIVATE_DIR**. That directory **must** exist in order for the program to run. As well, the `draws.txt` and `my-tickets.txt` files must exist in order to check your results. (It is recommended to keep your data files under *Git* management.)
 
 Ticket file format
 ------------------
 
-Your lottery ticket records must be in a text file in the following format:
+Your lottery ticket records must be in a text file in a special format as shown in this example:
 
-    # Lottery number choices (picks)
+    03 05 23 32 51 18 2025-12-24 pb dp
 
-    # The first five numbers are picks for the lottery, and the sixth and
-    # last number is the Power Ball.
+The first five numbers are picks for the lottery (in the range 1..69), and the sixth and last number is the Power Ball (in the range 1..26). 
 
-    # The seventh entry is the date the ticket is valid through and must
-    # be in yyyy-mm-dd format.
+Leading zeros are not required, but they help to keep the numbers aligned neatly. They are ignored when being processed for matches with drawn numbers.
 
-    # The remainder of the ticket line must contain at least one
-    # and up to several additional tokens:
+The seventh entry is the **last date the ticket is valid** and must be in YYYY-MM-DD format.
 
-    #   pp  (for the 'Power Play' add-on option)
-    #   dp  (for the 'Double Play' add-on option)
-    #   pb  (only needed if your ticket doesn't have the 'pp' or 'dp' options)
-    #   qp  (for your records if you used the 'quick pick' method)
-    #   paid (use this token to prevent the ticket from being tallied in
-    #         the 'status' routine)
+The remainder of the ticket line must contain at least one and up to several additional tokens from the following list:
 
-    # Any hash mark ('#') on a line starts a comment and
-    # it and the remainder of that line are ignored.
-    # Blank lines are ignored.
+  * pp 
 
-    # Valid examples:
+    For the 'Power Play' add-on option
 
-     02 20 32 45 47 06 2025-09-22 pb # <== no add-ons
-     02 20 32 45 47 06 2025-09-22 pp dp qp
-     02 20 32 45 47 06 2025-09-22 pp dp qp paid # <== see note above
+  * dp 
+
+    For the 'Double Play' add-on option
+
+  * pb 
+
+    This token is only needed if your ticket doesn't have the 'pp' or 'dp' options
+
+  * paid 
+
+    use this token to prevent the ticket from being tallied in the 'status' routine
+
+  * qp 
+
+    For your records if you used the 'quick pick' method
+
+Any hash mark ('#') on a line starts a comment and it and the remainder of that line are ignored.
+
+Blank lines are ignored.
+
+More valid examples:
+
+    02 20 32 45 47 06 2025-09-22 pb # <== no add-ons
+    02 20 32 45 47 06 2025-09-22 pp dp qp
+    02 20 32 45 47 06 2025-09-22 pp dp qp paid # <== see note above
 
 Draw file format
 ----------------
 
-Note the Power Ball lottery's **draw** record is slightly different from the user's ticket entry. First, it has **two** lines per draw date. The **first** line is the actual 'Power Ball' draw plus the multiplier factor for the Power Play. The **second** line is the 'Double Play' draw. The two lines for each draw data **must** be in a text file in the following format (note two draw dates are shown):
+**NOTE: The draw record file is now updated by code in this distribution and its format is slightly modified from the original version which was created by the user. New draw results will be added by the system, but no existing data will be deleted by the system. ONLY THE USER MAY REMOVE CURRENT DRAW RECORDS.** Before adding to the existing file, a dated copy is made and placed in subdirectory `./old-draw-records`
+
+The Power Ball lottery's **draw** record is slightly different from the user's ticket entry. First, it has **two** lines per draw date. The **first** line is the actual 'Power Ball' draw plus the multiplier factor for the Power Play. The **second** line is the 'Double Play' draw. The two lines for each draw data will be in a text file in the following format (note two draw dates are shown):
 
     # Powerball lottery draws
 
@@ -76,7 +98,6 @@ Note the Power Ball lottery's **draw** record is slightly different from the use
     08 23 25 40 53 05 2025-09-01 3x # <= the Power Ball draw & multiplier
     10 15 26 48 67 19 2025-09-01 dp # <= the Double Play draw
 
-    # next draw
     # draw on 2025-09-03
     03 16 29 61 69 22 2025-09-03 2x # <= the Power Ball draw & multiplier
     07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw

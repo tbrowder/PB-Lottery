@@ -42,6 +42,14 @@ class SPair {
     has Str $.R is required;
 }
 
+sub get-pdir-from-envar(
+    --> Str
+) is export {
+    my $pdir = %*ENV<PB_LOTTERY_PRIVATE_DIR> // die qq:to/HERE;
+    HERE
+    $pdir;
+} # end of sub get-pdir-envar
+
 sub show-string-matches(
     Str :$Lstr1!,
     Str :$Lstr2!,

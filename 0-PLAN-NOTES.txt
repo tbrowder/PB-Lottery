@@ -6,7 +6,7 @@ See Notes.txt in that directory.
 Goal: Use the required private directory to store all
 data without using cron.
 
-Primmary data file: history/pb.pdf
+Primmary, downloaded data file: /var/local/powerball/pb.pdf
 
 Primary data file currency is based on:
     date of last draw: Mon, Wed, and Sat at 1100 EST
