@@ -6,39 +6,20 @@ use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 
-# check for required env var
-my $pdir = get-pdir-envar;
-=begin comment
-my $env-var = "PB_LOTTERY_PRIVATE_DIR";
-my $pdir;
-if %*ENV{$env-var}:exists {
-    $pdir = %*ENV{$env-var};
-}
-else {
-    print qq:to/HERE/;
-    FATAL: The required environment variable
-
-              $env-var 
-
-           is not defined.  See the README for details.
-           Exiting...
-    HERE
-    exit(1);
-}
-=end comment
+# check for required private directory
+my $pdir = get-pdir-from-envar;
 
 my $debug  = 0;
 my $pick   = 0;
 my $status = 0;
-my $edraw  = 0;
-my $epick  = 0;
-my $all    = 0;
+my $latest = 0;
+
+#my $epick  = 0;
+#my $all    = 0;
 
 =begin comment
 # not yet used
 
-      edraw  - Begin a dialogue to enter a Power Ball draw
-                 (not yet implemented)
       epick  - Begin a dialogue to enter a Power Ball ticket
                  (not yet implemented)
 
@@ -53,8 +34,9 @@ if not @*ARGS {
     Usage: {$*PROGRAM.basename} <mode> [options...]
 
     Modes:
+      latest - Downloads and updates the user's 'draws.txt' file
+      status - Reports the user's current, uncollected prizes for valid tickets
       pick   - Select a random Power Ball play
-      status - Shows current user results from current data
 
     HERE
     exit;

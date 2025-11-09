@@ -221,8 +221,9 @@ The installed executable file C<pb-lottery> is the user's tool for
 manual operation. Execute the file without arguments to see its
 modes. Briefly they are:
 
-=item latest - downloads and updates the user's 'draws.txt' file
-=item status - reports the user's current, uncollected prizes for valid tickets
+=item latest - Downloads and updates the user's 'draws.txt' file
+=item status - Reports the user's current, uncollected prizes for valid tickets
+=item pick   - Select a random Power Ball play
 
 =head1 AUTHOR
 

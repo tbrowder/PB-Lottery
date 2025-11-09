@@ -1,5 +1,7 @@
 unit module PB-Lottery::Vars;
 
+our constant $pdir-env-var is export = "PB_LOTTERY_PRIVATE_DIR";
+
 # Prizes for the Florida Powerball lottery
 # in strings for decoding.
 

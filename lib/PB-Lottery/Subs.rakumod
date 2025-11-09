@@ -26,7 +26,6 @@ our %valid-ticket-types is export = set <
     dp Dp dP DP
     pp Pp pP PP
     pb Pb pB PB
-
 >;
 #   qp Qp qP QP
 
@@ -45,7 +44,13 @@ class SPair {
 sub get-pdir-from-envar(
     --> Str
 ) is export {
-    my $pdir = %*ENV<PB_LOTTERY_PRIVATE_DIR> // die qq:to/HERE;
+    my $pdir = %*ENV{$pdir-env-var} // die qq:to/HERE/;
+    FATAL: The required environment variable
+
+              $pdir-env-var
+
+           is not defined.  See the README for details.
+           Exiting...
     HERE
     $pdir;
 } # end of sub get-pdir-envar
