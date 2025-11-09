@@ -33,6 +33,7 @@
     "lottery florida powerball power ball"
   ],
   "test-depends": [
+    "curl"
   ],
   "version": "0.0.1"
 }
