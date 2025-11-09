@@ -14,8 +14,8 @@ my $pick   = 0;
 my $status = 0;
 my $latest = 0;
 
-#my $epick  = 0;
-#my $all    = 0;
+my $all    = 0;
+my $epick  = 0;
 
 =begin comment
 # not yet used
@@ -43,11 +43,9 @@ if not @*ARGS {
 }
 
 for @*ARGS {
-    when /^:i p/  { ++$pick   }
+    when /^:i l/  { ++$latest }
     when /^:i s/  { ++$status }
-    when /^:i ed/ { ++$edraw  }
-    when /^:i ep/ { ++$epick  }
-    when /^:i a/  { ++$all    }
+    when /^:i p/  { ++$pick   }
     when /^:i d/  { ++$debug  }
     default {
         print qq:to/HERE/;
@@ -64,14 +62,14 @@ if 0 and $debug {
     exit; 
 }
 
-if $status {
+if $latest {
+    do-latest $pdir, :$all, :$debug;
+}
+elsif $status {
     do-status $pdir, :$all, :$debug;
 }
 elsif $pick {
     do-pick $pdir, :$debug;
-}
-elsif $edraw {
-    do-enter-draw $pdir, :$debug;
 }
 elsif $epick {
     do-enter-pick $pdir, :$debug;

@@ -88,6 +88,14 @@ sub calculate-win(
     return $win;
 } # end sub calculate-win($ticket, $draw --> Win # from ChatGPT
 
+sub do-latest(
+    $pdir, #= private directory
+    :$alt-dir = "/var/local/powerball", 
+    :$debug,
+) is export {
+    say "Entering sub do-latest" if $debug;
+} # end of sub do-latest
+
 sub do-pick(
     $pdir, #= private directory
     :$debug,
@@ -131,6 +139,7 @@ sub do-enter-pick(
 
 sub do-enter-draw(
     $pdir, #= private directory
+    :$alt-dir = "/var/local/powerball", 
     :$debug,
 ) is export {
     say "Entering sub do-enter-draw" if $debug;
@@ -145,6 +154,7 @@ sub do-enter-draw(
 sub do-status(
     $pdir, #= private directory
     :$all, #= show latest only unless true
+    :$alt-dir = "/var/local/powerball", 
     :$debug,
 ) is export {
     say "Entering sub do-status" if $debug;
