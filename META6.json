@@ -33,7 +33,13 @@
     "lottery florida powerball power ball"
   ],
   "test-depends": [
-    "curl"
+    "curl",
+    "Test::Output",
+    "IO::Socket::SSL",
+    "HTTP::UserAgent",
+    "LibCurl::Easy",
+    "Text::Utils
+
   ],
   "version": "0.0.1"
 }
