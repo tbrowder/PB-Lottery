@@ -21,7 +21,7 @@ the recorded draw results...
 
 B<PB-Lottery> is intended to help the user manage his or her play in
 the US Power Ball Lottery with draws every Monday, Wednesday, and
-Saturday evening at 11:00 PM EST.. 
+Saturday evening at 11:00 PM EST.
 
 The package includes an installed binary file, C<pb-lottery>,
 to enbable checking various aspects of the user's lottery data
