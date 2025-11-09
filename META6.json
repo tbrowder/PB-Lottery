@@ -38,8 +38,7 @@
     "IO::Socket::SSL",
     "HTTP::UserAgent",
     "LibCurl::Easy",
-    "Text::Utils
-
+    "Text::Utils"
   ],
   "version": "0.0.1"
 }
