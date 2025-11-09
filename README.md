@@ -26,7 +26,7 @@ DESCRIPTION
 
 The package includes an installed binary file, `pb-lottery`, to enbable checking various aspects of the user's lottery data including a listing of winnings for each ticket for its valid time period. Execute the program without arguments to see its help text.
 
-There are two modes of operation: *semi-automatic* and *manual*, but the practical differnces are slight. Both methods require the user have his or her ticket files in a private directory. Both methods now use the Florida Lottery's results pdf file and extracts the desired data as needed. The location of that file varies with the method used.
+There are two modes of operation: *semi-automatic* and *manual*, but the practical differnces are slight. Both methods require the user have his or her ticket files in a private directory. Both methods now use the Florida Lottery's results pdf file and extract the desired data as needed. The location of that file varies with the method used.
 
 The manual method downloads the results pdf file into the user's private directory.
 
@@ -147,6 +147,15 @@ Finding results
 ---------------
 
 In the author's state of Florida, Power Ball lottery results may be found at [https://floridalottery.com](https://floridalottery.com). Other states will have their own lottery sites, but the results for any Power Ball lottery should be the same on each states' lottery site for the same date.
+
+Manual operation
+----------------
+
+The installed executable file `pb-lottery` is the user's tool for manual operation. Execute the file without arguments to see its modes. Briefly they are:
+
+  * latest - downloads and updates the user's 'draws.txt' file
+
+  * status - reports the user's current, uncollected prizes for valid tickets
 
 AUTHOR
 ======

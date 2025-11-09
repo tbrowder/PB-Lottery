@@ -33,7 +33,7 @@ There are two modes of operation: I<semi-automatic> and I<manual>,
 but the practical differnces are slight. Both methods
 require the user have his or her ticket files in a private
 directory. Both methods now use the Florida Lottery's results pdf
-file and extracts the desired data as needed. The location
+file and extract the desired data as needed. The location
 of that file varies with the method used.
 
 The manual method downloads the results pdf file into
@@ -214,6 +214,15 @@ In the author's state of Florida, Power Ball lottery results may be
 found at L<https://floridalottery.com>.  Other states will have their
 own lottery sites, but the results for any Power Ball lottery should be
 the same on each states' lottery site for the same date.
+
+=head2 Manual operation
+
+The installed executable file C<pb-lottery> is the user's tool for
+manual operation. Execute the file without arguments to see its
+modes. Briefly they are:
+
+=item latest - downloads and updates the user's 'draws.txt' file
+=item status - reports the user's current, uncollected prizes for valid tickets
 
 =head1 AUTHOR
 
