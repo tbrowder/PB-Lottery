@@ -3,17 +3,80 @@ Automating management
 
 If desired, the user can automate most of the Powerball management process on his or server with the following steps:
 
-  * Configure the system cron 
+1. Configure the system `cron`
 
-    * Add a bash script
+Create a cron job file in directory `/etc/cron.d` with the following contents:
 
-    * Add special directories
+    # /etc/cron.d/powerball
+    # draws on       Mon, Wed, Sat (1, 3, 6)
+    #   at 2300 EST, 2200 CST
+    # get results every day or on Tue, Thu, Sun (2, 4, 7)
+    #     at 0300 CDT (0800 UTC)
+    SHELL=/bin/bash
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    # download the file once per day at approx 0300 local
+    #   CST = UTC -6 => UTC = CST + 6 = 0900 UTC
+    #   CDT = UTC -5 => UTC = CST + 5 = 0800 UTC
+    # m h dom mon dow         user command
+      1 9 *   *   tue,thu,sun root /usr/local/bin/get-powerball-pdf.sh
 
-    * Configure syslog
+2. Add the bash script `get-powerball-pdf.sh`
 
-  * Add Gmail notifications
+Put the bash script in directory `/usr/local/bin` with the following contents:
 
-    * Obtain a Google user key
+    #!/usr/bin/env bash
+    # get-powerball-pdf.sh
+    # Simple script to download the latest Florida Powerball PDF.
+    # Requires: wget or curl, network access.
+    # Destination: /var/local/powerball/pb.pdf
 
-    * Congigure exim4 to provide email noticed
+    set -euo pipefail
+
+    OUTDIR="/var/local/powerball"
+    OUTFILE="${OUTDIR}/pb.pdf"
+    URL="https://files.floridalottery.com/exptkt/pb.pdf"
+    LOGFILE="${OUTDIR}/cron.log"
+
+    # Ensure destination directory exists
+    mkdir -p "${OUTDIR}"
+
+    # Download latest Powerball PDF
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] Downloading latest Powerball PDF..." | tee -a "${LOGFILE}"
+
+    if command -v wget >/dev/null 2>&1; then
+        wget -q -O "${OUTFILE}" "${URL}"
+    elif command -v curl >/dev/null 2>&1; then
+        curl -s -L -o "${OUTFILE}" "${URL}"
+    else
+        echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] Neither wget nor curl found." | tee -a "${LOGFILE}"
+        exit 1
+    fi
+
+    # Confirm successful download
+    if [[ -f "${OUTFILE}" ]]; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S') [INFO] Saved: ${OUTFILE}" | tee -a "${LOGFILE}"
+    else
+        echo "$(date '+%Y-%m-%d %H:%M:%S') [ERROR] Failed to download PDF." | tee -a "${LOGFILE}"
+        exit 1
+    fi
+
+3. Add special directories
+
+    sudo mkdir /var/local/powerball
+
+4. Configure `syslog`
+
+    TBA
+
+5. Add Gmail notifications
+
+    TBA
+
+6. Obtain a Google user key
+
+    TBA
+
+7. Configure `exim4` to provide email notices
+
+    TBA
 

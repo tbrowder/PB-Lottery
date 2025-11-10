@@ -22,7 +22,7 @@ the recorded draw results...
 DESCRIPTION
 ===========
 
-**PB-Lottery** is intended to help the user manage his or her play in the US Power Ball Lottery with draws every Monday, Wednesday, and Saturday evening at 11:00 PM EST.. 
+**PB-Lottery** is intended to help the user manage his or her play in the US Power Ball Lottery with draws every Monday, Wednesday, and Saturday evening at 11:00 PM EST.
 
 The package includes an installed binary file, `pb-lottery`, to enbable checking various aspects of the user's lottery data including a listing of winnings for each ticket for its valid time period. Execute the program without arguments to see its help text.
 
@@ -34,7 +34,7 @@ The semi-automatic mode requires a little more work in order to set up a system 
 
 To avoid confusion, if both locations exist, the using routine checks both locations and uses the pdf file with the latest results.
 
-The drawing record results are extracted from the official pdf results file and are are kept in a file named `draws.txt`. New results are added to end of that file in draw date order.
+The drawing record results are extracted from the official pdf results file and are kept in a file named `draws.txt`. New results are added to end of that file in draw date order.
 
 You ticket records must be in a file named `my-tickets.txt`.
 

@@ -8,6 +8,7 @@ Revision history for PB-Lottery
       + Add methods to Draw and Ticket classes
     - Add option "all" to the status mode
     - Update README 
+    - Improve random pick display
 
 0.0.1  2025-10-07T18:10:50-05:00
     - Initial version

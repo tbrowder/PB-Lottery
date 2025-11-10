@@ -36,7 +36,7 @@ if not @*ARGS {
     Modes:
       latest - Downloads and updates the user's 'draws.txt' file
       status - Reports the user's current, uncollected prizes for valid tickets
-      pick   - Select a random Power Ball play
+      pick   - Selects a random Power Ball play
 
     HERE
     exit;

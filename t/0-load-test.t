@@ -8,6 +8,7 @@ my @modules = <
     PB-Lottery::Vars
     PB-Lottery::Win
     PB-Lottery::Event
+    PB-Lottery::ExtractBlocks
 >;
 
 plan @modules.elems;

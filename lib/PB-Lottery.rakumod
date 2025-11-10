@@ -94,6 +94,14 @@ sub do-latest(
     :$debug,
 ) is export {
     say "Entering sub do-latest" if $debug;
+
+    # TODO: determine which pdf file has the latest data
+    my $dfile = "$pdir/draws.txt";
+    my @draws = get-draw-objects :$dfile;
+    say "  WARNING: No draws found!" unless @draws.elems;
+
+    my $tfile = "$pdir/my-tickets.txt";
+
 } # end of sub do-latest
 
 sub do-pick(
@@ -112,6 +120,7 @@ sub do-pick(
 
     # stringify for our use
     my ($s1, $s2);
+    my $zero-pad = False;
     for @pick.kv -> $i, $n is copy {
         if $i {
             # add a space to the existing string
@@ -121,13 +130,20 @@ sub do-pick(
 
         $s1 ~= $n;
         if $n.chars < 2 {
-            # add a leading zero
+            # add a leading zero for single digit numbers
             $n = "0$n";
+            $zero-pad = True;
         }
         $s2 ~= $n;
     }
-    say "random: $s1" if $debug;
-    say "random: $s2 # with 2 chars per number" if $debug;
+
+    say "Random Power Ball Lottery ticket pick:"; 
+    if $zero-pad {
+        say "  $s2 # with 2 chars per number";
+    }
+    else {
+        say "  $s1";
+    }
 }
 
 sub do-enter-pick(
@@ -158,6 +174,12 @@ sub do-status(
     :$debug,
 ) is export {
     say "Entering sub do-status" if $debug;
+
+    # TODO: determine which pdf file has the latest data
+    my $dfile = "$pdir/draws.txt";
+    my @draws = get-draw-objects :$dfile;
+    say "  WARNING: No draws found!" unless @draws.elems;
+
     # read all the draws...
     say "Calculating winnings..." if 0 or $debug;
     if 0 or $debug {
@@ -167,15 +189,12 @@ sub do-status(
         HERE
     }
 
-    my $dfile = "$pdir/draws.txt";
     my $tfile = "$pdir/my-tickets.txt";
 
     # create a sub to produce each of the list of Draw
     # and Ticket objects
     my @tickets = get-ticket-objects :$tfile;
     say "  WARNING: No tickets found!" unless @tickets;
-    my @draws   = get-draw-objects :$dfile;
-    say "  WARNING: No draws found!" unless @draws.elems;
 
     my $cash = Win.new; # total winnings from base+pp+dp
     my ($cash-pb, $cash-pp, $cash-dp) = 0, 0, 0;

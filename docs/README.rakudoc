@@ -17,6 +17,9 @@ valid lottery tickets for each of
 the recorded draw results...
 =end code
 
+B<NOTE>: This module requires system package C<poppler-utils> in order
+to interrogate the Florida Lottery's PDF file with all lottery drawing results.
+
 =head1 DESCRIPTION
 
 B<PB-Lottery> is intended to help the user manage his or her play in
@@ -157,7 +160,8 @@ text file in the following format (note two draw dates are shown):
 
 =end code
 
-If desired, you can also enter the jackpot value as a string
+With versions after the initial release, the jackpot amount is
+added as a string
 B<after> the mutiplier on the first line. For example:
 
 =begin code
