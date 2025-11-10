@@ -19,6 +19,8 @@ valid lottery tickets for each of
 the recorded draw results...
 ```
 
+**NOTE**: This module requires system package `poppler-utils` in order to interrogate the Florida Lottery's PDF file with all lottery drawing results.
+
 DESCRIPTION
 ===========
 
@@ -102,7 +104,7 @@ The Power Ball lottery's **draw** record is slightly different from the user's t
     03 16 29 61 69 22 2025-09-03 2x # <= the Power Ball draw & multiplier
     07 32 39 50 61 04 2025-09-03 dp # <= the Double Play draw
 
-If desired, you can also enter the jackpot value as a string **after** the mutiplier on the first line. For example:
+With versions after the initial release, the jackpot amount is added as a string **after** the mutiplier on the first line. For example:
 
     # draw on 2025-09-03
     03 16 29 61 69 22 2025-09-03 2x $1.4B  # <= the Power Ball jackpot
