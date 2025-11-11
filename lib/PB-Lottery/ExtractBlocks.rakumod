@@ -43,8 +43,7 @@ class Rec {
 sub MAIN(
 =end comment
 sub extract-blocks(
-    :$pdf-file1!,
-    :$pdf-file2 = "/var/local/powerball/pb.pdf",
+    :$pdir!, #f-file1!,
 
     :$last = 10,
     :$since = '',
@@ -61,27 +60,32 @@ sub extract-blocks(
         if $which.exitcode != 0;
 
     # download location varies right now
-    my $pdf-file;
-    if $debug {
-        $pdf-file = $*TMPDIR.IO.add('pb.pdf');
-    }
-    else {
-        # downloaded by a cron job to:
-        $pdf-file = "/var/local/powerball/pb.pdf";
-    }
+    my $pdf-file = "$pdir/pb.pdf";
+    # possibly downloaded by a cron job to:
+    my $pdf-file2 = "/var/local/powerball/pb.pdf".IO.r // False;;
 
-    say "DEBUG: See the input pdf file '$pdf-file'" if $debug;
-
-    # create a text file from the PDF file
-    my $txt-file = $*TMPDIR.IO.add('pb.txt');
-    say "DEBUG: See pdf2txt file '$txt-file'" if $debug;
+    # create a text file from each PDF file
+    my $txt-file  = "$pdir/pb.txt";
+    # text file 1
     my $pt = run 'pdftotext', '-layout', '-q', $pdf-file, 
                  $txt-file, :out, :err;
     die "pdftotext failed" if $pt.exitcode != 0;
-    
-    # parse the text file to get the latest draw data
-    my @lines = $txt-file.open(:r, :enc('utf8-c8')).lines;
-    my %by-date = Hash[Hash].new;
+
+    # parse the text files to get the latest draw data
+    my @lines  = $txt-file.open(:r, :enc('utf8-c8')).lines;
+
+    my ($pt2, $txt-file2, @lines2, %by-date2);
+    if $pdf-file2 {
+        # text file 2
+        $txt-file2 = "$pdir/pb2.txt";
+        $pt2 = run 'pdftotext', '-layout', '-q', $pdf-file2, 
+                   $txt-file2, :out, :err;
+        die "pdftotext failed" if $pt2.exitcode != 0;
+        @lines2 = $txt-file2.open(:r, :enc('utf8-c8')).lines;
+        %by-date2 = Hash[Hash].new;
+    }
+
+    my %by-date  = Hash[Hash].new;
 
     say "DEBUG: lines from file '$txt-file'" if 0 or $debug;
     for @lines -> $line {
