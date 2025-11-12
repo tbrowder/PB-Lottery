@@ -41,6 +41,25 @@ class SPair {
     has Str $.R is required;
 }
 
+sub get-file-mod-time(
+    $file
+    --> Date 
+) is export {
+    # DEBUG: File '/var/local/powerball/pb.pdf' access time: 
+    # '-rw-r--r-- 1 root root 686506 Nov 11 07:30 /var/local/powerball/pb.pdf
+    #   $t1 = run 'ls', '-l', $f1, :out, :err;
+    #   $a1 = $t1.out.slurp(:close);
+    #   say "DEBUG: File '$f1' access time: '$a1'" if $debug;
+    #   die "Fatal file '$f1' access error" if $t1.exitcode != 0;
+    my $proc = run 'ls', '-l', $file, :out, :err;
+
+    # '-rw-r--r-- 1 root root 686506 Nov       11 07:30 /var/local/powerball/pb.pdf
+    #                 686506   Nov       11       07:30 /var/local/powerball/pb.pdf
+    if $mtim ~~ / \h+ \d+ \h+ (\w+) \h+ (\d+) \h+ ($proc.out.slurp(:close);
+
+} # end of sub get-file-mod-time
+
+) 
 sub get-pdir-from-envar(
     --> Str
 ) is export {

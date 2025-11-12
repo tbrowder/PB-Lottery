@@ -101,44 +101,49 @@ sub do-latest(
     # PRIVATE/pb.pdf
     my $f1 = "/var/local/powerball/pb.pdf";
     my $f2 = "$pdir/pb.pdf";
+    $f1 = $f1.IO.r ?? $f1 !! False;
+    $f2 = $f2.IO.r ?? $f2 !! False;
+
+    if 0 {
+        say "DEBUG: \$f1 is '$f1'";
+        say "DEBUG: \$f2 is '$f2'";
+        say "DEBUG: early exit"; exit;
+    }
+
+
     my $e1 = $f1.IO.r // False;
     my $e2 = $f2.IO.r // False;
 
     my ($t1, $t2, $a1, $a2);
-    if $e1 {
-        $t1 = run 'ls', '-lc', $f1, :out, :err;
+    #if $e1 {
+    if $f1 {
+        $t1 = run 'ls', '-l', $f1, :out, :err;
         $a1 = $t1.out.slurp(:close);
         say "DEBUG: File '$f1' access time: '$a1'" if $debug;
         die "Fatal file '$f1' access error" if $t1.exitcode != 0;
     }
-    if $e2 {
-        $t2 = run 'ls', '-lc', $f2, :out, :err;
+    #if $e2 {
+    if $f2 {
+        $t2 = run 'ls', '-l', $f2, :out, :err;
         $a2 = $t2.out.slurp(:close);
         say "DEBUG: File '$f2' access time: '$a2'" if $debug;
         die "Fatal file '$f2' access error" if $t2.exitcode != 0;
     }
-    unless $e1 or $e2  {
+    unless $f1 or $f2  {
         die qq:to/HERE/;
         FATAL: No valid files exist.
         HERE
     }
 
-    if $e1 and $e2 and $debug {
+    if $f1 and $debug {
         say qq:to/HERE/;
-        DEBUG: File acccess times:
+        DEBUG: File 1 exists: acccess time:
           File '$f1': $a1
-          File '$f2': $a2
         HERE
     }
-    elsif $e1 and $debug {
+    if $f2 and $debug {
         say qq:to/HERE/;
-        DEBUG: File 1 only exists: acccess time:
-          File 'i$f1': $a1
-        HERE
-    }
-    elsif $e2 and $debug {
-        say qq:to/HERE/;
-        DEBUG: File 2 only exists: acccess time:
+        DEBUG: File 2 exists: acccess time:
           File '$f2': $a2
         HERE
     }
