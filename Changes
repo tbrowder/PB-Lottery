@@ -9,6 +9,8 @@ Revision history for PB-Lottery
     - Add option "all" to the status mode
     - Update README 
     - Improve random pick display
+    - Improve and expand documentation
+    - Improve and expand data handling and protection
 
 0.0.1  2025-10-07T18:10:50-05:00
     - Initial version

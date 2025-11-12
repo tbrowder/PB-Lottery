@@ -1,0 +1,41 @@
+=begin pod
+
+=head1 Files and directories
+
+=head2 Directories
+
+One or two directories are used:
+
+=item A private directory
+
+The directory is chosen by the user to keep the 
+contents of the seletect ticket(s) secret. The actual
+name of the directory must be identified by the 
+environment variable B<PB_LOTTERY_PRIVATE_DIR>. 
+This module's code will not function if
+that variable in not defined or does not point
+to a valid directory.
+
+=item An optional system directory
+
+If the semi-automatic mode is set up, there will
+be a system directory defined at C</var/local/powerball/>
+where duplicate, publicly readable drawing results files are kept.
+
+=head2 Files
+
+The module keeps either one or two copies of the
+files used in the manual or semi-automatic modes.
+
+The only source file that is overwritten is the
+Florida Lottery's current copy of the PDF results file, C<pb.pdf>,
+which is updated on the lottery's website after each draw.
+Copies of that are downloaded to the user's computer
+on demand.
+
+Other files are appended to after initial creation:
+
+=item draws.txt
+=item pb.txt
+
+=end pod

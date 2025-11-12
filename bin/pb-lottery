@@ -63,7 +63,7 @@ if 0 and $debug {
 }
 
 if $latest {
-    do-latest $pdir, :$all, :$debug;
+    do-latest $pdir, :$debug;
 }
 elsif $status {
     do-status $pdir, :$all, :$debug;
