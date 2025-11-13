@@ -52,14 +52,60 @@ sub get-file-mod-time(
     #   say "DEBUG: File '$f1' access time: '$a1'" if $debug;
     #   die "Fatal file '$f1' access error" if $t1.exitcode != 0;
     my $proc = run 'ls', '-l', $file, :out, :err;
+    my $mtim = $proc.out.slurp(:close);
 
-    # '-rw-r--r-- 1 root root 686506 Nov       11 07:30 /var/local/powerball/pb.pdf
-    #                 686506   Nov       11       07:30 /var/local/powerball/pb.pdf
-    if $mtim ~~ / \h+ \d+ \h+ (\w+) \h+ (\d+) \h+ ($proc.out.slurp(:close);
+    # '-rw-r--r-- 1 root root... 
+    #     686506 Nov 11 07:30 
+    #  ..l/var/local/powerball/pb.pdf
+    #     686506 Nov 11 07:30 
+    my ($mnam, $month, $day, $hour, $minute);
+    if $mtim ~~ / 
+        \h+ \d+ 
+        \h+ (\w+) # ~$0 - month name abbreviation
+        \h+ (\d+) # +$1 - day
+        \h+ (\d+) # +$2 - hour
+        ':' (\d+) # +$3 - minute
+        \h+ / { 
 
+        $mnam   = ~$0.lc;
+        $day    = +$1; 
+        $hour   = +$2;
+        $minute = +$3;
+        if $mnam.chars != 3 {
+            die qq:to/HERE/;
+            FATAL:
+                Month abbreviation '$mnam' doesn't have 3 letters.
+            HERE
+        }
+        # get numerical month number
+        with $mnam {
+            when /jan/ { $month =  1 } 
+            when /feb/ { $month =  2 } 
+            when /mar/ { $month =  3 } 
+            when /apr/ { $month =  4 } 
+            when /may/ { $month =  5 } 
+            when /jun/ { $month =  6 } 
+            when /jul/ { $month =  7 } 
+            when /aug/ { $month =  8 } 
+            when /sep/ { $month =  9 } 
+            when /oct/ { $month = 10 } 
+            when /nov/ { $month = 11 } 
+            when /dec/ { $month = 12 } 
+            default {
+                die "FATAL: Month abbreviation '$mnam' is not recognized";
+            }
+        }
+    }
+    else {
+        die qq:to/HERE/;
+        FATAL: Unrecognized data line:
+            |$mtim|
+        HERE
+    }
+    my $year = Date.now.year;
+    my $dt = DateTime.new: :$year, :$month, :$day, :$hour, :$minute;
 } # end of sub get-file-mod-time
 
-) 
 sub get-pdir-from-envar(
     --> Str
 ) is export {
