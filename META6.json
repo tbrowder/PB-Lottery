@@ -21,6 +21,7 @@
     "PB-Lottery": "lib/PB-Lottery.rakumod",
     "PB-Lottery::Append": "lib/PB-Lottery/Append.rakumod",
     "PB-Lottery::Draw": "lib/PB-Lottery/Draw.rakumod",
+    "PB-Lottery::DrawDateStatus": "lib/PB-Lottery/DrawDateStatus.rakumod",
     "PB-Lottery::Event": "lib/PB-Lottery/Event.rakumod",
     "PB-Lottery::ExtractBlocks": "lib/PB-Lottery/ExtractBlocks.rakumod",
     "PB-Lottery::Numbers": "lib/PB-Lottery/Numbers.rakumod",

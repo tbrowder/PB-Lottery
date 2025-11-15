@@ -11,6 +11,7 @@ need PB-Lottery::Ticket;
 need PB-Lottery::Draw;
 need PB-Lottery::Win;
 need PB-Lottery::Event;
+need PB-Lottery::DrawDateStatus;
 
 use PB-Lottery::Vars;
 use PB-Lottery::Subs;
@@ -101,8 +102,9 @@ sub do-latest(
 
 #   my $ld  = get-last-pb-draw-date :$last;
 #   my $nd  = get-last-pb-draw-date :$next;
-    my $ld  = get-current-pb-draw-data; #s :$last;
-    my $nd  = get-current-pb-draw-data; # :$next;
+    my $cd  = get-current-pb-draw-data; #.last-draw-date; #s :$last;
+    my $ld  = $cd.last-draw-date; # :$next;
+    my $nd  = $cd.next-draw-date; # :$next;
 
     my $ldow = dow-name $ld.day-of-week;
     my $ndow = dow-name $nd.day-of-week;

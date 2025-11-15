@@ -10,6 +10,7 @@ my @modules = <
     PB-Lottery::Event
     PB-Lottery::ExtractBlocks
     PB-Lottery::Append
+    PB-Lottery::DrawDateStatus
 >;
 
 plan @modules.elems;

@@ -10,6 +10,7 @@ use LibCurl::Easy;
 use Text::Utils :strip-comment, :str2intlist;
 
 use PB-Lottery::Vars;
+use PB-Lottery::DrawDateStatus;
 
 # All items here MUST be dependent
 # only upon Raku core or external
@@ -41,12 +42,6 @@ our %valid-draw-types is export = set <
 class SPair {
     has Str $.L is required;
     has Str $.R is required;
-}
-
-class DrawDateStatus {
-    has $.last-draw-date is rw = Nil;
-    has $.curr-draw-date is rw = Nil;
-    has $.next-draw-date is rw = Nil;
 }
 
 #sub get-last-pb-draw-date(
