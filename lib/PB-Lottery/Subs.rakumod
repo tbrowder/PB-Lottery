@@ -48,7 +48,7 @@ class SPair {
 sub get-current-pb-draw-data(
 #   :$last,
 #   :$next,
-    --> DrawDateStatus # Date
+    --> PB-Lottery::DrawDateStatus # Date
 ) is export {
     # draws are on Monday, Wednesday, and Saturday
     # at approximately 2300 EDT (2200 local time west of Tallahassee)
@@ -56,7 +56,7 @@ sub get-current-pb-draw-data(
 #   my $d   = $dt.Date; #Date.new(now);
     my $dow = $dt.day-of-week; # mon = 1, wed = 3, sat = 6
 
-    my $ds = DrawDateStatus.new;
+    my $ds = PB-Lottery::DrawDateStatus.new;
 #   my $last-draw-date = Nil;
 #   my $curr-draw-date = Nil;
 #   my $next-draw-date = Nil;
