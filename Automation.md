@@ -18,7 +18,7 @@ Create a cron job file in directory `/etc/cron.d` with the following contents:
     #   CST = UTC -6 => UTC = CST + 6 = 0900 UTC
     #   CDT = UTC -5 => UTC = CST + 5 = 0800 UTC
     # m h dom mon dow         user command
-      1 9 *   *   tue,thu,sun root /usr/local/bin/get-powerball-pdf.sh
+      1 3 *   *   tue,thu,sun root /usr/local/bin/get-powerball-pdf.sh
 
 2. Add the bash script `get-powerball-pdf.sh`
 

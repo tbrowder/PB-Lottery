@@ -2,8 +2,8 @@
 
 use LibCurl::Easy;
 
-# the download example modified
-my $ofil = "full-draw-history.pdf";
+# the download example modified to use the real name
+my $ofil = "pb.pdf";
 my $addr = "https://files.floridalottery.com/exptkt/pb.pdf";
 my $curl = LibCurl::Easy.new(
     URL => $addr,

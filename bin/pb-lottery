@@ -6,7 +6,7 @@ use PB-Lottery::Draw;
 use PB-Lottery::Ticket;
 use PB-Lottery::Numbers;
 
-# check for required private directory
+# check for the required private directory
 my $pdir = get-pdir-from-envar;
 
 my $debug  = 0;

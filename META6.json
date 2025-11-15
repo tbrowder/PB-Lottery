@@ -10,6 +10,7 @@
     "IO::Socket::SSL",
     "HTTP::UserAgent",
     "LibCurl::Easy",
+    "Date::Utils:ver<0.7.0>",
     "Text::Utils"
   ],
   "description": "Provides routines for handling play of the Florida Power Ball lottery game\n",
@@ -18,6 +19,7 @@
   "perl": "6.d",
   "provides": {
     "PB-Lottery": "lib/PB-Lottery.rakumod",
+    "PB-Lottery::Append": "lib/PB-Lottery/Append.rakumod",
     "PB-Lottery::Draw": "lib/PB-Lottery/Draw.rakumod",
     "PB-Lottery::Event": "lib/PB-Lottery/Event.rakumod",
     "PB-Lottery::ExtractBlocks": "lib/PB-Lottery/ExtractBlocks.rakumod",

@@ -42,8 +42,10 @@ class Rec {
 =begin comment
 sub MAIN(
 =end comment
+
 sub extract-blocks(
-    :$pdir!, #f-file1!,
+#   :$pdir!, #f-file1!,
+    $pdf,
 
     :$last = 10,
     :$since = '',
@@ -59,32 +61,19 @@ sub extract-blocks(
     die "pdftotext not found (install poppler-utils)" 
         if $which.exitcode != 0;
 
-    # download location varies right now
-    my $pdf-file = "$pdir/pb.pdf";
-    # possibly downloaded by a cron job to:
-    my $pdf-file2 = "/var/local/powerball/pb.pdf".IO.r // False;;
+    # get the directory of the pdf file
+    my $dir = $pdf.IO.parent;
+    say "DEBUG: parent dir: $dir" if 1 or $debug;
 
-    # create a text file from each PDF file
-    my $txt-file  = "$pdir/pb.txt";
+    # create a text file from the PDF file
+    my $txt-file  = "$dir/pb.txt";
     # text file 1
-    my $pt = run 'pdftotext', '-layout', '-q', $pdf-file, 
+    my $pt = run 'pdftotext', '-layout', '-q', $pdf, 
                  $txt-file, :out, :err;
     die "pdftotext failed" if $pt.exitcode != 0;
 
-    # parse the text files to get the latest draw data
+    # parse the text file to get the latest draw data
     my @lines  = $txt-file.open(:r, :enc('utf8-c8')).lines;
-
-    my ($pt2, $txt-file2, @lines2, %by-date2);
-    if $pdf-file2 {
-        # text file 2
-        $txt-file2 = "$pdir/pb2.txt";
-        $pt2 = run 'pdftotext', '-layout', '-q', $pdf-file2, 
-                   $txt-file2, :out, :err;
-        die "pdftotext failed" if $pt2.exitcode != 0;
-        @lines2 = $txt-file2.open(:r, :enc('utf8-c8')).lines;
-        %by-date2 = Hash[Hash].new;
-    }
-
     my %by-date  = Hash[Hash].new;
 
     say "DEBUG: lines from file '$txt-file'" if 0 or $debug;
@@ -197,7 +186,6 @@ sub extract-blocks(
     my @json;
     my @blocks;
     for @dates -> $d {
-        #if %by-date{$d}:exists('pb') {
         if %by-date{$d}<pb>:exists {
             my $r = %by-date{$d}<pb>;
 

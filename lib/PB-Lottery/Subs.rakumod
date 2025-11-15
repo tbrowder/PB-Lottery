@@ -4,6 +4,8 @@ my $F = $?FILE.IO.basename;
 
 use Test;
 
+use Date::Utils;
+
 use LibCurl::Easy;
 use Text::Utils :strip-comment, :str2intlist;
 
@@ -41,6 +43,75 @@ class SPair {
     has Str $.R is required;
 }
 
+class DrawDateStatus {
+    has $.last-draw-date is rw = Nil;
+    has $.curr-draw-date is rw = Nil;
+    has $.next-draw-date is rw = Nil;
+}
+
+#sub get-last-pb-draw-date(
+sub get-current-pb-draw-data(
+#   :$last,
+#   :$next,
+    --> DrawDateStatus # Date
+) is export {
+    # draws are on Monday, Wednesday, and Saturday
+    # at approximately 2300 EDT (2200 local time west of Tallahassee)
+    my $dt  = DateTime.new(now);
+#   my $d   = $dt.Date; #Date.new(now);
+    my $dow = $dt.day-of-week; # mon = 1, wed = 3, sat = 6
+
+    my $ds = DrawDateStatus.new;
+#   my $last-draw-date = Nil;
+#   my $curr-draw-date = Nil;
+#   my $next-draw-date = Nil;
+
+    with $dt.day-of-week {
+        when /1/ { 
+            # Monday is a draw at 2300 EST
+            $ds.curr-draw-date = $dt;
+
+            $ds.last-draw-date = $dt - 2; # Saturday
+            $ds.next-draw-date = $dt + 3; # Wednesday
+        }
+        when /2/ { 
+            # Tuesday
+            $ds.last-draw-date = $dt - 1; # Monday
+            $ds.next-draw-date = $dt + 1; # Wednesday
+        }
+        when /3/ { 
+            # Wednesday is a draw at 2300 EST
+            $ds.curr-draw-date = $dt;
+
+            $ds.last-draw-date = $dt - 2; # Monday
+            $ds.next-draw-date = $dt + 3; # Saturday
+        }
+        when /4/ { 
+            # Thursday
+            $ds.last-draw-date = $dt - 1; # Wednesday
+            $ds.next-draw-date = $dt + 2; # Saturday
+        }
+        when /5/ { 
+            # Friday
+            $ds.last-draw-date = $dt - 2; # Wednesday
+            $ds.next-draw-date = $dt + 1; # Saturday
+        }
+        when /6/ { 
+            # Saturday is a draw at 2300 EST
+            $ds.curr-draw-date = $dt;
+
+            $ds.last-draw-date = $dt - 3; # Wednesday
+            $ds.next-draw-date = $dt + 2; # Monday
+        }
+        when /7/ { 
+            # Sunday
+            $ds.last-draw-date = $dt - 1; # Saturday
+            $ds.next-draw-date = $dt + 1; # Monday
+        }
+    }
+    $ds;
+} # end of sub get-current-pb-draw-data
+	
 sub get-file-mod-time(
     $file
     --> Date 
@@ -51,7 +122,7 @@ sub get-file-mod-time(
     #   $a1 = $t1.out.slurp(:close);
     #   say "DEBUG: File '$f1' access time: '$a1'" if $debug;
     #   die "Fatal file '$f1' access error" if $t1.exitcode != 0;
-    my $proc = run 'ls', '-l', $file, :out, :err;
+    my $proc = run 'ls', '-lc', $file, :out, :err;
     my $mtim = $proc.out.slurp(:close);
 
     # '-rw-r--r-- 1 root root... 

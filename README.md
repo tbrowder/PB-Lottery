@@ -155,11 +155,11 @@ Manual operation
 
 The installed executable file `pb-lottery` is the user's tool for manual operation. Execute the file without arguments to see its modes. Briefly they are:
 
-  * latest - Downloads and updates the user's 'draws.txt' file
+  * latest - Downloads and updates the user's 'draws.txt' file (or files'
 
   * status - Reports the user's current, uncollected prizes for valid tickets
 
-  * pick - Select a random Power Ball play
+  * pick - Displays a random Power Ball play
 
 AUTHOR
 ======

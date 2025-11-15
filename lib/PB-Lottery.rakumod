@@ -2,6 +2,7 @@ unit module PB-Lottery;
 
 my $F = $?FILE.IO.basename;
 
+use Date::Utils;
 use Text::Utils :strip-comment, :str2intlist;
 use Test;
 
@@ -50,10 +51,10 @@ sub calculate-win(
         5 => { True  => 1_000_000_000, 
                False => 1_000_000 },  # Jackpot
         4 => { True  => 50_000,         False => 100 },
-        3 => { True  => 100,            False => 7 },
-        2 => { True  => 7,              False => 0 },
-        1 => { True  => 4,              False => 0 },
-        0 => { True  => 4,              False => 0 },
+        3 => { True  => 100,            False => 7   },
+        2 => { True  => 7,              False => 0   },
+        1 => { True  => 4,              False => 0   },
+        0 => { True  => 4,              False => 0   },
     );
 
     # lookup base win (pb)
@@ -74,11 +75,11 @@ sub calculate-win(
 
         my %dp-payouts = %(
             5 => { True  => 10_000_000, False => 500_000 },
-            4 => { True  => 50_000,     False => 500 },
-            3 => { True  => 500,        False => 20 },
-            2 => { True  => 20,         False => 0 },
-            1 => { True  => 10,         False => 0 },
-            0 => { True  => 7,          False => 0 },
+            4 => { True  => 50_000,     False => 500     },
+            3 => { True  => 500,        False => 20      },
+            2 => { True  => 20,         False => 0       },
+            1 => { True  => 10,         False => 0       },
+            0 => { True  => 7,          False => 0       },
         );
         if %dp-payouts{$dmatch}:exists {
             $win.dp = %dp-payouts{$dmatch}{$dpb} // 0;
@@ -95,62 +96,101 @@ sub do-latest(
 ) is export {
     say "Entering sub do-latest" if $debug;
 
+    # we know the last and next draw dates and times based on the current date
+    # and time
+
+#   my $ld  = get-last-pb-draw-date :$last;
+#   my $nd  = get-last-pb-draw-date :$next;
+    my $ld  = get-current-pb-draw-data; #s :$last;
+    my $nd  = get-current-pb-draw-data; # :$next;
+
+    my $ldow = dow-name $ld.day-of-week;
+    my $ndow = dow-name $nd.day-of-week;
+    say "Last Power Ball draw was: $ld ($ldow)";
+    say "Next Power Ball draw ss:  $nd ($ndow)";
+
     # TODO: determine which pdf file has the latest data
+    
+    # try using the last modified DateTime
     # use sys command "ls -l" 
     # /var/local/pb.pdf
     # PRIVATE/pb.pdf
-    my $f1 = "/var/local/powerball/pb.pdf";
-    my $f2 = "$pdir/pb.pdf";
-    $f1 = $f1.IO.r ?? $f1 !! False;
-    $f2 = $f2.IO.r ?? $f2 !! False;
+    my $pdf1 = "/var/local/powerball/pb.pdf";
+    my $pdf2 = "$pdir/pb.pdf";
+    # do both files exist?
+    $pdf1 = $pdf1.IO.r ?? $pdf1 !! False;
+    $pdf2 = $pdf2.IO.r ?? $pdf2 !! False;
+
+    # the draws.txt file (only one)
+    my $dfile = "$pdir/draws.txt";
 
     if 0 {
-        say "DEBUG: \$f1 is '$f1'";
-        say "DEBUG: \$f2 is '$f2'";
+        say "DEBUG: \$pdf1 is '$pdf1'";
+        say "DEBUG: \$pdf2 is '$pdf2'";
         say "DEBUG: early exit"; exit;
     }
 
-
-    my $e1 = $f1.IO.r // False;
-    my $e2 = $f2.IO.r // False;
-
+    # get the latest access times 
     my ($t1, $t2, $a1, $a2);
-    #if $e1 {
-    if $f1 {
-        $t1 = run 'ls', '-l', $f1, :out, :err;
+    if $pdf1 {
+        $t1 = run 'ls', '-l', $pdf1, :out, :err;
         $a1 = $t1.out.slurp(:close);
-        say "DEBUG: File '$f1' access time: '$a1'" if $debug;
-        die "Fatal file '$f1' access error" if $t1.exitcode != 0;
+        say "DEBUG: File '$pdf1' access time: '$a1'" if $debug;
+        die "Fatal file '$pdf1' access error" if $t1.exitcode != 0;
     }
-    #if $e2 {
-    if $f2 {
-        $t2 = run 'ls', '-l', $f2, :out, :err;
+    if $pdf2 {
+        $t2 = run 'ls', '-l', $pdf2, :out, :err;
         $a2 = $t2.out.slurp(:close);
-        say "DEBUG: File '$f2' access time: '$a2'" if $debug;
-        die "Fatal file '$f2' access error" if $t2.exitcode != 0;
+        say "DEBUG: File '$pdf2' access time: '$a2'" if $debug;
+        die "Fatal file '$pdf2' access error" if $t2.exitcode != 0;
     }
-    unless $f1 or $f2  {
+    unless $pdf1 or $pdf2  {
         die qq:to/HERE/;
         FATAL: No valid files exist.
         HERE
     }
 
-    if $f1 and $debug {
+    if $pdf1 and $debug {
         say qq:to/HERE/;
-        DEBUG: File 1 exists: acccess time:
-          File '$f1': $a1
+        DEBUG: PDF File 1 exists: acccess time:
+          File '$pdf1': $a1
         HERE
     }
-    if $f2 and $debug {
+    if $pdf2 and $debug {
         say qq:to/HERE/;
-        DEBUG: File 2 exists: acccess time:
-          File '$f2': $a2
+        DEBUG: PDF File 2 exists: acccess time:
+          File '$pdf2': $a2
         HERE
     }
 
+    # create the draws.txt file from the latest pb.pdf file
+    # but which has the latest real draw data?
+    # in order to do that, get the last N draws from the existing pdf files
+    if $pdf1 {
+        # create the draw string line pairs (blocks)
+        # see lib/*/Extract*
+        #   sub extract-blocks(
+    }
+    if $pdf2 {
+        # create the draw string line pairs (blocks)
+    }
+
+    =begin comment
+    # get the first result in each existing file
+    my (@draws1, @draws2);
+    if $f1 {
+        @draws1 = get-draw-objects :dfile($f1);
+    }
+    if $f2 {
+        @draws2 = get-draw-objects :dfile($f2);
+    }
+    =end comment
+
+    =begin comment
     my $dfile = "$pdir/draws.txt";
     my @draws = get-draw-objects :$dfile;
     say "  WARNING: No draws found!" unless @draws.elems;
+    =end comment
 
     my $tfile = "$pdir/my-tickets.txt";
 
