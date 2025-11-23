@@ -32,27 +32,19 @@ sub parse-mmddyy(Str $mdy --> Str) {
 
 class Rec {
     has Str  $.date;
-#   has @.nums;
     has @.numbers;
     has Int  $.pb;
     has Str  $.mult is rw;
     has Bool $.is-dp = False;
 }
 
-=begin comment
-sub MAIN(
-=end comment
-
 sub extract-blocks(
-#   :$pdir!, #f-file1!,
     $pdf,
 
     :$last = 10,
     :$since = '',
     :$until = '',
     :$emit = 'blocks', #= blocks|json|both
-#   :$pdf  = '',       #= local PDF path
-#   :$pdf-url = 'https://files.floridalottery.com/exptkt/pb.pdf',
     :$debug,
 ) is export {
 
@@ -63,22 +55,28 @@ sub extract-blocks(
 
     # get the directory of the pdf file
     my $dir = $pdf.IO.parent;
-    say "DEBUG: parent dir: $dir" if 1 or $debug;
+    if $debug {
+        say "DEBUG: The input PDF: $pdf";
+        say "       The PDF's parent dir is: $dir";
+    }
 
     # create a text file from the PDF file
-    my $txt-file  = "$dir/pb.txt";
+    my $txt-file  = "$*TMPDIR/pb.txt".IO;
     # text file 1
     my $pt = run 'pdftotext', '-layout', '-q', $pdf, 
                  $txt-file, :out, :err;
     die "pdftotext failed" if $pt.exitcode != 0;
 
     # parse the text file to get the latest draw data
-    my @lines  = $txt-file.open(:r, :enc('utf8-c8')).lines;
+    my @lines   = $txt-file.open(:r, :enc('utf8-c8')).lines;
+    my $nlines1 = @lines.elems;
+
     my %by-date  = Hash[Hash].new;
 
     say "DEBUG: lines from file '$txt-file'" if 0 or $debug;
-    for @lines -> $line {
-        say "  line: |$line|" if 0 or $debug;
+    my $show-nlines = 20; # for debugging
+    for @lines.kv -> $i, $line {
+        say "  line: |$line|" if (0 or $debug) and $i < $show-nlines;
         next unless $line ~~ /^ \s* (\d+ '/' \d+ '/' \d+) \s+ /;
         my $date = parse-mmddyy($0.Str);
 
@@ -94,6 +92,7 @@ sub extract-blocks(
         my $L = $line.uc.subst(/\s+/, ' ', :g);
 
         =begin comment
+        # typical lines
         10/25/25 2 12 22 39 67 PB 15 X2 POWERBALL
 
         10/25/25 3 24 46 58 61 PB 7 POWERBALL DP
@@ -111,7 +110,6 @@ sub extract-blocks(
 
         # empty the date
         %by-date{$date} //= {};
-        #%by-date{$date} { $is-dp ?? 'dp' !! 'pb' } = $rec;
         if $is-dp {
             %by-date{$date}<dp> = $rec;
         }
@@ -149,12 +147,24 @@ sub extract-blocks(
         say "    which has $nlines lines";
         exit(1);
     }
-    if 1 {
+
+    if 0 and $debug {
         say "see PB txt file '$txt-file'";
+        say "    which has $nlines1 lines";
         say "alse see cleaned PB txt file '$clean";
         say "    which has $nlines lines";
     }
 
+    # swap the clean file for the original
+    $txt-file = $clean;
+    unlink $clean;
+
+    if $debug {
+        say "see cleaned PB txt file '$txt-file'";
+        say "    which has $nlines lines";
+    }
+
+    =begin comment
     #=============================================
     # @dates has the desired number of text blocks
     #=============================================
@@ -236,6 +246,7 @@ sub extract-blocks(
     unless @blocks.elems > 2 {
         die "FATAL: The blocks array has too few elements";
     }
+    =end comment
 
     =begin comment
     # also put the last 10 in the private dir as 
@@ -244,6 +255,7 @@ sub extract-blocks(
         /home/tbrowde/mydata/tbrowde-home/pb-lottery
     =end comment
 
+    =begin comment
     my $private-file = 0;
     my $private-dir = <PB_LOTTERY_PRIVATE_DIR>;
     if %*ENV{$private-dir}:exists {
@@ -279,4 +291,5 @@ sub extract-blocks(
         $jstr = to-json @json, :pretty;
         say $jstr;
     }
+    =end comment
 }

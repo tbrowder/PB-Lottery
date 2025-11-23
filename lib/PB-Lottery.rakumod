@@ -15,6 +15,7 @@ need PB-Lottery::DrawDateStatus;
 
 use PB-Lottery::Vars;
 use PB-Lottery::Subs;
+use PB-Lottery::ExtractBlocks;
 
 =begin comment
 class Win is export {
@@ -92,7 +93,7 @@ sub calculate-win(
 
 sub do-latest(
     $pdir, #= private directory
-    :$alt-dir = "/var/local/powerball", 
+    :$alt-dir = "/var/local/powerball",
     :$debug,
 ) is export {
     say "Entering sub do-latest" if $debug;
@@ -102,15 +103,38 @@ sub do-latest(
 
 #   my $ld  = get-last-pb-draw-date :$last;
 #   my $nd  = get-last-pb-draw-date :$next;
-    my $cd  = get-current-pb-draw-data; #.last-draw-date; #s :$last;
-    my $ld  = $cd.last-draw-date; # :$next;
-    my $nd  = $cd.next-draw-date; # :$next;
 
-    my $ldow = dow-name $ld.day-of-week;
-    my $ndow = dow-name $nd.day-of-week;
-    say "Last Power Ball draw was: $ld ($ldow)";
-    say "Next Power Ball draw ss:  $nd ($ndow)";
+    my $CD  = get-current-pb-draw-data; #.last-draw-date; #s :$last;
+    
+    my $ld  = $CD.last-draw-date ?? $CD.last-draw-date !! 0; 
+    my $cd  = $CD.curr-draw-date ?? $CD.curr-draw-date !! 0;
+    my $nd  = $CD.next-draw-date ?? $CD.next-draw-date !! 0;
 
+    my ($ldow, $ndow, $cdow);
+    if $ld { 
+        $ldow = dow-name $ld.day-of-week;
+        say "Last Power Ball draw was: $ld ($ldow)" if $debug;
+    }
+    else {
+        say "Last Power Ball draw date is unknown..." if $debug;
+    }
+
+    if $cd { 
+        $cdow = dow-name $cd.day-of-week;
+        say "Current Power Ball draw is:  $cd ($cdow)" if $debug;
+    }
+    else {
+        say "No current Power Ball draw date is available..." if $debug;
+    }
+
+    if $nd { 
+        $ndow = dow-name $nd.day-of-week;
+        say "Next Power Ball draw is:  $nd ($ndow)" if $debug;
+    }
+    else {
+        say "Next Power Ball draw date is unknown..." if $debug;
+    }
+        
     # TODO: determine which pdf file has the latest data
     
     # try using the last modified DateTime
@@ -172,9 +196,14 @@ sub do-latest(
         # create the draw string line pairs (blocks)
         # see lib/*/Extract*
         #   sub extract-blocks(
+        #       $pdf,
+        extract-blocks $pdf1, :$debug;
     }
     if $pdf2 {
         # create the draw string line pairs (blocks)
+        # see lib/*/Extract*
+        #   sub extract-blocks(
+        extract-blocks $pdf2, :$debug;
     }
 
     =begin comment

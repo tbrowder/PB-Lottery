@@ -53,55 +53,58 @@ sub get-current-pb-draw-data(
     # draws are on Monday, Wednesday, and Saturday
     # at approximately 2300 EDT (2200 local time west of Tallahassee)
     my $dt  = DateTime.new(now);
-#   my $d   = $dt.Date; #Date.new(now);
-    my $dow = $dt.day-of-week; # mon = 1, wed = 3, sat = 6
+    my $d   = Date.new(now);
+    my $dow = $d.day-of-week; # mon = 1, wed = 3, sat = 6
 
     my $ds = PB-Lottery::DrawDateStatus.new;
 #   my $last-draw-date = Nil;
 #   my $curr-draw-date = Nil;
 #   my $next-draw-date = Nil;
 
-    with $dt.day-of-week {
+    with $dow { # .day-of-week {
         when /1/ { 
             # Monday is a draw at 2300 EST
-            $ds.curr-draw-date = $dt;
+            $ds.curr-draw-date = $d;
 
-            $ds.last-draw-date = $dt - 2; # Saturday
-            $ds.next-draw-date = $dt + 3; # Wednesday
+            $ds.last-draw-date = $d - 2; # Saturday
+            $ds.next-draw-date = $d + 3; # Wednesday
         }
         when /2/ { 
             # Tuesday
-            $ds.last-draw-date = $dt - 1; # Monday
-            $ds.next-draw-date = $dt + 1; # Wednesday
+            $ds.last-draw-date = $d - 1; # Monday
+            $ds.next-draw-date = $d + 1; # Wednesday
         }
         when /3/ { 
             # Wednesday is a draw at 2300 EST
-            $ds.curr-draw-date = $dt;
+            $ds.curr-draw-date = $d;
 
-            $ds.last-draw-date = $dt - 2; # Monday
-            $ds.next-draw-date = $dt + 3; # Saturday
+            $ds.last-draw-date = $d - 2; # Monday
+            $ds.next-draw-date = $d + 3; # Saturday
         }
         when /4/ { 
             # Thursday
-            $ds.last-draw-date = $dt - 1; # Wednesday
-            $ds.next-draw-date = $dt + 2; # Saturday
+            $ds.last-draw-date = $d - 1; # Wednesday
+            $ds.next-draw-date = $d + 2; # Saturday
         }
         when /5/ { 
             # Friday
-            $ds.last-draw-date = $dt - 2; # Wednesday
-            $ds.next-draw-date = $dt + 1; # Saturday
+            $ds.last-draw-date = $d - 2; # Wednesday
+            $ds.next-draw-date = $d + 1; # Saturday
         }
         when /6/ { 
             # Saturday is a draw at 2300 EST
-            $ds.curr-draw-date = $dt;
+            $ds.curr-draw-date = $d;
 
-            $ds.last-draw-date = $dt - 3; # Wednesday
-            $ds.next-draw-date = $dt + 2; # Monday
+            $ds.last-draw-date = $d - 3; # Wednesday
+            $ds.next-draw-date = $d + 2; # Monday
         }
         when /7/ { 
             # Sunday
-            $ds.last-draw-date = $dt - 1; # Saturday
-            $ds.next-draw-date = $dt + 1; # Monday
+            $ds.last-draw-date = $d - 1; # Saturday
+            $ds.next-draw-date = $d + 1; # Monday
+        }
+        default {
+            die "FATAL: Unknown DoW: $_";
         }
     }
     $ds;
