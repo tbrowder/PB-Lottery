@@ -28,4 +28,6 @@ jobs:
             choco install rakudostar
             zef --exclude="z, curl" install --debug --/test --test-depends --deps-only .
       - name: Run Tests
-        run: zef install . --debug
+        run: prove6
+      - name: Install
+        run: zef install . 

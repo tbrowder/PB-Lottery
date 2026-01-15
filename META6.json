@@ -6,6 +6,7 @@
   "build-depends": [
   ],
   "depends": [
+    "App::Prove6",
     "Test::Output",
     "IO::Socket::SSL",
     "HTTP::UserAgent",
