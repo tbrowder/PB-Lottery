@@ -25,9 +25,8 @@ jobs:
       - uses: Raku/setup-raku@v1
       - name: Install Dependencies
         run: |
-            choco install rakudostar
-            zef --exclude="z, curl" install --debug --/test --test-depends --deps-only .
+            zef --exclude='curl:ver<4>:from<native>' install --debug --/test --test-depends --deps-only .
       - name: Run Tests
-        run: prove6
+        run: prove6 -I.
       - name: Install
         run: zef install . 
